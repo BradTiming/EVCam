@@ -105,7 +105,7 @@
                 android:paddingVertical="1dp"
                 android:textColor="#FFFFFF"
                 android:textSize="10sp"
-                android:text="4路" />
+                android:text="4-ch" />
         </FrameLayout>
 
         <!-- 视频信息 -->
