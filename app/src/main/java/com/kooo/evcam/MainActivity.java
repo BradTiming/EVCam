@@ -897,7 +897,7 @@ public class MainActivity extends AppCompatActivity {
             layoutId = R.layout.activity_main_custom;
             configuredCameraCount = appConfig.getCameraCount();
             requiredTextureCount = configuredCameraCount;
-            AppLog.d(TAG, "使用自定义车型布局：" + configuredCameraCount + "摄像头");
+            AppLog.d(TAG, "使用自定义车型布局：" + configuredCameraCount + " camera(s)");
         }
         // 银河E5：横屏四摄像头布局
         else {
@@ -957,7 +957,7 @@ public class MainActivity extends AppCompatActivity {
                 if (versionText != null) {
                     try {
                         String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-                        versionText.setText("版本：v" + versionName);
+                        versionText.setText("Version: v" + versionName);
                     } catch (Exception e) {
                         // 忽略异常，保持默认文本
                     }
@@ -1339,11 +1339,11 @@ public class MainActivity extends AppCompatActivity {
             if (isRecordingStatsEnabled) {
                 // 显示状态（使用 alpha 恢复可见）
                 tvRecordingStats.setAlpha(1.0f);
-                Toast.makeText(this, "录制状态显示已开启", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Recording status display enabled", Toast.LENGTH_SHORT).show();
             } else {
                 // 使用 alpha=0 隐藏，但保持 VISIBLE 状态以响应点击
                 tvRecordingStats.setAlpha(0.0f);
-                Toast.makeText(this, "录制状态显示已关闭", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Recording status display disabled", Toast.LENGTH_SHORT).show();
             }
         }
         
@@ -2022,7 +2022,7 @@ public class MainActivity extends AppCompatActivity {
                     initCamera();
                 }
             } else {
-                Toast.makeText(this, "需要相机和存储权限", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Camera and storage permissions are required", Toast.LENGTH_SHORT).show();
                 finish();
             }
         }
@@ -2449,7 +2449,7 @@ public class MainActivity extends AppCompatActivity {
 
             } catch (CameraAccessException e) {
                 AppLog.e(TAG, "Failed to access camera", e);
-                Toast.makeText(this, "摄像头访问失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Camera access failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -2485,7 +2485,7 @@ public class MainActivity extends AppCompatActivity {
                     cameraIds[0], textureRight
             );
         } else {
-            Toast.makeText(this, "没有可用的摄像头", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No available camera", Toast.LENGTH_SHORT).show();
         }
     }
     
@@ -2519,7 +2519,7 @@ public class MainActivity extends AppCompatActivity {
                     cameraIds[0], textureRight
             );
         } else {
-            Toast.makeText(this, "没有可用的摄像头", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No available camera", Toast.LENGTH_SHORT).show();
         }
     }
     
@@ -2561,7 +2561,7 @@ public class MainActivity extends AppCompatActivity {
                     cameraIds[0], textureRight
             );
         } else {
-            Toast.makeText(this, "没有可用的摄像头", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No available camera", Toast.LENGTH_SHORT).show();
         }
     }
     
@@ -2590,7 +2590,7 @@ public class MainActivity extends AppCompatActivity {
             );
             AppLog.d(TAG, "手机模式初始化：单摄像头=" + cameraIds[0]);
         } else {
-            Toast.makeText(this, "没有可用的摄像头", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No available camera", Toast.LENGTH_SHORT).show();
         }
     }
     
@@ -2981,11 +2981,11 @@ public class MainActivity extends AppCompatActivity {
         if (debugOverlayVisible) {
             tvDebugOverlay.setVisibility(View.VISIBLE);
             startDebugUpdates();
-            android.widget.Toast.makeText(this, "调试信息已开启", android.widget.Toast.LENGTH_SHORT).show();
+            android.widget.Toast.makeText(this, "Debug info enabled", android.widget.Toast.LENGTH_SHORT).show();
         } else {
             tvDebugOverlay.setVisibility(View.GONE);
             stopDebugUpdates();
-            android.widget.Toast.makeText(this, "调试信息已关闭", android.widget.Toast.LENGTH_SHORT).show();
+            android.widget.Toast.makeText(this, "Debug info disabled", android.widget.Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -3074,7 +3074,7 @@ public class MainActivity extends AppCompatActivity {
             // 检查摄像头是否就绪
             if (cameraManager == null || !cameraManager.hasConnectedCameras()) {
                 AppLog.w(TAG, "摄像头未就绪，无法恢复录制");
-                Toast.makeText(this, "摄像头未就绪，恢复录制失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Cameras not ready, failed to resume recording", Toast.LENGTH_SHORT).show();
                 shouldResumeRecordingAfterRecreate = false;
                 savedRecordingStartTime = 0;
                 savedSegmentCount = 1;
@@ -3083,7 +3083,7 @@ public class MainActivity extends AppCompatActivity {
             
             AppLog.d(TAG, "主题切换后自动恢复录制...");
             startRecording();
-            Toast.makeText(this, "已自动恢复录制", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Recording resumed automatically", Toast.LENGTH_SHORT).show();
             // 注意：shouldResumeRecordingAfterRecreate 在首次数据写入回调中重置，
             // 以便计时器使用保存的时间
         }, 2000);  // 延迟2秒
@@ -3131,13 +3131,13 @@ public class MainActivity extends AppCompatActivity {
             // 检查摄像头是否就绪
             if (cameraManager == null || !cameraManager.hasConnectedCameras()) {
                 AppLog.w(TAG, "摄像头未就绪，无法自动开始录制");
-                Toast.makeText(this, "摄像头未就绪，自动录制失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Cameras not ready, auto-recording failed", Toast.LENGTH_SHORT).show();
                 return;
             }
             
             AppLog.d(TAG, "自动开始录制...");
             startRecording();
-            Toast.makeText(this, "已自动开始录制", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Recording started automatically", Toast.LENGTH_SHORT).show();
         }, 2000);  // 延迟2秒
     }
     
@@ -3225,7 +3225,7 @@ public class MainActivity extends AppCompatActivity {
         // 满足所有条件，自动恢复录制
         AppLog.d(TAG, "自动录制检查：检测到未在录制，自动恢复录制...");
         startRecording();
-        Toast.makeText(this, "已自动恢复录制", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Recording resumed automatically", Toast.LENGTH_SHORT).show();
     }
     
     /**
@@ -3353,7 +3353,7 @@ public class MainActivity extends AppCompatActivity {
                 AppLog.d(TAG, "息屏已持续10秒，自动停止录制");
                 stopRecording();
                 runOnUiThread(() -> {
-                    Toast.makeText(MainActivity.this, "息屏10秒，已自动停止录制", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Screen off for 10s, recording stopped automatically", Toast.LENGTH_SHORT).show();
                 });
             };
             
@@ -3415,7 +3415,7 @@ public class MainActivity extends AppCompatActivity {
             moveTaskToBack(true);
             
             runOnUiThread(() -> {
-                Toast.makeText(MainActivity.this, "息屏15秒，已退到后台", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Screen off for 15s, app moved to background", Toast.LENGTH_SHORT).show();
             });
         };
         
@@ -3530,7 +3530,7 @@ public class MainActivity extends AppCompatActivity {
                             if (!isScreenOff && !isRecording && cameraManager.hasConnectedCameras()) {
                                 AppLog.d(TAG, "摄像头已就绪，开始恢复录制");
                                 startRecording();
-                                Toast.makeText(MainActivity.this, "已自动恢复录制", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MainActivity.this, "Recording resumed automatically", Toast.LENGTH_SHORT).show();
                             }
                         }, 2000);
                     } catch (Exception e) {
@@ -3543,7 +3543,7 @@ public class MainActivity extends AppCompatActivity {
             AppLog.d(TAG, "亮屏已持续10秒，自动恢复录制");
             startRecording();
             runOnUiThread(() -> {
-                Toast.makeText(MainActivity.this, "亮屏10秒，已自动恢复录制", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Screen on for 10s, recording resumed automatically", Toast.LENGTH_SHORT).show();
             });
         };
         
@@ -3587,7 +3587,7 @@ public class MainActivity extends AppCompatActivity {
             java.util.Set<String> enabledCameras = appConfig.getEnabledRecordingCameras();
             
             if (enabledCameras.isEmpty()) {
-                Toast.makeText(this, "请至少选择一个录制摄像头", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Please select at least one camera to record", Toast.LENGTH_SHORT).show();
                 return;
             }
             
@@ -3617,25 +3617,25 @@ public class MainActivity extends AppCompatActivity {
                 // 发送录制状态广播（通知悬浮窗）
                 FloatingWindowService.sendRecordingStateChanged(this, true);
 
-                // L7-多按钮布局：更新录制按钮文字为"停止"
+                // L7-多按钮布局：更新录制按钮文字为"Stop"
                 if (AppConfig.CAR_MODEL_L7_MULTI.equals(appConfig.getCarModel()) && btnStartRecord != null) {
-                    btnStartRecord.setText("停止");
+                    btnStartRecord.setText("Stop");
                 }
 
                 // 显示提示：优先显示回退提示（每次冷启动只显示一次）
                 if (isFallback && !AppConfig.isSdFallbackShownThisSession()) {
                     AppConfig.setSdFallbackShownThisSession(true);
-                    Toast.makeText(this, "未检测到U盘，已回退到内部存储", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "USB drive not detected, switched back to internal storage", Toast.LENGTH_LONG).show();
                     AppLog.w(TAG, "U盘回退：用户选择U盘但不可用，使用内部存储");
                 } else {
                     // 显示录制的摄像头数量
                     int cameraCount = enabledCameras.size();
-                    String cameraText = cameraCount == appConfig.getCameraCount() ? "全部" : cameraCount + "个";
-                    Toast.makeText(this, "开始录制" + cameraText + "摄像头", Toast.LENGTH_SHORT).show();
+                    String cameraText = cameraCount == appConfig.getCameraCount() ? "all" : String.valueOf(cameraCount);
+                    Toast.makeText(this, "Started recording " + cameraText + " camera(s)", Toast.LENGTH_SHORT).show();
                 }
                 AppLog.d(TAG, "Recording started with " + enabledCameras.size() + " camera(s): " + enabledCameras);
             } else {
-                Toast.makeText(this, "录制失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Recording failed", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -3658,12 +3658,12 @@ public class MainActivity extends AppCompatActivity {
             // 发送录制状态广播（通知悬浮窗）
             FloatingWindowService.sendRecordingStateChanged(this, false);
 
-            // L7-多按钮布局：恢复录制按钮文字为"录像"
+            // L7-多按钮布局：恢复录制按钮文字为"Record"
             if (AppConfig.CAR_MODEL_L7_MULTI.equals(appConfig.getCarModel()) && btnStartRecord != null) {
-                btnStartRecord.setText("录像");
+                btnStartRecord.setText("Record");
             }
 
-            Toast.makeText(this, "录制已停止", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Recording stopped", Toast.LENGTH_SHORT).show();
             AppLog.d(TAG, "Recording stopped, foreground service stopped");
         }
     }
@@ -3782,7 +3782,7 @@ public class MainActivity extends AppCompatActivity {
     private void takePicture() {
         if (cameraManager != null) {
             cameraManager.takePicture();
-            Toast.makeText(this, "拍照完成", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Photo captured", Toast.LENGTH_SHORT).show();
             AppLog.d(TAG, "Picture taken");
         }
     }
@@ -3820,7 +3820,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void startDingTalkService() {
         if (!dingTalkConfig.isConfigured()) {
-            Toast.makeText(this, "请先配置钉钉参数", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please configure DingTalk parameters first", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -3850,7 +3850,7 @@ public class MainActivity extends AppCompatActivity {
             public void onConnected() {
                 runOnUiThread(() -> {
                     AppLog.d(TAG, "远程查看服务已连接");
-                    Toast.makeText(MainActivity.this, "钉钉远程已启动", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "DingTalk remote service started", Toast.LENGTH_SHORT).show();
                     // 通知 RemoteViewFragment 更新 UI
                     updateRemoteViewFragmentUI();
                 });
@@ -3869,7 +3869,7 @@ public class MainActivity extends AppCompatActivity {
             public void onError(String error) {
                 runOnUiThread(() -> {
                     AppLog.e(TAG, "远程查看服务连接失败: " + error);
-                    Toast.makeText(MainActivity.this, "连接失败: " + error, Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "Connection failed: " + error, Toast.LENGTH_LONG).show();
                     // 通知 RemoteViewFragment 更新 UI
                     updateRemoteViewFragmentUI();
                 });
@@ -3951,7 +3951,7 @@ public class MainActivity extends AppCompatActivity {
             // 从 RemoteServiceManager 清除
             RemoteServiceManager.getInstance().clearDingTalkService();
             
-            Toast.makeText(this, "远程查看服务已停止", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Remote viewing service stopped", Toast.LENGTH_SHORT).show();
             // 通知 RemoteViewFragment 更新 UI
             updateRemoteViewFragmentUI();
         }
@@ -3971,7 +3971,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void startTelegramService() {
         if (!telegramConfig.isConfigured()) {
-            Toast.makeText(this, "请先配置 Telegram Bot Token", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please configure Telegram Bot Token first", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -4006,7 +4006,7 @@ public class MainActivity extends AppCompatActivity {
             public void onConnected() {
                 runOnUiThread(() -> {
                     AppLog.d(TAG, "Telegram 服务已连接");
-                    Toast.makeText(MainActivity.this, "Telegram 已连接", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Telegram connected", Toast.LENGTH_SHORT).show();
                     updateTelegramFragmentUI();
                 });
             }
@@ -4023,7 +4023,7 @@ public class MainActivity extends AppCompatActivity {
             public void onError(String error) {
                 runOnUiThread(() -> {
                     AppLog.e(TAG, "Telegram 服务连接失败: " + error);
-                    Toast.makeText(MainActivity.this, "Telegram 连接失败: " + error, Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "Telegram connection failed: " + error, Toast.LENGTH_LONG).show();
                     updateTelegramFragmentUI();
                 });
             }
@@ -4101,7 +4101,7 @@ public class MainActivity extends AppCompatActivity {
             // 从 RemoteServiceManager 清除
             RemoteServiceManager.getInstance().clearTelegramService();
             
-            Toast.makeText(this, "Telegram 服务已停止", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Telegram service stopped", Toast.LENGTH_SHORT).show();
             updateTelegramFragmentUI();
         }
     }
@@ -4131,7 +4131,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void startFeishuService() {
         if (!feishuConfig.isConfigured()) {
-            Toast.makeText(this, "请先配置飞书 App ID 和 App Secret", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please configure Feishu App ID and App Secret first", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -4167,7 +4167,7 @@ public class MainActivity extends AppCompatActivity {
             public void onConnected() {
                 runOnUiThread(() -> {
                     AppLog.d(TAG, "飞书服务已连接");
-                    Toast.makeText(MainActivity.this, "飞书已连接", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Feishu connected", Toast.LENGTH_SHORT).show();
                     updateFeishuFragmentUI();
                 });
             }
@@ -4184,7 +4184,7 @@ public class MainActivity extends AppCompatActivity {
             public void onError(String error) {
                 runOnUiThread(() -> {
                     AppLog.e(TAG, "飞书服务连接失败: " + error);
-                    Toast.makeText(MainActivity.this, "飞书连接失败: " + error, Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "Feishu connection failed: " + error, Toast.LENGTH_LONG).show();
                     updateFeishuFragmentUI();
                 });
             }
@@ -4263,7 +4263,7 @@ public class MainActivity extends AppCompatActivity {
             // 从 RemoteServiceManager 清除
             RemoteServiceManager.getInstance().clearFeishuService();
             
-            Toast.makeText(this, "飞书服务已停止", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Feishu service stopped", Toast.LENGTH_SHORT).show();
             updateFeishuFragmentUI();
         }
     }
@@ -4667,7 +4667,7 @@ public class MainActivity extends AppCompatActivity {
                             if (!isRecording && cameraManager != null && cameraManager.hasConnectedCameras()) {
                                 AppLog.d(TAG, "自动恢复录制...");
                                 startRecording();
-                                Toast.makeText(this, "已自动恢复录制", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, "Recording resumed automatically", Toast.LENGTH_SHORT).show();
                             }
                         }, 1500);  // 等待摄像头准备好
                     }
@@ -4850,7 +4850,7 @@ public class MainActivity extends AppCompatActivity {
         lastRecordingErrorToastTime = currentTime;
 
         runOnUiThread(() -> {
-            android.widget.Toast.makeText(this, "录制发生异常", android.widget.Toast.LENGTH_LONG).show();
+            android.widget.Toast.makeText(this, "Recording encountered an error", android.widget.Toast.LENGTH_LONG).show();
         });
     }
 
@@ -5150,7 +5150,7 @@ public class MainActivity extends AppCompatActivity {
     public void showImageAdjustFloatingWindow() {
         // 检查悬浮窗权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(this)) {
-            Toast.makeText(this, "需要悬浮窗权限才能打开调节窗口", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Overlay permission is required to open controls", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                     android.net.Uri.parse("package:" + getPackageName()));
             startActivityForResult(intent, REQUEST_OVERLAY_PERMISSION);
@@ -5158,7 +5158,7 @@ public class MainActivity extends AppCompatActivity {
         }
         
         if (imageAdjustManager == null) {
-            Toast.makeText(this, "摄像头未就绪，无法打开调节窗口", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Cameras not ready, cannot open controls", Toast.LENGTH_SHORT).show();
             return;
         }
         
@@ -5204,7 +5204,7 @@ public class MainActivity extends AppCompatActivity {
                 // 权限已授予，打开悬浮窗
                 showImageAdjustFloatingWindow();
             } else {
-                Toast.makeText(this, "悬浮窗权限未授予", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Overlay permission not granted", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -5229,7 +5229,7 @@ public class MainActivity extends AppCompatActivity {
     public void showCameraPreviewFloating(String cameraPosition) {
         // 检查悬浮窗权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(this)) {
-            Toast.makeText(this, "需要悬浮窗权限才能显示预览", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Overlay permission is required to show preview", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                     android.net.Uri.parse("package:" + getPackageName()));
             startActivity(intent);
@@ -5239,7 +5239,7 @@ public class MainActivity extends AppCompatActivity {
         // TODO: CameraPreviewFloatingService 尚未实现
         // CameraPreviewFloatingService.start(this, cameraPosition);
         AppLog.d(TAG, "Camera preview floating not implemented yet for: " + cameraPosition);
-        Toast.makeText(this, "摄像头预览悬浮窗功能尚未实现", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Floating camera preview is not implemented yet", Toast.LENGTH_SHORT).show();
     }
     
     /**
