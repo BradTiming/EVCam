@@ -943,7 +943,7 @@ public class ResolutionSettingsFragment extends Fragment {
             mainActivity.showImageAdjustFloatingWindow();
             
             // 返回主界面以便查看预览效果
-            Toast.makeText(getContext(), "悬浮窗已打开，返回预览界面可实时查看效果", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Control overlay opened. Return to preview to see changes in real time", Toast.LENGTH_SHORT).show();
         }
     }
     
