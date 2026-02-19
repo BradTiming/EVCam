@@ -37,7 +37,7 @@
                 android:id="@+id/nav_header_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="EVCam"
+                android:text="EV Dashcam"
                 android:textColor="@color/nav_header_text"
                 android:textSize="22sp"
                 android:textStyle="bold" />
@@ -47,7 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="EVCam"
+                android:text="EV Dashcam"
                 android:textColor="@color/nav_header_text_secondary"
                 android:textSize="14sp" />
 

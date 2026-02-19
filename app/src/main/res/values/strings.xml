@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">EVCam</string>
+    <string name="app_name">EV Dashcam</string>
     <string name="accessibility_service_description">Keep-alive service: improves background stability so remote-control features can work reliably.\n\nThis service does not monitor or operate any user interface and does not collect personal data. It is only used to keep the app process active.</string>
 </resources>
