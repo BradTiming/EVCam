@@ -101,6 +101,12 @@ public class StorageCleanupManager {
      */
     private void performCleanup() {
         AppLog.d(TAG, "开始执行存储清理检测...");
+
+        String cleanupTarget = appConfig.getStorageCleanupTarget();
+        if (AppConfig.STORAGE_CLEANUP_TARGET_OFF.equals(cleanupTarget)) {
+            AppLog.d(TAG, "Auto cleanup target is OFF, skipping all cleanup checks");
+            return;
+        }
         
         // 首先检测内部存储低空间情况（强制清理）
         performLowSpaceCleanupIfNeeded();
@@ -110,25 +116,29 @@ public class StorageCleanupManager {
         
         // 检测并清理视频
         if (videoLimitGb > 0) {
-            CleanupResult videoResult = cleanupDirectory(
-                StorageHelper.getVideoDir(context),
-                videoLimitGb * GB_TO_BYTES,
-                "视频"
-            );
-            if (videoResult.deletedCount > 0) {
-                showCleanupNotification(videoResult, "视频");
+            for (StorageTarget target : getConfiguredTargets(cleanupTarget)) {
+                CleanupResult videoResult = cleanupDirectory(
+                        StorageHelper.getVideoDir(context, target.useExternalSd),
+                        videoLimitGb * GB_TO_BYTES,
+                        "Video (" + target.label + ")"
+                );
+                if (videoResult.deletedCount > 0) {
+                    showCleanupNotification(videoResult, "Video (" + target.label + ")");
+                }
             }
         }
         
         // 检测并清理图片
         if (photoLimitGb > 0) {
-            CleanupResult photoResult = cleanupDirectory(
-                StorageHelper.getPhotoDir(context),
-                photoLimitGb * GB_TO_BYTES,
-                "图片"
-            );
-            if (photoResult.deletedCount > 0) {
-                showCleanupNotification(photoResult, "图片");
+            for (StorageTarget target : getConfiguredTargets(cleanupTarget)) {
+                CleanupResult photoResult = cleanupDirectory(
+                        StorageHelper.getPhotoDir(context, target.useExternalSd),
+                        photoLimitGb * GB_TO_BYTES,
+                        "Photos (" + target.label + ")"
+                );
+                if (photoResult.deletedCount > 0) {
+                    showCleanupNotification(photoResult, "Photos (" + target.label + ")");
+                }
             }
         }
         
@@ -361,7 +371,11 @@ public class StorageCleanupManager {
      * @return 占用大小（字节）
      */
     public long getVideoUsedSize() {
-        return getDirectorySize(StorageHelper.getVideoDir(context));
+        long total = 0;
+        for (StorageTarget target : getConfiguredTargets(appConfig.getStorageCleanupTarget())) {
+            total += getDirectorySize(StorageHelper.getVideoDir(context, target.useExternalSd));
+        }
+        return total;
     }
     
     /**
@@ -369,7 +383,34 @@ public class StorageCleanupManager {
      * @return 占用大小（字节）
      */
     public long getPhotoUsedSize() {
-        return getDirectorySize(StorageHelper.getPhotoDir(context));
+        long total = 0;
+        for (StorageTarget target : getConfiguredTargets(appConfig.getStorageCleanupTarget())) {
+            total += getDirectorySize(StorageHelper.getPhotoDir(context, target.useExternalSd));
+        }
+        return total;
+    }
+
+    private List<StorageTarget> getConfiguredTargets(String cleanupTarget) {
+        List<StorageTarget> targets = new ArrayList<>();
+        if (AppConfig.STORAGE_CLEANUP_TARGET_INTERNAL.equals(cleanupTarget)
+                || AppConfig.STORAGE_CLEANUP_TARGET_BOTH.equals(cleanupTarget)) {
+            targets.add(new StorageTarget(false, "Internal"));
+        }
+        if (AppConfig.STORAGE_CLEANUP_TARGET_USB.equals(cleanupTarget)
+                || AppConfig.STORAGE_CLEANUP_TARGET_BOTH.equals(cleanupTarget)) {
+            targets.add(new StorageTarget(true, "USB"));
+        }
+        return targets;
+    }
+
+    private static class StorageTarget {
+        final boolean useExternalSd;
+        final String label;
+
+        StorageTarget(boolean useExternalSd, String label) {
+            this.useExternalSd = useExternalSd;
+            this.label = label;
+        }
     }
     
     /**

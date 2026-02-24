@@ -43,6 +43,7 @@ public class AppConfig {
     // 存储清理配置
     private static final String KEY_VIDEO_STORAGE_LIMIT_GB = "video_storage_limit_gb";  // 视频存储限制（GB）
     private static final String KEY_PHOTO_STORAGE_LIMIT_GB = "photo_storage_limit_gb";  // 图片存储限制（GB）
+    private static final String KEY_STORAGE_CLEANUP_TARGET = "storage_cleanup_target";  // 自动清理目标存储
     
     // 分段录制配置
     private static final String KEY_SEGMENT_DURATION_MINUTES = "segment_duration_minutes";  // 分段时长（分钟）
@@ -240,6 +241,12 @@ public class AppConfig {
     // 帧率等级常量
     public static final String FRAMERATE_STANDARD = "standard";  // 标准帧率（默认）
     public static final String FRAMERATE_LOW = "low";            // 低帧率（标准值的一半）
+
+    // 自动清理目标
+    public static final String STORAGE_CLEANUP_TARGET_OFF = "off";
+    public static final String STORAGE_CLEANUP_TARGET_INTERNAL = "internal";
+    public static final String STORAGE_CLEANUP_TARGET_USB = "usb";
+    public static final String STORAGE_CLEANUP_TARGET_BOTH = "both";
     
     // 车型配置相关键名
     private static final String KEY_CAR_MODEL = "car_model";  // 车型（galaxy_e5 / custom）
@@ -1339,7 +1346,23 @@ public class AppConfig {
      * @return true 如果至少有一项存储限制设置大于0
      */
     public boolean isStorageCleanupEnabled() {
-        return getVideoStorageLimitGb() > 0 || getPhotoStorageLimitGb() > 0;
+        return !STORAGE_CLEANUP_TARGET_OFF.equals(getStorageCleanupTarget())
+                && (getVideoStorageLimitGb() > 0 || getPhotoStorageLimitGb() > 0);
+    }
+
+    public void setStorageCleanupTarget(String target) {
+        if (!STORAGE_CLEANUP_TARGET_INTERNAL.equals(target)
+                && !STORAGE_CLEANUP_TARGET_USB.equals(target)
+                && !STORAGE_CLEANUP_TARGET_BOTH.equals(target)
+                && !STORAGE_CLEANUP_TARGET_OFF.equals(target)) {
+            target = STORAGE_CLEANUP_TARGET_BOTH;
+        }
+        prefs.edit().putString(KEY_STORAGE_CLEANUP_TARGET, target).apply();
+        AppLog.d(TAG, "Auto cleanup target set to: " + target);
+    }
+
+    public String getStorageCleanupTarget() {
+        return prefs.getString(KEY_STORAGE_CLEANUP_TARGET, STORAGE_CLEANUP_TARGET_BOTH);
     }
     
     // ==================== 分段录制配置相关方法 ====================
