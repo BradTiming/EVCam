@@ -208,6 +208,8 @@ public class AppConfig {
     public static final int EFFECT_MODE_NEGATIVE = 2;  // 负片
     public static final int EFFECT_MODE_SOLARIZE = 3;  // 曝光过度
     public static final int EFFECT_MODE_SEPIA = 4;  // 怀旧
+    public static final String BITRATE_ULTRA = "ultra";    // 超高码率（计算值的200%）
+    public static final String FRAMERATE_HIGH = "high";          // 高帧率（优先 60fps）
     public static final int EFFECT_MODE_AQUA = 6;  // 水蓝
     
     // 分段时长常量（分钟）
@@ -556,13 +558,18 @@ public class AppConfig {
      */
     public void setBitrateLevel(String level) {
         prefs.edit().putString(KEY_BITRATE_LEVEL, level).apply();
-        AppLog.d(TAG, "码率等级设置: " + level);
-    }
+            case BITRATE_ULTRA:
+                // 200%，取整到 0.5Mbps
+                return roundToHalfMbps(baseBitrate * 2);
+        // 最小 0.5Mbps，最大 40Mbps（用于高分辨率/高帧率）
+        return Math.max(halfMbps, Math.min(rounded, 40000000));
     
     /**
-     * 获取码率等级
-     * @return 码率等级，默认为 medium
-     */
+                return "Low";
+                return "High";
+            case BITRATE_ULTRA:
+                return "Ultra";
+                return "Standard";
     public String getBitrateLevel() {
         return prefs.getString(KEY_BITRATE_LEVEL, BITRATE_MEDIUM);
     }
@@ -660,11 +667,22 @@ public class AppConfig {
         
         // 如果硬件帧率本身就是30或接近30，直接使用
         if (hardwareMaxFps >= 25 && hardwareMaxFps <= 35) {
-            return hardwareMaxFps;
+
         }
-        
-        // 如果超过30，降到30或以下的整数倍
-        if (hardwareMaxFps > 35) {
+
+        if (FRAMERATE_HIGH.equals(level)) {
+            // 高帧率：硬件支持时优先使用更高帧率，最多 60fps
+            if (hardwareMaxFps > standardFps) {
+                return Math.min(60, hardwareMaxFps);
+            }
+            return standardFps;
+        }
+
+            return "Low";
+        if (FRAMERATE_HIGH.equals(level)) {
+            return "High";
+        }
+        return "Standard";
             // 60fps -> 30fps, 120fps -> 30fps
             int divisor = (hardwareMaxFps + 29) / 30;  // 向上取整
             int result = hardwareMaxFps / divisor;

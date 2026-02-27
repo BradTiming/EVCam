@@ -865,7 +865,7 @@ public class MultiCameraManager {
         }
         
         // 获取帧率配置（根据帧率等级设置计算）
-        int targetFrameRate = appConfig.getActualFrameRate(30);  // 假设硬件支持30fps
+        int targetFrameRate = appConfig.getActualFrameRate(60);  // 高帧率模式可提升到60fps
         AppLog.d(TAG, "Target frame rate: " + targetFrameRate + " fps (level: " + appConfig.getFramerateLevel() + ")");
 
         // 第一步：准备所有 MediaRecorder（但不启动）
@@ -1164,7 +1164,7 @@ public class MultiCameraManager {
         }
         
         // 获取帧率配置（根据帧率等级设置计算）
-        int targetFrameRate = appConfig.getActualFrameRate(30);
+        int targetFrameRate = appConfig.getActualFrameRate(60);
         AppLog.d(TAG, "Codec target frame rate: " + targetFrameRate + " fps (level: " + appConfig.getFramerateLevel() + ")");
 
         // 清理之前的软编码录制器

@@ -352,6 +352,7 @@ public class ResolutionSettingsFragment extends Fragment {
         bitrateOptions.add("Low (smaller files)");
         bitrateOptions.add("Standard (recommended)");
         bitrateOptions.add("High (best quality)");
+        bitrateOptions.add("Ultra (max quality, larger files)");
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 getContext(),
@@ -369,6 +370,8 @@ public class ResolutionSettingsFragment extends Fragment {
             selectedIndex = 0;
         } else if (AppConfig.BITRATE_HIGH.equals(currentLevel)) {
             selectedIndex = 2;
+        } else if (AppConfig.BITRATE_ULTRA.equals(currentLevel)) {
+            selectedIndex = 3;
         }
         bitrateSpinner.setSelection(selectedIndex);
 
@@ -385,6 +388,9 @@ public class ResolutionSettingsFragment extends Fragment {
                         break;
                     case 2:
                         newLevel = AppConfig.BITRATE_HIGH;
+                        break;
+                    case 3:
+                        newLevel = AppConfig.BITRATE_ULTRA;
                         break;
                     default:
                         newLevel = AppConfig.BITRATE_MEDIUM;
@@ -424,6 +430,7 @@ public class ResolutionSettingsFragment extends Fragment {
         framerateOptions.clear();
         framerateOptions.add("Standard (recommended)");
         framerateOptions.add("Low (smaller files)");
+        framerateOptions.add("High (smoother, needs stronger hardware)");
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 getContext(),
@@ -439,6 +446,8 @@ public class ResolutionSettingsFragment extends Fragment {
         int selectedIndex = 0;  // 默认标准
         if (AppConfig.FRAMERATE_LOW.equals(currentLevel)) {
             selectedIndex = 1;
+        } else if (AppConfig.FRAMERATE_HIGH.equals(currentLevel)) {
+            selectedIndex = 2;
         }
         framerateSpinner.setSelection(selectedIndex);
 
@@ -448,7 +457,7 @@ public class ResolutionSettingsFragment extends Fragment {
             
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String newLevel = (position == 1) ? AppConfig.FRAMERATE_LOW : AppConfig.FRAMERATE_STANDARD;
+                String newLevel = (position == 1) ? AppConfig.FRAMERATE_LOW : (position == 2 ? AppConfig.FRAMERATE_HIGH : AppConfig.FRAMERATE_STANDARD);
                 
                 // 只在值变化且非首次选择时保存
                 if (!isFirstSelection && !newLevel.equals(selectedFramerateLevel)) {
@@ -482,8 +491,9 @@ public class ResolutionSettingsFragment extends Fragment {
 
         int standardFps = getStandardFrameRate();
         int lowFps = Math.max(10, standardFps / 2);
+        int highFps = Math.min(60, getRecordingHardwareMaxFps());
 
-        String desc = String.format("Standard: %dfps | Low: %dfps", standardFps, lowFps);
+        String desc = String.format("Standard: %dfps | Low: %dfps | High: up to %dfps", standardFps, lowFps, highFps);
         framerateDescText.setText(desc);
     }
 
@@ -493,9 +503,8 @@ public class ResolutionSettingsFragment extends Fragment {
     private int getStandardFrameRate() {
         int maxFps = 30;
         for (CameraInfo info : cameraInfoMap.values()) {
-            if (info.maxFps > 0) {
+            if (info.maxFps > maxFps) {
                 maxFps = info.maxFps;
-                break;  // 假设所有摄像头帧率相同
             }
         }
         return AppConfig.getStandardFrameRate(maxFps);
@@ -505,12 +514,27 @@ public class ResolutionSettingsFragment extends Fragment {
      * 根据当前选择获取实际帧率
      */
     private int getSelectedFrameRate() {
-        int standardFps = getStandardFrameRate();
-        // 防止初始化顺序导致的 null 问题
-        if (selectedFramerateLevel != null && AppConfig.FRAMERATE_LOW.equals(selectedFramerateLevel)) {
+        int standardFps = AppConfig.getStandardFrameRate(getRecordingHardwareMaxFps());
+        if (AppConfig.FRAMERATE_LOW.equals(selectedFramerateLevel)) {
             return Math.max(10, standardFps / 2);
         }
+        if (AppConfig.FRAMERATE_HIGH.equals(selectedFramerateLevel)) {
+            return Math.min(60, Math.max(standardFps, getRecordingHardwareMaxFps()));
+        }
         return standardFps;
+    }
+
+    /**
+     * 获取录制可用的硬件最大帧率（取已检测摄像头中的最大值）
+     */
+    private int getRecordingHardwareMaxFps() {
+        int maxFps = 30;
+        for (CameraInfo info : cameraInfoMap.values()) {
+            if (info.maxFps > maxFps) {
+                maxFps = info.maxFps;
+            }
+        }
+        return Math.max(30, maxFps);
     }
 
     /**
@@ -541,13 +565,15 @@ public class ResolutionSettingsFragment extends Fragment {
         int lowBitrate = roundToHalfMbps(baseBitrate / 2);
         int mediumBitrate = roundToHalfMbps(baseBitrate);
         int highBitrate = roundToHalfMbps(baseBitrate * 3 / 2);
+        int ultraBitrate = roundToHalfMbps(baseBitrate * 2);
 
         String desc = String.format(
-                "Resolution %dx%d @ %dfps\nLow: %s | Standard: %s | High: %s",
+                "Resolution %dx%d @ %dfps\nLow: %s | Standard: %s | High: %s | Ultra: %s",
                 width, height, frameRate,
                 AppConfig.formatBitrate(lowBitrate),
                 AppConfig.formatBitrate(mediumBitrate),
-                AppConfig.formatBitrate(highBitrate)
+                AppConfig.formatBitrate(highBitrate),
+                AppConfig.formatBitrate(ultraBitrate)
         );
         bitrateDescText.setText(desc);
     }
@@ -558,7 +584,7 @@ public class ResolutionSettingsFragment extends Fragment {
     private int roundToHalfMbps(int bitrate) {
         int halfMbps = 500000;
         int rounded = ((bitrate + halfMbps / 2) / halfMbps) * halfMbps;
-        return Math.max(halfMbps, Math.min(rounded, 20000000));
+        return Math.max(halfMbps, Math.min(rounded, 40000000));
     }
 
     /**
@@ -592,8 +618,7 @@ public class ResolutionSettingsFragment extends Fragment {
         String targetRes = appConfig.getTargetResolution();
         String bitrateLevel = AppConfig.getBitrateLevelDisplayName(appConfig.getBitrateLevel());
         String framerateLevel = AppConfig.getFramerateLevelDisplayName(appConfig.getFramerateLevel());
-        int standardFps = getStandardFrameRate();
-        int actualFps = appConfig.getActualFrameRate(standardFps);
+        int actualFps = appConfig.getActualFrameRate(getRecordingHardwareMaxFps());
         
         sb.append("[Current Configuration]\n");
         sb.append("Target resolution: ").append(AppConfig.RESOLUTION_DEFAULT.equals(targetRes) ? "Default (1280×800)" : targetRes).append("\n");
