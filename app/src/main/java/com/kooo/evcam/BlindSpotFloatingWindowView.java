@@ -38,6 +38,9 @@ public class BlindSpotFloatingWindowView extends FrameLayout {
     private boolean isSetupMode = false;
     private int currentRotation = 0;
     private boolean isAdjustPreviewMode = false;
+    private boolean isRaceMode = false;
+    private long lastTapTimeMs = 0L;
+    private Runnable raceModeDismissListener;
 
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private int retryBindCount = 0;
@@ -157,7 +160,7 @@ public class BlindSpotFloatingWindowView extends FrameLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (!isSetupMode && !isAdjustPreviewMode) return super.onTouchEvent(event);
+        if (!isSetupMode && !isAdjustPreviewMode && !isRaceMode) return super.onTouchEvent(event);
 
         float x = event.getRawX();
         float y = event.getRawY();
@@ -225,10 +228,47 @@ public class BlindSpotFloatingWindowView extends FrameLayout {
                 if (isResizing) {
                     hasUnsavedResize = true;
                 }
+                if (isRaceMode) {
+                    long now = System.currentTimeMillis();
+                    if (now - lastTapTimeMs <= 350) {
+                        if (raceModeDismissListener != null) {
+                            raceModeDismissListener.run();
+                        }
+                        dismiss();
+                        lastTapTimeMs = 0L;
+                        return true;
+                    }
+                    lastTapTimeMs = now;
+                }
                 isResizing = false;
                 return true;
         }
         return super.onTouchEvent(event);
+    }
+
+    public void enableRaceMode(Runnable onDismiss) {
+        this.isRaceMode = true;
+        this.raceModeDismissListener = onDismiss;
+    }
+
+    public void setWindowSize(int width, int height) {
+        if (params == null) {
+            return;
+        }
+        params.width = Math.max(220, width);
+        params.height = Math.max(124, height);
+        if (getParent() != null) {
+            try {
+                windowManager.updateViewLayout(this, params);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    public void applyRaceModeTuning(float zoom, float fisheyeReduction) {
+        float scale = Math.max(1.0f, zoom + fisheyeReduction * 0.4f);
+        textureView.setScaleX(scale);
+        textureView.setScaleY(scale);
     }
 
     /**

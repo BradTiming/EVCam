@@ -7,7 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,6 +24,16 @@ public class BlindSpotLabFragment extends Fragment {
     private SwitchMaterial reuseMainFloatingSwitch;
     private SwitchMaterial teslaStyleSwitch;
     private SwitchMaterial lowLatencySwitch;
+    private SwitchMaterial disableMainFloatingSignalSwitch;
+    private SwitchMaterial raceModeSwitch;
+    private SeekBar raceZoomSeek;
+    private SeekBar raceFisheyeSeek;
+    private SeekBar raceWidthSeek;
+    private SeekBar raceHeightSeek;
+    private TextView raceZoomValue;
+    private TextView raceFisheyeValue;
+    private TextView raceWidthValue;
+    private TextView raceHeightValue;
     private Button setupBlindSpotPosButton;
     private Button saveButton;
     private Button backButton;
@@ -49,6 +61,16 @@ public class BlindSpotLabFragment extends Fragment {
         reuseMainFloatingSwitch = view.findViewById(R.id.switch_reuse_main_floating);
         teslaStyleSwitch = view.findViewById(R.id.switch_tesla_style);
         lowLatencySwitch = view.findViewById(R.id.switch_low_latency);
+        disableMainFloatingSignalSwitch = view.findViewById(R.id.switch_disable_main_floating_signal);
+        raceModeSwitch = view.findViewById(R.id.switch_race_mode);
+        raceZoomSeek = view.findViewById(R.id.seek_race_zoom);
+        raceFisheyeSeek = view.findViewById(R.id.seek_race_fisheye);
+        raceWidthSeek = view.findViewById(R.id.seek_race_width);
+        raceHeightSeek = view.findViewById(R.id.seek_race_height);
+        raceZoomValue = view.findViewById(R.id.tv_race_zoom_value);
+        raceFisheyeValue = view.findViewById(R.id.tv_race_fisheye_value);
+        raceWidthValue = view.findViewById(R.id.tv_race_width_value);
+        raceHeightValue = view.findViewById(R.id.tv_race_height_value);
         setupBlindSpotPosButton = view.findViewById(R.id.btn_setup_blind_spot_pos);
         saveButton = view.findViewById(R.id.btn_save_apply);
 
@@ -64,6 +86,13 @@ public class BlindSpotLabFragment extends Fragment {
         reuseMainFloatingSwitch.setChecked(appConfig.isTurnSignalReuseMainFloating());
         teslaStyleSwitch.setChecked(appConfig.isBlindSpotTeslaStyleEnabled());
         lowLatencySwitch.setChecked(appConfig.isBlindSpotLowLatencyEnabled());
+        disableMainFloatingSignalSwitch.setChecked(appConfig.isBlindSpotDisableMainFloatingInSignal());
+        raceModeSwitch.setChecked(appConfig.isLabRaceModeEnabled());
+        raceZoomSeek.setProgress(Math.round((appConfig.getLabRaceModeZoom() - 1.0f) * 100f));
+        raceFisheyeSeek.setProgress(Math.round(appConfig.getLabRaceModeFisheyeReduction() * 100f));
+        raceWidthSeek.setProgress(appConfig.getLabRaceModeWidth());
+        raceHeightSeek.setProgress(appConfig.getLabRaceModeHeight());
+        updateRaceValueLabels();
         setupBlindSpotPosButton.setVisibility(appConfig.isTurnSignalReuseMainFloating() ? View.GONE : View.VISIBLE);
     }
 
@@ -131,6 +160,57 @@ public class BlindSpotLabFragment extends Fragment {
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
         });
 
+        disableMainFloatingSignalSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            appConfig.setBlindSpotDisableMainFloatingInSignal(isChecked);
+            BlindSpotService.update(requireContext());
+        });
+
+        raceModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            appConfig.setLabRaceModeEnabled(isChecked);
+            Intent intent = new Intent(requireContext(), BlindSpotService.class);
+            intent.putExtra("action", isChecked ? "show_race_mode" : "hide_race_mode");
+            requireContext().startService(intent);
+        });
+
+        raceZoomSeek.setOnSeekBarChangeListener(new SimpleSeekBarListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                float zoom = 1.0f + (progress / 100f);
+                appConfig.setLabRaceModeZoom(zoom);
+                updateRaceValueLabels();
+                BlindSpotService.update(requireContext());
+            }
+        });
+
+        raceFisheyeSeek.setOnSeekBarChangeListener(new SimpleSeekBarListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                appConfig.setLabRaceModeFisheyeReduction(progress / 100f);
+                updateRaceValueLabels();
+                BlindSpotService.update(requireContext());
+            }
+        });
+
+        raceWidthSeek.setOnSeekBarChangeListener(new SimpleSeekBarListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                int width = Math.max(220, progress);
+                appConfig.setLabRaceModeWindowSize(width, appConfig.getLabRaceModeHeight());
+                updateRaceValueLabels();
+                BlindSpotService.update(requireContext());
+            }
+        });
+
+        raceHeightSeek.setOnSeekBarChangeListener(new SimpleSeekBarListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                int height = Math.max(124, progress);
+                appConfig.setLabRaceModeWindowSize(appConfig.getLabRaceModeWidth(), height);
+                updateRaceValueLabels();
+                BlindSpotService.update(requireContext());
+            }
+        });
+
         setupBlindSpotPosButton.setOnClickListener(v -> {
             if (!WakeUpHelper.hasOverlayPermission(requireContext())) {
                 Toast.makeText(requireContext(), "Please grant overlay permission first", Toast.LENGTH_SHORT).show();
@@ -166,5 +246,20 @@ public class BlindSpotLabFragment extends Fragment {
             case 3: return "right";
             default: return "front";
         }
+    }
+
+    private void updateRaceValueLabels() {
+        raceZoomValue.setText(String.format(java.util.Locale.US, "%.2fx", appConfig.getLabRaceModeZoom()));
+        raceFisheyeValue.setText(Math.round(appConfig.getLabRaceModeFisheyeReduction() * 100f) + "%");
+        raceWidthValue.setText(appConfig.getLabRaceModeWidth() + " px");
+        raceHeightValue.setText(appConfig.getLabRaceModeHeight() + " px");
+    }
+
+    private static abstract class SimpleSeekBarListener implements SeekBar.OnSeekBarChangeListener {
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {}
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {}
     }
 }

@@ -133,6 +133,12 @@ public class AppConfig {
     // 补盲实验室选项
     private static final String KEY_BLIND_SPOT_TESLA_STYLE_ENABLED = "blind_spot_tesla_style_enabled";
     private static final String KEY_BLIND_SPOT_LOW_LATENCY_ENABLED = "blind_spot_low_latency_enabled";
+    private static final String KEY_BLIND_SPOT_DISABLE_MAIN_FLOATING_IN_SIGNAL = "blind_spot_disable_main_floating_in_signal";
+    private static final String KEY_LAB_RACE_MODE_ENABLED = "lab_race_mode_enabled";
+    private static final String KEY_LAB_RACE_MODE_ZOOM = "lab_race_mode_zoom";
+    private static final String KEY_LAB_RACE_MODE_FISHEYE_REDUCTION = "lab_race_mode_fisheye_reduction";
+    private static final String KEY_LAB_RACE_MODE_WIDTH = "lab_race_mode_width";
+    private static final String KEY_LAB_RACE_MODE_HEIGHT = "lab_race_mode_height";
 
     // 补盲画面矫正 (Matrix)
     private static final String KEY_BLIND_SPOT_CORRECTION_ENABLED = "blind_spot_correction_enabled";
@@ -1589,6 +1595,53 @@ public class AppConfig {
 
     public boolean isBlindSpotLowLatencyEnabled() {
         return prefs.getBoolean(KEY_BLIND_SPOT_LOW_LATENCY_ENABLED, false);
+    }
+
+    public void setBlindSpotDisableMainFloatingInSignal(boolean enabled) {
+        prefs.edit().putBoolean(KEY_BLIND_SPOT_DISABLE_MAIN_FLOATING_IN_SIGNAL, enabled).apply();
+    }
+
+    public boolean isBlindSpotDisableMainFloatingInSignal() {
+        return prefs.getBoolean(KEY_BLIND_SPOT_DISABLE_MAIN_FLOATING_IN_SIGNAL, false);
+    }
+
+    public void setLabRaceModeEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_LAB_RACE_MODE_ENABLED, enabled).apply();
+    }
+
+    public boolean isLabRaceModeEnabled() {
+        return prefs.getBoolean(KEY_LAB_RACE_MODE_ENABLED, false);
+    }
+
+    public void setLabRaceModeZoom(float zoom) {
+        prefs.edit().putFloat(KEY_LAB_RACE_MODE_ZOOM, Math.max(1.0f, Math.min(2.5f, zoom))).apply();
+    }
+
+    public float getLabRaceModeZoom() {
+        return prefs.getFloat(KEY_LAB_RACE_MODE_ZOOM, 1.2f);
+    }
+
+    public void setLabRaceModeFisheyeReduction(float reduction) {
+        prefs.edit().putFloat(KEY_LAB_RACE_MODE_FISHEYE_REDUCTION, Math.max(0f, Math.min(1f, reduction))).apply();
+    }
+
+    public float getLabRaceModeFisheyeReduction() {
+        return prefs.getFloat(KEY_LAB_RACE_MODE_FISHEYE_REDUCTION, 0.25f);
+    }
+
+    public void setLabRaceModeWindowSize(int width, int height) {
+        prefs.edit()
+                .putInt(KEY_LAB_RACE_MODE_WIDTH, Math.max(220, width))
+                .putInt(KEY_LAB_RACE_MODE_HEIGHT, Math.max(124, height))
+                .apply();
+    }
+
+    public int getLabRaceModeWidth() {
+        return prefs.getInt(KEY_LAB_RACE_MODE_WIDTH, 420);
+    }
+
+    public int getLabRaceModeHeight() {
+        return prefs.getInt(KEY_LAB_RACE_MODE_HEIGHT, 236);
     }
 
     public void setBlindSpotCorrectionEnabled(boolean enabled) {

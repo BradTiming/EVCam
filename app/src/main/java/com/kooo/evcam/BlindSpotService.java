@@ -53,6 +53,7 @@ public class BlindSpotService extends Service {
     private MainFloatingWindowView mainFloatingWindowView;
     private BlindSpotFloatingWindowView dedicatedBlindSpotWindow;
     private BlindSpotFloatingWindowView previewBlindSpotWindow;
+    private BlindSpotFloatingWindowView raceModeWindow;
     private boolean isMainTempShown = false; // 是否为主屏临时显示
     private boolean isSecondaryAdjustMode = false;
     private int secondaryAttachedDisplayId = -1;
@@ -472,7 +473,8 @@ public class BlindSpotService extends Service {
         AppLog.i(TAG, "🚦 转向灯激活，设置 currentSignalCamera = " + cameraPos);
 
         // --- 1. 尽早创建窗口 UI（addView 触发布局，与后续 IPC 并行，Surface 就绪更快） ---
-        boolean reuseMain = appConfig.isTurnSignalReuseMainFloating();
+        boolean reuseMain = appConfig.isTurnSignalReuseMainFloating()
+                && !appConfig.isBlindSpotDisableMainFloatingInSignal();
 
         if (reuseMain) {
             // 复用主屏悬浮窗
@@ -561,7 +563,8 @@ public class BlindSpotService extends Service {
         boolean reuseMain = false;
         // 全景影像避让：目标Activity在前台时只跳过主屏窗口，副屏仍正常工作
         if (!isAvmAvoidanceActive) {
-            reuseMain = appConfig.isTurnSignalReuseMainFloating();
+            reuseMain = appConfig.isTurnSignalReuseMainFloating()
+                    && !appConfig.isBlindSpotDisableMainFloatingInSignal();
 
             if (reuseMain) {
                 // --- 复用主屏悬浮窗逻辑 ---
@@ -899,7 +902,8 @@ public class BlindSpotService extends Service {
         }
         
         // --- 1. 尽早创建窗口 UI（addView 触发布局，与后续 IPC 并行，Surface 就绪更快） ---
-        boolean reuseMain = appConfig.isTurnSignalReuseMainFloating();
+        boolean reuseMain = appConfig.isTurnSignalReuseMainFloating()
+                && !appConfig.isBlindSpotDisableMainFloatingInSignal();
         AppLog.i(TAG, "🚪 复用主屏悬浮窗: " + reuseMain + " (复用转向联动配置)");
         
         if (reuseMain) {
@@ -1089,6 +1093,16 @@ public class BlindSpotService extends Service {
                 updateWindows();
                 return START_STICKY;
             }
+            if ("show_race_mode".equals(action)) {
+                appConfig.setLabRaceModeEnabled(true);
+                showRaceModeWindow();
+                return START_STICKY;
+            }
+            if ("hide_race_mode".equals(action)) {
+                appConfig.setLabRaceModeEnabled(false);
+                hideRaceModeWindow();
+                return START_STICKY;
+            }
         }
         // 重新初始化新功能（设置变更时通过 update() 触发）
         appConfig = new AppConfig(this);
@@ -1127,7 +1141,8 @@ public class BlindSpotService extends Service {
 
     private void updateWindows() {
         // 全局开关关闭时，清理所有补盲窗口（调整模式和预览模式除外）
-        if (!appConfig.isBlindSpotGlobalEnabled() && !isSecondaryAdjustMode && previewCameraPos == null) {
+        if (!appConfig.isBlindSpotGlobalEnabled() && !isSecondaryAdjustMode
+                && previewCameraPos == null && !appConfig.isLabRaceModeEnabled()) {
             removeSecondaryView();
             if (mainFloatingWindowView != null) {
                 mainFloatingWindowView.dismiss();
@@ -1137,6 +1152,7 @@ public class BlindSpotService extends Service {
                 dedicatedBlindSpotWindow.dismiss();
                 dedicatedBlindSpotWindow = null;
             }
+            hideRaceModeWindow();
             removeMockControlWindow();
             currentSignalCamera = null;
             isMainTempShown = false;
@@ -1150,6 +1166,7 @@ public class BlindSpotService extends Service {
         updateSecondaryDisplay();
         updateMainFloatingWindow();
         updateMockControlWindow();
+        updateRaceModeWindow();
         applyTransforms();
         
         if (isSecondaryAdjustMode
@@ -1159,6 +1176,7 @@ public class BlindSpotService extends Service {
                 || appConfig.isMockTurnSignalFloatingEnabled() // 加入模拟转向灯检查
                 || appConfig.isAvmAvoidanceEnabled() // 全景影像避让
                 || appConfig.isCustomKeyWakeupEnabled() // 定制键唤醒
+                || appConfig.isLabRaceModeEnabled() // race mode 悬浮窗
                 || currentSignalCamera != null // 加入转向灯联动检查
                 || previewCameraPos != null) {
             CameraForegroundService.start(this, "补盲运行中", "正在显示补盲画面");
@@ -1173,6 +1191,7 @@ public class BlindSpotService extends Service {
                 && !appConfig.isMockTurnSignalFloatingEnabled()
                 && !appConfig.isAvmAvoidanceEnabled() // 全景影像避让
                 && !appConfig.isCustomKeyWakeupEnabled() // 定制键唤醒
+                && !appConfig.isLabRaceModeEnabled()
                 && previewCameraPos == null) {
             AppLog.i(TAG, "🚪 所有功能都关闭，停止服务");
             stopSelf();
@@ -1188,6 +1207,9 @@ public class BlindSpotService extends Service {
         }
         if (previewBlindSpotWindow != null) {
             previewBlindSpotWindow.applyTransformNow();
+        }
+        if (raceModeWindow != null) {
+            raceModeWindow.applyTransformNow();
         }
         String secondaryCameraPos = currentSignalCamera != null ? currentSignalCamera : (previewCameraPos != null ? previewCameraPos : secondaryDesiredCameraPos);
         if (secondaryCameraPos != null) {
@@ -1495,6 +1517,39 @@ public class BlindSpotService extends Service {
         if (secondaryCachedSurface != null) {
             secondaryCachedSurface.release();
             secondaryCachedSurface = null;
+        }
+    }
+
+    private void updateRaceModeWindow() {
+        if (appConfig.isLabRaceModeEnabled()) {
+            showRaceModeWindow();
+        } else {
+            hideRaceModeWindow();
+        }
+    }
+
+    private void showRaceModeWindow() {
+        if (!WakeUpHelper.hasOverlayPermission(this)) {
+            appConfig.setLabRaceModeEnabled(false);
+            return;
+        }
+
+        if (raceModeWindow == null) {
+            raceModeWindow = new BlindSpotFloatingWindowView(this, false);
+            raceModeWindow.enableRaceMode(() -> appConfig.setLabRaceModeEnabled(false));
+            raceModeWindow.setCameraPos("back");
+            raceModeWindow.show();
+        }
+
+        raceModeWindow.setWindowSize(appConfig.getLabRaceModeWidth(), appConfig.getLabRaceModeHeight());
+        raceModeWindow.applyRaceModeTuning(appConfig.getLabRaceModeZoom(), appConfig.getLabRaceModeFisheyeReduction());
+        raceModeWindow.setCamera("back");
+    }
+
+    private void hideRaceModeWindow() {
+        if (raceModeWindow != null) {
+            raceModeWindow.dismiss();
+            raceModeWindow = null;
         }
     }
 
@@ -1861,6 +1916,7 @@ public class BlindSpotService extends Service {
         if (previewBlindSpotWindow != null) {
             previewBlindSpotWindow.dismiss();
         }
+        hideRaceModeWindow();
         sInstance = null;
         super.onDestroy();
     }
