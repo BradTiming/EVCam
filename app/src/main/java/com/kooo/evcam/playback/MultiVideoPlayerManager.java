@@ -59,6 +59,9 @@ public class MultiVideoPlayerManager {
 
     /** 视频时长（毫秒） */
     private int duration = 0;
+    private long lastSyncCheckMs = 0L;
+    private static final int SYNC_TOLERANCE_MS = 120;
+    private static final int SYNC_CHECK_INTERVAL_MS = 1000;
 
     /** 播放状态监听器 */
     private OnPlaybackListener playbackListener;
@@ -623,12 +626,42 @@ public class MultiVideoPlayerManager {
                 if (isPlaying && playbackListener != null) {
                     int position = getCurrentPosition();
                     playbackListener.onProgressUpdate(position);
+                    syncPlaybackIfNeeded(position);
                 }
                 if (isPlaying) {
                     handler.postDelayed(this, 200);
                 }
             }
         }, 200);
+    }
+
+    private void syncPlaybackIfNeeded(int masterPosition) {
+        if (isSingleMode) {
+            return;
+        }
+        long now = android.os.SystemClock.elapsedRealtime();
+        if (now - lastSyncCheckMs < SYNC_CHECK_INTERVAL_MS) {
+            return;
+        }
+        lastSyncCheckMs = now;
+
+        alignVideo(videoFront, masterPosition);
+        alignVideo(videoBack, masterPosition);
+        alignVideo(videoLeft, masterPosition);
+        alignVideo(videoRight, masterPosition);
+    }
+
+    private void alignVideo(VideoView videoView, int masterPosition) {
+        if (videoView == null) {
+            return;
+        }
+        try {
+            int pos = videoView.getCurrentPosition();
+            if (Math.abs(pos - masterPosition) > SYNC_TOLERANCE_MS) {
+                videoView.seekTo(masterPosition);
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     /**

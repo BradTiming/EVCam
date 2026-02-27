@@ -35,6 +35,7 @@ public class SecondaryBlindSpotAdjustFragment extends Fragment {
     private EditText etX, etY, etWidth, etHeight;
     private Spinner rotationSpinner;
     private Spinner orientationSpinner;
+    private SwitchMaterial keepAspectRatioSwitch;
     private SwitchMaterial borderSwitch;
     private SeekBar seekbarAlpha;
     private TextView tvAlphaValue;
@@ -43,6 +44,8 @@ public class SecondaryBlindSpotAdjustFragment extends Fragment {
     private AppConfig appConfig;
     private DisplayManager displayManager;
     private final List<Display> availableDisplays = new ArrayList<>();
+    private boolean isAdjustingAspect = false;
+    private float lockedAspectRatio = 1.0f;
 
     @Nullable
     @Override
@@ -80,6 +83,7 @@ public class SecondaryBlindSpotAdjustFragment extends Fragment {
         etHeight = view.findViewById(R.id.et_height_value);
         rotationSpinner = view.findViewById(R.id.spinner_rotation);
         orientationSpinner = view.findViewById(R.id.spinner_screen_orientation);
+        keepAspectRatioSwitch = view.findViewById(R.id.switch_keep_aspect_ratio);
         borderSwitch = view.findViewById(R.id.switch_border);
         seekbarAlpha = view.findViewById(R.id.seekbar_alpha);
         tvAlphaValue = view.findViewById(R.id.tv_alpha_value);
@@ -130,9 +134,13 @@ public class SecondaryBlindSpotAdjustFragment extends Fragment {
         etY.setText(String.valueOf(appConfig.getSecondaryDisplayY()));
         etWidth.setText(String.valueOf(appConfig.getSecondaryDisplayWidth()));
         etHeight.setText(String.valueOf(appConfig.getSecondaryDisplayHeight()));
+        int width = Math.max(1, appConfig.getSecondaryDisplayWidth());
+        int height = Math.max(1, appConfig.getSecondaryDisplayHeight());
+        lockedAspectRatio = (float) width / height;
 
         rotationSpinner.setSelection(appConfig.getSecondaryDisplayRotation() / 90);
         orientationSpinner.setSelection(appConfig.getSecondaryDisplayOrientation() / 90);
+        keepAspectRatioSwitch.setChecked(appConfig.isSecondaryDisplayAspectRatioLocked());
         borderSwitch.setChecked(appConfig.isSecondaryDisplayBorderEnabled());
 
         int alpha = appConfig.getSecondaryDisplayAlpha();
@@ -176,10 +184,20 @@ public class SecondaryBlindSpotAdjustFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (!fromUser) return;
+                if (isAdjustingAspect) return;
                 if (seekBar == seekbarX) etX.setText(String.valueOf(progress));
                 else if (seekBar == seekbarY) etY.setText(String.valueOf(progress));
-                else if (seekBar == seekbarWidth) etWidth.setText(String.valueOf(progress));
-                else if (seekBar == seekbarHeight) etHeight.setText(String.valueOf(progress));
+                else if (seekBar == seekbarWidth) {
+                    if (keepAspectRatioSwitch.isChecked()) {
+                        syncSizeByWidth(progress);
+                    }
+                    etWidth.setText(String.valueOf(progress));
+                } else if (seekBar == seekbarHeight) {
+                    if (keepAspectRatioSwitch.isChecked()) {
+                        syncSizeByHeight(progress);
+                    }
+                    etHeight.setText(String.valueOf(progress));
+                }
                 persistBoundsAndUpdate();
             }
 
@@ -202,12 +220,22 @@ public class SecondaryBlindSpotAdjustFragment extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
             @Override
             public void afterTextChanged(android.text.Editable s) {
+                if (isAdjustingAspect) return;
                 try {
                     int val = Integer.parseInt(s.toString());
                     if (etX.getEditableText() == s) seekbarX.setProgress(val);
                     else if (etY.getEditableText() == s) seekbarY.setProgress(val);
-                    else if (etWidth.getEditableText() == s) seekbarWidth.setProgress(val);
-                    else if (etHeight.getEditableText() == s) seekbarHeight.setProgress(val);
+                    else if (etWidth.getEditableText() == s) {
+                        seekbarWidth.setProgress(val);
+                        if (keepAspectRatioSwitch.isChecked()) {
+                            syncSizeByWidth(seekbarWidth.getProgress());
+                        }
+                    } else if (etHeight.getEditableText() == s) {
+                        seekbarHeight.setProgress(val);
+                        if (keepAspectRatioSwitch.isChecked()) {
+                            syncSizeByHeight(seekbarHeight.getProgress());
+                        }
+                    }
                 } catch (Exception e) {
                     return;
                 }
@@ -251,6 +279,15 @@ public class SecondaryBlindSpotAdjustFragment extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        keepAspectRatioSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            appConfig.setSecondaryDisplayAspectRatioLocked(isChecked);
+            if (isChecked) {
+                int width = Math.max(1, seekbarWidth.getProgress());
+                int height = Math.max(1, seekbarHeight.getProgress());
+                lockedAspectRatio = (float) width / height;
+            }
         });
 
         borderSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -312,6 +349,26 @@ public class SecondaryBlindSpotAdjustFragment extends Fragment {
         seekbarY.setMax(metrics.heightPixels);
         seekbarWidth.setMax(metrics.widthPixels);
         seekbarHeight.setMax(metrics.heightPixels);
+    }
+
+    private void syncSizeByWidth(int width) {
+        int safeWidth = Math.max(1, width);
+        int targetHeight = Math.max(1, Math.round(safeWidth / Math.max(0.1f, lockedAspectRatio)));
+        targetHeight = Math.min(targetHeight, seekbarHeight.getMax());
+        isAdjustingAspect = true;
+        seekbarHeight.setProgress(targetHeight);
+        etHeight.setText(String.valueOf(targetHeight));
+        isAdjustingAspect = false;
+    }
+
+    private void syncSizeByHeight(int height) {
+        int safeHeight = Math.max(1, height);
+        int targetWidth = Math.max(1, Math.round(safeHeight * Math.max(0.1f, lockedAspectRatio)));
+        targetWidth = Math.min(targetWidth, seekbarWidth.getMax());
+        isAdjustingAspect = true;
+        seekbarWidth.setProgress(targetWidth);
+        etWidth.setText(String.valueOf(targetWidth));
+        isAdjustingAspect = false;
     }
 
     private void enterAdjustMode() {

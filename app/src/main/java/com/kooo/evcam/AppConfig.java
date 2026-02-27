@@ -66,6 +66,7 @@ public class AppConfig {
     private static final String KEY_SECONDARY_DISPLAY_BORDER = "secondary_display_border";    // 是否显示白边框
     private static final String KEY_SECONDARY_DISPLAY_ORIENTATION = "secondary_display_orientation"; // 屏幕方向（0/90/180/270）
     private static final String KEY_SECONDARY_DISPLAY_ALPHA = "secondary_display_alpha"; // 副屏补盲悬浮窗透明度（0-100）
+    private static final String KEY_SECONDARY_DISPLAY_ASPECT_RATIO_LOCKED = "secondary_display_aspect_ratio_locked"; // 副屏宽高比锁定
 
     // 主屏悬浮窗配置 (补盲选项新增)
     private static final String KEY_MAIN_FLOATING_ENABLED = "main_floating_enabled";          // 主屏悬浮窗开关
@@ -128,6 +129,10 @@ public class AppConfig {
 
     // 主屏悬浮窗长按拖动
     private static final String KEY_MAIN_FLOATING_LONG_PRESS_DRAG = "main_floating_long_press_drag";
+
+    // 补盲实验室选项
+    private static final String KEY_BLIND_SPOT_TESLA_STYLE_ENABLED = "blind_spot_tesla_style_enabled";
+    private static final String KEY_BLIND_SPOT_LOW_LATENCY_ENABLED = "blind_spot_low_latency_enabled";
 
     // 补盲画面矫正 (Matrix)
     private static final String KEY_BLIND_SPOT_CORRECTION_ENABLED = "blind_spot_correction_enabled";
@@ -1546,6 +1551,14 @@ public class AppConfig {
         return prefs.getInt(KEY_SECONDARY_DISPLAY_ALPHA, 100);
     }
 
+    public void setSecondaryDisplayAspectRatioLocked(boolean locked) {
+        prefs.edit().putBoolean(KEY_SECONDARY_DISPLAY_ASPECT_RATIO_LOCKED, locked).apply();
+    }
+
+    public boolean isSecondaryDisplayAspectRatioLocked() {
+        return prefs.getBoolean(KEY_SECONDARY_DISPLAY_ASPECT_RATIO_LOCKED, false);
+    }
+
     public void setMainFloatingAspectRatioLocked(boolean locked) {
         prefs.edit().putBoolean(KEY_MAIN_FLOATING_ASPECT_RATIO_LOCKED, locked).apply();
     }
@@ -1560,6 +1573,22 @@ public class AppConfig {
 
     public boolean isMainFloatingLongPressDragEnabled() {
         return prefs.getBoolean(KEY_MAIN_FLOATING_LONG_PRESS_DRAG, false);
+    }
+
+    public void setBlindSpotTeslaStyleEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_BLIND_SPOT_TESLA_STYLE_ENABLED, enabled).apply();
+    }
+
+    public boolean isBlindSpotTeslaStyleEnabled() {
+        return prefs.getBoolean(KEY_BLIND_SPOT_TESLA_STYLE_ENABLED, false);
+    }
+
+    public void setBlindSpotLowLatencyEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_BLIND_SPOT_LOW_LATENCY_ENABLED, enabled).apply();
+    }
+
+    public boolean isBlindSpotLowLatencyEnabled() {
+        return prefs.getBoolean(KEY_BLIND_SPOT_LOW_LATENCY_ENABLED, false);
     }
 
     public void setBlindSpotCorrectionEnabled(boolean enabled) {

@@ -435,6 +435,7 @@ public class BlindSpotService extends Service {
      * 显示盲区摄像头（用于 CarSignalManager API，不使用 debounce）
      */
     private void showBlindSpotCamera(String cameraPos) {
+        cameraPos = resolveSignalCameraPos(cameraPos);
         // 全景影像避让：目标Activity在前台时不弹出补盲窗口
         if (isAvmAvoidanceActive) {
             AppLog.d(TAG, "全景影像避让中，忽略CarSignalManager转向灯信号: " + cameraPos);
@@ -532,11 +533,12 @@ public class BlindSpotService extends Service {
 
         // 副屏摄像头预览
         if (appConfig.isSecondaryDisplayEnabled()) {
-            startSecondaryCameraPreviewDirectly(cameraPos);
+            startSecondaryCameraPreviewDirectly(resolveSecondarySignalCameraPos(cameraPos));
         }
     }
 
     private void handleTurnSignal(String cameraPos) {
+        cameraPos = resolveSignalCameraPos(cameraPos);
         // 取消隐藏计时器
         if (hideRunnable != null) {
             hideHandler.removeCallbacks(hideRunnable);
@@ -630,8 +632,25 @@ public class BlindSpotService extends Service {
 
         // --- 副屏摄像头预览 ---
         if (appConfig.isSecondaryDisplayEnabled()) {
-            startSecondaryCameraPreviewDirectly(cameraPos);
+            startSecondaryCameraPreviewDirectly(resolveSecondarySignalCameraPos(cameraPos));
         }
+    }
+
+    private String resolveSignalCameraPos(String signalCameraPos) {
+        if (!appConfig.isBlindSpotTeslaStyleEnabled()) {
+            return signalCameraPos;
+        }
+        if ("left".equals(signalCameraPos) || "right".equals(signalCameraPos)) {
+            return signalCameraPos;
+        }
+        return appConfig.getMainFloatingCamera();
+    }
+
+    private String resolveSecondarySignalCameraPos(String signalCameraPos) {
+        if (appConfig.isBlindSpotTeslaStyleEnabled()) {
+            return "back";
+        }
+        return signalCameraPos;
     }
 
     private void startSecondaryCameraPreviewDirectly(String cameraPos) {
@@ -749,15 +768,16 @@ public class BlindSpotService extends Service {
         cancelSecondaryRetry();
         secondaryRetryCount++;
         long delayMs;
+        boolean lowLatency = appConfig.isBlindSpotLowLatencyEnabled();
         if (secondaryRetryCount <= 5) {
-            // 前5次快速重试（50ms），覆盖冷启动等待 previewSize 就位的场景
-            delayMs = 50;
+            // 前5次快速重试，覆盖冷启动等待 previewSize 就位的场景
+            delayMs = lowLatency ? 30 : 50;
         } else if (secondaryRetryCount <= 15) {
-            delayMs = 500;
+            delayMs = lowLatency ? 250 : 500;
         } else if (secondaryRetryCount <= 35) {
-            delayMs = 1000;
+            delayMs = lowLatency ? 500 : 1000;
         } else {
-            delayMs = 3000;
+            delayMs = lowLatency ? 1500 : 3000;
         }
         secondaryRetryRunnable = () -> startSecondaryCameraPreviewDirectly(cameraPos);
         hideHandler.postDelayed(secondaryRetryRunnable, delayMs);
@@ -1218,6 +1238,9 @@ public class BlindSpotService extends Service {
                 }
                 String cameraPos = currentSignalCamera != null ? currentSignalCamera : previewCameraPos;
                 if (cameraPos != null) {
+                    if (currentSignalCamera != null && previewCameraPos == null) {
+                        cameraPos = resolveSecondarySignalCameraPos(cameraPos);
+                    }
                     startSecondaryCameraPreviewDirectly(cameraPos);
                 }
             } else {
@@ -1365,7 +1388,7 @@ public class BlindSpotService extends Service {
                     } else if (previewCameraPos != null) {
                         cameraPos = previewCameraPos;
                     } else if (currentSignalCamera != null) {
-                        cameraPos = currentSignalCamera;
+                        cameraPos = resolveSecondarySignalCameraPos(currentSignalCamera);
                     }
                 }
                 if (cameraPos == null) {

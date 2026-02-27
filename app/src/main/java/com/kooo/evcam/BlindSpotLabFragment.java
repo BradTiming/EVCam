@@ -20,6 +20,8 @@ public class BlindSpotLabFragment extends Fragment {
     private SwitchMaterial mainFloatingSwitch;
     private Spinner mainFloatingCameraSpinner;
     private SwitchMaterial reuseMainFloatingSwitch;
+    private SwitchMaterial teslaStyleSwitch;
+    private SwitchMaterial lowLatencySwitch;
     private Button setupBlindSpotPosButton;
     private Button saveButton;
     private Button backButton;
@@ -45,6 +47,8 @@ public class BlindSpotLabFragment extends Fragment {
         mainFloatingSwitch = view.findViewById(R.id.switch_main_floating);
         mainFloatingCameraSpinner = view.findViewById(R.id.spinner_main_floating_camera);
         reuseMainFloatingSwitch = view.findViewById(R.id.switch_reuse_main_floating);
+        teslaStyleSwitch = view.findViewById(R.id.switch_tesla_style);
+        lowLatencySwitch = view.findViewById(R.id.switch_low_latency);
         setupBlindSpotPosButton = view.findViewById(R.id.btn_setup_blind_spot_pos);
         saveButton = view.findViewById(R.id.btn_save_apply);
 
@@ -58,6 +62,8 @@ public class BlindSpotLabFragment extends Fragment {
         mainFloatingSwitch.setChecked(appConfig.isMainFloatingEnabled());
         mainFloatingCameraSpinner.setSelection(getCameraIndex(appConfig.getMainFloatingCamera()));
         reuseMainFloatingSwitch.setChecked(appConfig.isTurnSignalReuseMainFloating());
+        teslaStyleSwitch.setChecked(appConfig.isBlindSpotTeslaStyleEnabled());
+        lowLatencySwitch.setChecked(appConfig.isBlindSpotLowLatencyEnabled());
         setupBlindSpotPosButton.setVisibility(appConfig.isTurnSignalReuseMainFloating() ? View.GONE : View.VISIBLE);
     }
 
@@ -107,6 +113,24 @@ public class BlindSpotLabFragment extends Fragment {
             BlindSpotService.update(requireContext());
         });
 
+        teslaStyleSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            appConfig.setBlindSpotTeslaStyleEnabled(isChecked);
+            BlindSpotService.update(requireContext());
+            String message = isChecked
+                    ? "Tesla-style turn signal preview enabled"
+                    : "Tesla-style turn signal preview disabled";
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+        });
+
+        lowLatencySwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            appConfig.setBlindSpotLowLatencyEnabled(isChecked);
+            BlindSpotService.update(requireContext());
+            String message = isChecked
+                    ? "Low-latency camera feed enabled"
+                    : "Low-latency camera feed disabled";
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+        });
+
         setupBlindSpotPosButton.setOnClickListener(v -> {
             if (!WakeUpHelper.hasOverlayPermission(requireContext())) {
                 Toast.makeText(requireContext(), "Please grant overlay permission first", Toast.LENGTH_SHORT).show();
@@ -144,4 +168,3 @@ public class BlindSpotLabFragment extends Fragment {
         }
     }
 }
-
