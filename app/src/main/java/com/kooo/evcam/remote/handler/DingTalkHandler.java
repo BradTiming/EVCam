@@ -33,7 +33,7 @@ public class DingTalkHandler extends RemoteCommandHandler {
     
     @Override
     protected String getPlatformName() {
-        return "钉钉";
+        return "DingTalk";
     }
     
     @Override
@@ -49,7 +49,7 @@ public class DingTalkHandler extends RemoteCommandHandler {
     @Override
     public void sendMessage(ChatIdentifier chatId, String message) {
         if (apiClient == null) {
-            AppLog.e(TAG, "钉钉 API 客户端未初始化");
+            AppLog.e(TAG, "DingTalk API client is not initialized");
             return;
         }
         
@@ -62,7 +62,7 @@ public class DingTalkHandler extends RemoteCommandHandler {
                     message
                 );
             } catch (Exception e) {
-                AppLog.e(TAG, "发送钉钉消息失败", e);
+                AppLog.e(TAG, "Failed to send DingTalk message", e);
             }
         }).start();
     }

@@ -52,7 +52,7 @@ public class TelegramHandler extends RemoteCommandHandler {
     @Override
     public void sendMessage(ChatIdentifier chatId, String message) {
         if (apiClient == null) {
-            AppLog.e(TAG, "Telegram API 客户端未初始化");
+            AppLog.e(TAG, "Telegram API client is not initialized");
             return;
         }
         
@@ -61,7 +61,7 @@ public class TelegramHandler extends RemoteCommandHandler {
             try {
                 apiClient.sendMessage(telegramChatId, message);
             } catch (Exception e) {
-                AppLog.e(TAG, "发送 Telegram 消息失败", e);
+                AppLog.e(TAG, "Failed to send Telegram message", e);
             }
         }).start();
     }
@@ -89,7 +89,7 @@ public class TelegramHandler extends RemoteCommandHandler {
         if (error.contains("413") || 
             error.toLowerCase().contains("too large") || 
             error.toLowerCase().contains("file is too big")) {
-            sendMessage(chatId, "提示：Telegram Bot API 限制上传文件不能超过50MB，该文件大小已超出。");
+            sendMessage(chatId, "Note: Telegram Bot API upload limit is 50MB. This file exceeds that limit.");
         }
     }
     

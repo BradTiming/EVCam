@@ -49,7 +49,7 @@ public class HeartbeatConfig {
     public static final int TARGET_SIZE_100KB = 100;
     public static final int TARGET_SIZE_500KB = 500;
     public static final int TARGET_SIZE_1MB = 1024;
-    public static final int TARGET_SIZE_NO_COMPRESS = 0;  // 0 表示不压缩
+    public static final int TARGET_SIZE_NO_COMPRESS = 0;  // 0 表示No compression
     private static final int DEFAULT_TARGET_SIZE_KB = TARGET_SIZE_100KB;
     
     private final SharedPreferences prefs;
@@ -77,7 +77,7 @@ public class HeartbeatConfig {
      */
     public void setEnabled(boolean enabled) {
         prefs.edit().putBoolean(KEY_ENABLED, enabled).apply();
-        AppLog.d(TAG, "心跳推图功能: " + (enabled ? "启用" : "禁用"));
+        AppLog.d(TAG, "Heartbeat image upload: " + (enabled ? "enabled" : "disabled"));
     }
     
     /**
@@ -92,7 +92,7 @@ public class HeartbeatConfig {
      */
     public void setIntervalSeconds(int seconds) {
         prefs.edit().putInt(KEY_INTERVAL_SECONDS, seconds).apply();
-        AppLog.d(TAG, "推送间隔设置: " + seconds + "秒");
+        AppLog.d(TAG, "Upload interval set: " + seconds + "s");
     }
     
     /**
@@ -107,7 +107,7 @@ public class HeartbeatConfig {
      */
     public void setServerUrl(String url) {
         prefs.edit().putString(KEY_SERVER_URL, url).apply();
-        AppLog.d(TAG, "服务器地址设置: " + url);
+        AppLog.d(TAG, "Server URL set: " + url);
     }
     
     /**
@@ -132,7 +132,7 @@ public class HeartbeatConfig {
         // 这确保即使用户清除数据，也能恢复到相同的ID
         if (!expectedId.equals(savedId)) {
             prefs.edit().putString(KEY_VEHICLE_ID, expectedId).apply();
-            AppLog.d(TAG, "车辆ID已初始化: " + expectedId);
+            AppLog.d(TAG, "Vehicle ID initialized: " + expectedId);
         }
     }
     
@@ -175,7 +175,7 @@ public class HeartbeatConfig {
             return "EV-" + sb.toString();
             
         } catch (Exception e) {
-            AppLog.e(TAG, "生成车辆ID失败: " + e.getMessage());
+            AppLog.e(TAG, "Failed to generate vehicle ID: " + e.getMessage());
             // 降级方案：使用 ANDROID_ID 直接截取
             String androidId = Settings.Secure.getString(
                     context.getContentResolver(), 
@@ -209,7 +209,7 @@ public class HeartbeatConfig {
      */
     public void setSecretKey(String key) {
         prefs.edit().putString(KEY_SECRET_KEY, key).apply();
-        AppLog.d(TAG, "通信密钥已设置");
+        AppLog.d(TAG, "Communication key set");
     }
     
     /**
@@ -234,7 +234,7 @@ public class HeartbeatConfig {
      */
     public void setTargetSizeKB(int sizeKB) {
         prefs.edit().putInt(KEY_TARGET_SIZE_KB, sizeKB).apply();
-        AppLog.d(TAG, "目标压缩大小设置: " + (sizeKB == 0 ? "不压缩" : sizeKB + "KB"));
+        AppLog.d(TAG, "Target compression size set: " + (sizeKB == 0 ? "No compression" : sizeKB + "KB"));
     }
     
     /**
@@ -243,13 +243,13 @@ public class HeartbeatConfig {
     public static String getTargetSizeDisplayName(int sizeKB) {
         switch (sizeKB) {
             case TARGET_SIZE_100KB:
-                return "100KB（省流量）";
+                return "100KB (data-saving)";
             case TARGET_SIZE_500KB:
                 return "500KB";
             case TARGET_SIZE_1MB:
                 return "1MB";
             case TARGET_SIZE_NO_COMPRESS:
-                return "不压缩（原图质量）";
+                return "No compression (original quality)";
             default:
                 return sizeKB + "KB";
         }
@@ -270,7 +270,7 @@ public class HeartbeatConfig {
      */
     public void setScreenOnPushEnabled(boolean enabled) {
         prefs.edit().putBoolean(KEY_SCREEN_ON_PUSH, enabled).apply();
-        AppLog.d(TAG, "亮屏推图设置: " + (enabled ? "启用" : "禁用"));
+        AppLog.d(TAG, "Screen-on upload: " + (enabled ? "enabled" : "disabled"));
     }
     
     /**
@@ -286,7 +286,7 @@ public class HeartbeatConfig {
      */
     public void setScreenOffPushEnabled(boolean enabled) {
         prefs.edit().putBoolean(KEY_SCREEN_OFF_PUSH, enabled).apply();
-        AppLog.d(TAG, "息屏推图设置: " + (enabled ? "启用" : "禁用"));
+        AppLog.d(TAG, "Screen-off upload: " + (enabled ? "enabled" : "disabled"));
     }
     
     /**
@@ -301,7 +301,7 @@ public class HeartbeatConfig {
      */
     public void setAutoStartEnabled(boolean enabled) {
         prefs.edit().putBoolean(KEY_AUTO_START, enabled).apply();
-        AppLog.d(TAG, "自动启动设置: " + (enabled ? "启用" : "禁用"));
+        AppLog.d(TAG, "Auto-start: " + (enabled ? "enabled" : "disabled"));
     }
     
     // ==================== 统计信息 ====================
@@ -374,7 +374,7 @@ public class HeartbeatConfig {
             .putInt(KEY_FAIL_COUNT, 0)
             .remove(KEY_LAST_ERROR)
             .apply();
-        AppLog.d(TAG, "统计信息已重置");
+        AppLog.d(TAG, "Statistics reset");
     }
     
     // ==================== 配置检查 ====================
@@ -391,12 +391,12 @@ public class HeartbeatConfig {
      */
     public String getConfigStatus() {
         if (!hasServerUrl()) {
-            return "请配置服务器地址";
+            return "Please configure server URL";
         }
         if (!hasSecretKey()) {
-            return "请配置通信密钥";
+            return "Please configure communication key";
         }
-        return "配置完成";
+        return "Configuration complete";
     }
     
     // ==================== 间隔显示名称 ====================
@@ -407,15 +407,15 @@ public class HeartbeatConfig {
     public static String getIntervalDisplayName(int seconds) {
         switch (seconds) {
             case INTERVAL_30_SECONDS:
-                return "30秒";
+                return "30s";
             case INTERVAL_60_SECONDS:
-                return "1分钟（推荐）";
+                return "1 min (recommended)";
             case INTERVAL_120_SECONDS:
-                return "2分钟";
+                return "2 min";
             case INTERVAL_300_SECONDS:
-                return "5分钟";
+                return "5 min";
             default:
-                return seconds + "秒";
+                return seconds + "s";
         }
     }
 }

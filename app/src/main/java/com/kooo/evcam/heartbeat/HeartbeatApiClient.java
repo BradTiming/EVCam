@@ -53,11 +53,11 @@ public class HeartbeatApiClient {
                                           byte[] imageBytes, int imageWidth, int imageHeight,
                                           int cameraCount, String appStatus) {
         if (serverUrl == null || serverUrl.isEmpty()) {
-            return new HeartbeatResult(false, "服务器地址未配置");
+            return new HeartbeatResult(false, "Server URL is not configured");
         }
         
         if (imageBytes == null || imageBytes.length == 0) {
-            return new HeartbeatResult(false, "图片数据为空");
+            return new HeartbeatResult(false, "Image data is empty");
         }
         
         try {
@@ -67,7 +67,7 @@ public class HeartbeatApiClient {
             String signature = generateSignature(vehicleId, timestamp, nonce, secretKey);
             
             if (signature == null) {
-                return new HeartbeatResult(false, "签名生成失败");
+                return new HeartbeatResult(false, "Failed to generate signature");
             }
             
             // 构建 JSON 请求体
@@ -87,27 +87,27 @@ public class HeartbeatApiClient {
                     .addHeader("X-Signature", signature)
                     .build();
             
-            AppLog.d(TAG, "发送心跳请求: " + serverUrl + ", 图片大小: " + (imageBytes.length / 1024) + "KB");
+            AppLog.d(TAG, "Sending heartbeat request: " + serverUrl + ", image size: " + (imageBytes.length / 1024) + "KB");
             
             try (Response response = client.newCall(request).execute()) {
                 int code = response.code();
                 String responseBody = response.body() != null ? response.body().string() : "";
                 
                 if (response.isSuccessful()) {
-                    AppLog.d(TAG, "心跳请求成功: " + code);
-                    return new HeartbeatResult(true, "成功", code, responseBody);
+                    AppLog.d(TAG, "Heartbeat request succeeded: " + code);
+                    return new HeartbeatResult(true, "Success", code, responseBody);
                 } else {
-                    AppLog.w(TAG, "心跳请求失败: " + code + ", " + responseBody);
+                    AppLog.w(TAG, "Heartbeat request failed: " + code + ", " + responseBody);
                     return new HeartbeatResult(false, "HTTP " + code + ": " + responseBody, code, responseBody);
                 }
             }
             
         } catch (IOException e) {
-            AppLog.e(TAG, "心跳请求网络错误: " + e.getMessage());
-            return new HeartbeatResult(false, "网络错误: " + e.getMessage());
+            AppLog.e(TAG, "Heartbeat network error: " + e.getMessage());
+            return new HeartbeatResult(false, "Network error: " + e.getMessage());
         } catch (Exception e) {
-            AppLog.e(TAG, "心跳请求异常: " + e.getMessage(), e);
-            return new HeartbeatResult(false, "异常: " + e.getMessage());
+            AppLog.e(TAG, "Heartbeat request exception: " + e.getMessage(), e);
+            return new HeartbeatResult(false, "Exception: " + e.getMessage());
         }
     }
     
@@ -138,7 +138,7 @@ public class HeartbeatApiClient {
             return sb.toString();
             
         } catch (Exception e) {
-            AppLog.e(TAG, "签名生成失败: " + e.getMessage());
+            AppLog.e(TAG, "Signature generation failed: " + e.getMessage());
             return null;
         }
     }
