@@ -220,7 +220,7 @@ public class PermissionSettingsFragment extends Fragment {
         btnOverlayPermission.setOnClickListener(v -> {
             if (getContext() != null) {
                 WakeUpHelper.requestOverlayPermission(getContext());
-                Toast.makeText(getContext(), "请开启悬浮窗权限", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Please enable overlay permission", Toast.LENGTH_LONG).show();
             }
         });
         
@@ -486,10 +486,10 @@ public class PermissionSettingsFragment extends Fragment {
             Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
             intent.setData(Uri.parse("package:" + getContext().getPackageName()));
             startActivity(intent);
-            Toast.makeText(getContext(), "请在权限列表中授予所需权限", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Please grant required permissions in the permission list", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             AppLog.e("PermissionSettings", "打开应用设置失败", e);
-            Toast.makeText(getContext(), "无法打开设置页面，请使用第三方权限管理工具设置", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Unable to open settings page. Please use a third-party permission manager.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -503,7 +503,7 @@ public class PermissionSettingsFragment extends Fragment {
             Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
             intent.putExtra(Settings.EXTRA_APP_PACKAGE, getContext().getPackageName());
             startActivity(intent);
-            Toast.makeText(getContext(), "请开启通知权限", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Please enable notification permission", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             openAppSettings();
         }
@@ -520,15 +520,15 @@ public class PermissionSettingsFragment extends Fragment {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
                 intent.setData(Uri.parse("package:" + getContext().getPackageName()));
                 startActivity(intent);
-                Toast.makeText(getContext(), "请开启「允许访问所有文件」", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Please enable "Allow access to all files"", Toast.LENGTH_LONG).show();
             } catch (Exception e) {
                 try {
                     Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
                     startActivity(intent);
-                    Toast.makeText(getContext(), "请找到本应用并开启权限", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Please find this app and enable the permission", Toast.LENGTH_LONG).show();
                 } catch (Exception e2) {
                     AppLog.e("PermissionSettings", "无法打开权限设置页面", e2);
-                    Toast.makeText(getContext(), "无法打开设置页面，请使用第三方权限管理工具设置", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Unable to open settings page. Please use a third-party permission manager.", Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -574,10 +574,10 @@ public class PermissionSettingsFragment extends Fragment {
         try {
             Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
             startActivity(intent);
-            Toast.makeText(getContext(), "请找到本应用并开启使用情况访问权限", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Please find this app and enable usage access permission", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             AppLog.e("PermissionSettings", "打开使用情况访问设置失败", e);
-            Toast.makeText(getContext(), "无法打开设置页面", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Unable to open settings page", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -589,10 +589,10 @@ public class PermissionSettingsFragment extends Fragment {
             Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-            Toast.makeText(getContext(), "请找到「电车记录仪 - 保活服务」并启用", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Please find "Dashcam - Keep-alive Service" and enable it", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             AppLog.e("PermissionSettings", "打开无障碍设置失败", e);
-            Toast.makeText(getContext(), "无法打开设置页面，请使用第三方权限管理工具设置", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Unable to open settings page. Please use a third-party permission manager.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -646,8 +646,8 @@ public class PermissionSettingsFragment extends Fragment {
         if (getContext() == null) return;
 
         new MaterialAlertDialogBuilder(getContext(), R.style.Theme_Cam_MaterialAlertDialog)
-                .setTitle("风险提醒")
-                .setMessage("此操作将修改车机系统分区的配置文件，请仔细阅读：\n\n"
+                .setTitle("Risk Notice")
+                .setMessage("This action will modify files in the vehicle system partition. Please read carefully:\n\n"
                         + "1. 仅适用于银河E5（E245）车机\n"
                         + "2. 需要设备已打开USB调试\n"
                         + "3. 将修改 system 和 vendor 分区的 3 个 XML 文件\n"
@@ -656,7 +656,7 @@ public class PermissionSettingsFragment extends Fragment {
                         + "6. 本脚本理论上不会对车机造成危害，但出现任何问题均请自行承担后果\n"
                         + "7. 如果设备不是 E245，脚本会自动检测并中止。\n\n"
                         + "确认要继续执行吗？")
-                .setPositiveButton("确认执行", (dialog, which) -> startWhitelistSetup())
+                .setPositiveButton("Run", (dialog, which) -> startWhitelistSetup())
                 .setNegativeButton("Cancel", null)
                 .show();
     }
@@ -717,8 +717,8 @@ public class PermissionSettingsFragment extends Fragment {
         if (getContext() == null) return;
 
         new MaterialAlertDialogBuilder(getContext(), R.style.Theme_Cam_MaterialAlertDialog)
-                .setTitle("恢复确认")
-                .setMessage("此操作将从备份恢复车机系统白名单配置：\n\n"
+                .setTitle("Restore Confirmation")
+                .setMessage("This action will restore vehicle whitelist configuration from backup:\n\n"
                         + "1. 恢复后 EVCam 的白名单配置将被移除\n"
                         + "2. 系统配置文件将还原为修改前的状态\n"
                         + "3. 需要重启车机才能生效\n"

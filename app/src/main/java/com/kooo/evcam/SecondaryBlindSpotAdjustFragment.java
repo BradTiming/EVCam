@@ -276,7 +276,7 @@ public class SecondaryBlindSpotAdjustFragment extends Fragment {
 
         saveButton.setOnClickListener(v -> {
             persistAllAndUpdate();
-            Toast.makeText(requireContext(), "配置已保存并应用", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Configuration saved and applied", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -306,7 +306,7 @@ public class SecondaryBlindSpotAdjustFragment extends Fragment {
     private void updateDisplayInfo(Display display) {
         android.util.DisplayMetrics metrics = new android.util.DisplayMetrics();
         display.getRealMetrics(metrics);
-        displayInfoText.setText(String.format("当前屏幕分辨率: %d x %d", metrics.widthPixels, metrics.heightPixels));
+        displayInfoText.setText(String.format("Current screen resolution: %d x %d", metrics.widthPixels, metrics.heightPixels));
 
         seekbarX.setMax(metrics.widthPixels);
         seekbarY.setMax(metrics.heightPixels);

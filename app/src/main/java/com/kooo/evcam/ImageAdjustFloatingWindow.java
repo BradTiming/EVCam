@@ -223,7 +223,7 @@ public class ImageAdjustFloatingWindow {
         // 如果没有可调节的参数
         if (contentLayout.getChildCount() == 0) {
             TextView noParamsText = new TextView(context);
-            noParamsText.setText("当前设备不支持亮度/降噪调节");
+            noParamsText.setText("This device does not support exposure/noise reduction adjustment");
             noParamsText.setTextColor(Color.GRAY);
             noParamsText.setTextSize(14);
             noParamsText.setPadding(0, dp2px(20), 0, dp2px(20));
@@ -251,7 +251,7 @@ public class ImageAdjustFloatingWindow {
         
         // 标题
         TextView titleText = new TextView(context);
-        titleText.setText("亮度/降噪调节");
+        titleText.setText("Exposure/Noise Reduction");
         titleText.setTextColor(Color.WHITE);
         titleText.setTextSize(16);
         titleText.setLayoutParams(new LinearLayout.LayoutParams(
@@ -370,7 +370,7 @@ public class ImageAdjustFloatingWindow {
         if (exposureValueText != null) {
             int value = adjustManager.getExposureCompensation();
             String text = (value >= 0 ? "+" : "") + value;
-            exposureValueText.setText("当前: " + text + " (调暗 ← → 调亮)");
+            exposureValueText.setText("Current: " + text + " (Darker ← → Brighter)");
         }
     }
     
@@ -616,7 +616,7 @@ public class ImageAdjustFloatingWindow {
             }
             dialog.dismiss();
         });
-        builder.setNegativeButton("取消", null);
+        builder.setNegativeButton("Cancel", null);
         
         AlertDialog dialog = builder.create();
         
@@ -663,7 +663,7 @@ public class ImageAdjustFloatingWindow {
         
         // 重置按钮
         Button resetButton = new Button(context);
-        resetButton.setText("恢复默认");
+        resetButton.setText("Reset Default");
         resetButton.setTextSize(12);
         resetButton.setOnClickListener(v -> {
             adjustManager.resetToDefault();
@@ -678,7 +678,7 @@ public class ImageAdjustFloatingWindow {
         
         // 保存并关闭按钮
         Button saveButton = new Button(context);
-        saveButton.setText("保存并关闭");
+        saveButton.setText("Save & Close");
         saveButton.setTextSize(12);
         saveButton.setOnClickListener(v -> dismiss());
         bottomBar.addView(saveButton);

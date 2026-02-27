@@ -120,8 +120,8 @@ public class BlindSpotDisclaimerDialogFragment extends DialogFragment {
 
                 if (secondsLeft <= 0) {
                     btnAccept.setEnabled(true);
-                    btnAccept.setText("我已知情并同意");
-                    tvCountdown.setText("已阅读完毕，可点击同意继续");
+                    btnAccept.setText("I have read and agree");
+                    tvCountdown.setText("Reading complete. Tap Agree to continue");
                     return;
                 }
 
@@ -141,8 +141,8 @@ public class BlindSpotDisclaimerDialogFragment extends DialogFragment {
     }
 
     private void updateCountdownViews(TextView tvCountdown, Button btnAccept) {
-        tvCountdown.setText("请阅读后等待 " + secondsLeft + " 秒");
-        btnAccept.setText("我已知情并同意（" + secondsLeft + "s）");
+        tvCountdown.setText("Please read and wait " + secondsLeft + " seconds");
+        btnAccept.setText("I have read and agree (" + secondsLeft + "s)");
     }
 
     private String readRawText(int resId) {

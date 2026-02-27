@@ -186,13 +186,13 @@ public class BlindSpotSettingsFragment extends Fragment {
             }
             customKeywordsLayout.setVisibility(View.GONE);
             carApiStatusText.setVisibility(View.VISIBLE);
-            carApiStatusText.setText("CarSignalManager 服务状态: 检测中...");
+            carApiStatusText.setText("CarSignalManager service status: Checking...");
             checkCarSignalManagerConnection();
         } else if (appConfig.isVhalGrpcTriggerMode()) {
             turnSignalPresetGroup.check(R.id.rb_preset_car_api);
             customKeywordsLayout.setVisibility(View.GONE);
             carApiStatusText.setVisibility(View.VISIBLE);
-            carApiStatusText.setText("车辆API 服务状态: 检测中...");
+            carApiStatusText.setText("Vehicle API service status: Checking...");
             checkVhalGrpcConnection();
         } else {
             int matchedPreset = findMatchingPreset(currentLeft, currentRight);
@@ -281,7 +281,7 @@ public class BlindSpotSettingsFragment extends Fragment {
         turnSignalLinkageSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked && !WakeUpHelper.hasOverlayPermission(requireContext())) {
                 turnSignalLinkageSwitch.setChecked(false);
-                Toast.makeText(requireContext(), "请先授予悬浮窗权限", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Please grant overlay permission first", Toast.LENGTH_SHORT).show();
                 WakeUpHelper.requestOverlayPermission(requireContext());
                 return;
             }
@@ -311,7 +311,7 @@ public class BlindSpotSettingsFragment extends Fragment {
                 // CarSignalManager API 模式
                 customKeywordsLayout.setVisibility(View.GONE);
                 carApiStatusText.setVisibility(View.VISIBLE);
-                carApiStatusText.setText("CarSignalManager 服务状态: 检测中...");
+                carApiStatusText.setText("CarSignalManager service status: Checking...");
                 appConfig.setTurnSignalTriggerMode(AppConfig.TRIGGER_MODE_CAR_SIGNAL_MANAGER);
                 
                 // 保存具体选择的预设（博越L 或 L6/L7）
@@ -330,7 +330,7 @@ public class BlindSpotSettingsFragment extends Fragment {
                 // 车辆API 模式
                 customKeywordsLayout.setVisibility(View.GONE);
                 carApiStatusText.setVisibility(View.VISIBLE);
-                carApiStatusText.setText("车辆API 服务状态: 检测中...");
+                carApiStatusText.setText("Vehicle API service status: Checking...");
                 appConfig.setTurnSignalTriggerMode(AppConfig.TRIGGER_MODE_VHAL_GRPC);
                 appConfig.setTurnSignalPresetSelection("car_api");
                 
@@ -391,7 +391,7 @@ public class BlindSpotSettingsFragment extends Fragment {
         secondaryBlindSpotSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked && !WakeUpHelper.hasOverlayPermission(requireContext())) {
                 secondaryBlindSpotSwitch.setChecked(false);
-                Toast.makeText(requireContext(), "请先授予悬浮窗权限", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Please grant overlay permission first", Toast.LENGTH_SHORT).show();
                 WakeUpHelper.requestOverlayPermission(requireContext());
                 return;
             }
@@ -406,7 +406,7 @@ public class BlindSpotSettingsFragment extends Fragment {
         mockFloatingSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked && !WakeUpHelper.hasOverlayPermission(requireContext())) {
                 mockFloatingSwitch.setChecked(false);
-                Toast.makeText(requireContext(), "请先授予悬浮窗权限", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Please grant overlay permission first", Toast.LENGTH_SHORT).show();
                 WakeUpHelper.requestOverlayPermission(requireContext());
                 return;
             }
@@ -419,7 +419,7 @@ public class BlindSpotSettingsFragment extends Fragment {
         doorLinkageSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked && !WakeUpHelper.hasOverlayPermission(requireContext())) {
                 doorLinkageSwitch.setChecked(false);
-                Toast.makeText(requireContext(), "请先授予悬浮窗权限", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Please grant overlay permission first", Toast.LENGTH_SHORT).show();
                 WakeUpHelper.requestOverlayPermission(requireContext());
                 return;
             }
@@ -443,12 +443,12 @@ public class BlindSpotSettingsFragment extends Fragment {
         resetMainFloatingButton.setOnClickListener(v -> {
             appConfig.resetMainFloatingBounds();
             BlindSpotService.update(requireContext());
-            Toast.makeText(requireContext(), "主屏悬浮窗已重置", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Primary floating window reset", Toast.LENGTH_SHORT).show();
         });
 
         adjustBlindSpotCorrectionButton.setOnClickListener(v -> {
             if (!WakeUpHelper.hasOverlayPermission(requireContext())) {
-                Toast.makeText(requireContext(), "请先授予悬浮窗权限", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Please grant overlay permission first", Toast.LENGTH_SHORT).show();
                 WakeUpHelper.requestOverlayPermission(requireContext());
                 return;
             }
@@ -461,7 +461,7 @@ public class BlindSpotSettingsFragment extends Fragment {
 
         adjustSecondaryBlindSpotWindowButton.setOnClickListener(v -> {
             if (!WakeUpHelper.hasOverlayPermission(requireContext())) {
-                Toast.makeText(requireContext(), "请先授予悬浮窗权限", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Please grant overlay permission first", Toast.LENGTH_SHORT).show();
                 WakeUpHelper.requestOverlayPermission(requireContext());
                 return;
             }
@@ -478,14 +478,14 @@ public class BlindSpotSettingsFragment extends Fragment {
             if (keyword.isEmpty()) {
                 // 没有输入关键词时弹窗提示
                 new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext(), R.style.Theme_Cam_MaterialAlertDialog)
-                    .setTitle("提示")
-                    .setMessage("未输入过滤关键字，日志量可能很大，可能导致界面卡顿。\n\n建议输入关键字进行过滤，是否继续？")
-                    .setPositiveButton("继续打开", (dialog, which) -> {
+                    .setTitle("Notice")
+                    .setMessage("No filter keyword entered. Log volume may be large and could cause UI lag.\n\nEnter a keyword filter if possible. Continue anyway?")
+                    .setPositiveButton("Continue", (dialog, which) -> {
                         android.content.Intent intent = new android.content.Intent(requireContext(), LogcatViewerActivity.class);
                         intent.putExtra("filter_keyword", "");
                         startActivity(intent);
                     })
-                    .setNegativeButton("返回输入", null)
+                    .setNegativeButton("Go Back", null)
                     .show();
             } else {
                 android.content.Intent intent = new android.content.Intent(requireContext(), LogcatViewerActivity.class);
@@ -576,7 +576,7 @@ public class BlindSpotSettingsFragment extends Fragment {
      */
     private void checkVhalGrpcConnection() {
         if (carApiStatusText == null) return;
-        carApiStatusText.setText("车辆API 服务状态: 检测中...");
+        carApiStatusText.setText("Vehicle API service status: Checking...");
         carApiStatusText.setTextColor(getResources().getColor(R.color.text_secondary, null));
 
         new Thread(() -> {
@@ -585,10 +585,10 @@ public class BlindSpotSettingsFragment extends Fragment {
                 getActivity().runOnUiThread(() -> {
                     if (carApiStatusText == null) return;
                     if (reachable) {
-                        carApiStatusText.setText("车辆API 服务状态: ✓ 已连接");
+                        carApiStatusText.setText("Vehicle API service status: ✓ Connected");
                         carApiStatusText.setTextColor(0xFF4CAF50); // green
                     } else {
-                        carApiStatusText.setText("车辆API 服务状态: ✗ 服务不可达");
+                        carApiStatusText.setText("Vehicle API service status: ✗ Unreachable");
                         carApiStatusText.setTextColor(0xFFF44336); // red
                     }
                 });
@@ -601,7 +601,7 @@ public class BlindSpotSettingsFragment extends Fragment {
      */
     private void checkCarSignalManagerConnection() {
         if (carApiStatusText == null) return;
-        carApiStatusText.setText("CarSignalManager 服务状态: 检测中...");
+        carApiStatusText.setText("CarSignalManager service status: Checking...");
         carApiStatusText.setTextColor(getResources().getColor(R.color.text_secondary, null));
 
         new Thread(() -> {
@@ -610,10 +610,10 @@ public class BlindSpotSettingsFragment extends Fragment {
                 getActivity().runOnUiThread(() -> {
                     if (carApiStatusText == null) return;
                     if (reachable) {
-                        carApiStatusText.setText("CarSignalManager 服务状态: ✓ 已连接");
+                        carApiStatusText.setText("CarSignalManager service status: ✓ Connected");
                         carApiStatusText.setTextColor(0xFF4CAF50); // green
                     } else {
-                        carApiStatusText.setText("CarSignalManager 服务状态: ✗ 服务不可达");
+                        carApiStatusText.setText("CarSignalManager service status: ✗ Unreachable");
                         carApiStatusText.setTextColor(0xFFF44336); // red
                     }
                 });

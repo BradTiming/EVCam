@@ -76,7 +76,7 @@ public class BlindSpotLabFragment extends Fragment {
         mainFloatingSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked && !WakeUpHelper.hasOverlayPermission(requireContext())) {
                 mainFloatingSwitch.setChecked(false);
-                Toast.makeText(requireContext(), "请先授予悬浮窗权限", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Please grant overlay permission first", Toast.LENGTH_SHORT).show();
                 WakeUpHelper.requestOverlayPermission(requireContext());
                 return;
             }
@@ -109,7 +109,7 @@ public class BlindSpotLabFragment extends Fragment {
 
         setupBlindSpotPosButton.setOnClickListener(v -> {
             if (!WakeUpHelper.hasOverlayPermission(requireContext())) {
-                Toast.makeText(requireContext(), "请先授予悬浮窗权限", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Please grant overlay permission first", Toast.LENGTH_SHORT).show();
                 WakeUpHelper.requestOverlayPermission(requireContext());
                 return;
             }
@@ -119,7 +119,7 @@ public class BlindSpotLabFragment extends Fragment {
         });
 
         saveButton.setOnClickListener(v -> {
-            Toast.makeText(requireContext(), "配置已保存并应用", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Configuration saved and applied", Toast.LENGTH_SHORT).show();
             BlindSpotService.update(requireContext());
         });
     }
