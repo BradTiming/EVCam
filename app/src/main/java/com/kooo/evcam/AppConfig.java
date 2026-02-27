@@ -43,6 +43,7 @@ public class AppConfig {
     // 存储清理配置
     private static final String KEY_VIDEO_STORAGE_LIMIT_GB = "video_storage_limit_gb";  // 视频存储限制（GB）
     private static final String KEY_PHOTO_STORAGE_LIMIT_GB = "photo_storage_limit_gb";  // 图片存储限制（GB）
+    private static final String KEY_STORAGE_CLEANUP_TARGET = "storage_cleanup_target";  // 自动清理目标存储
     
     // 分段录制配置
     private static final String KEY_SEGMENT_DURATION_MINUTES = "segment_duration_minutes";  // 分段时长（分钟）
@@ -65,6 +66,7 @@ public class AppConfig {
     private static final String KEY_SECONDARY_DISPLAY_BORDER = "secondary_display_border";    // 是否显示白边框
     private static final String KEY_SECONDARY_DISPLAY_ORIENTATION = "secondary_display_orientation"; // 屏幕方向（0/90/180/270）
     private static final String KEY_SECONDARY_DISPLAY_ALPHA = "secondary_display_alpha"; // 副屏补盲悬浮窗透明度（0-100）
+    private static final String KEY_SECONDARY_DISPLAY_ASPECT_RATIO_LOCKED = "secondary_display_aspect_ratio_locked"; // 副屏宽高比锁定
 
     // 主屏悬浮窗配置 (补盲选项新增)
     private static final String KEY_MAIN_FLOATING_ENABLED = "main_floating_enabled";          // 主屏悬浮窗开关
@@ -127,6 +129,16 @@ public class AppConfig {
 
     // 主屏悬浮窗长按拖动
     private static final String KEY_MAIN_FLOATING_LONG_PRESS_DRAG = "main_floating_long_press_drag";
+
+    // 补盲实验室选项
+    private static final String KEY_BLIND_SPOT_TESLA_STYLE_ENABLED = "blind_spot_tesla_style_enabled";
+    private static final String KEY_BLIND_SPOT_LOW_LATENCY_ENABLED = "blind_spot_low_latency_enabled";
+    private static final String KEY_BLIND_SPOT_DISABLE_MAIN_FLOATING_IN_SIGNAL = "blind_spot_disable_main_floating_in_signal";
+    private static final String KEY_LAB_RACE_MODE_ENABLED = "lab_race_mode_enabled";
+    private static final String KEY_LAB_RACE_MODE_ZOOM = "lab_race_mode_zoom";
+    private static final String KEY_LAB_RACE_MODE_FISHEYE_REDUCTION = "lab_race_mode_fisheye_reduction";
+    private static final String KEY_LAB_RACE_MODE_WIDTH = "lab_race_mode_width";
+    private static final String KEY_LAB_RACE_MODE_HEIGHT = "lab_race_mode_height";
 
     // 补盲画面矫正 (Matrix)
     private static final String KEY_BLIND_SPOT_CORRECTION_ENABLED = "blind_spot_correction_enabled";
@@ -240,6 +252,12 @@ public class AppConfig {
     // 帧率等级常量
     public static final String FRAMERATE_STANDARD = "standard";  // 标准帧率（默认）
     public static final String FRAMERATE_LOW = "low";            // 低帧率（标准值的一半）
+
+    // 自动清理目标
+    public static final String STORAGE_CLEANUP_TARGET_OFF = "off";
+    public static final String STORAGE_CLEANUP_TARGET_INTERNAL = "internal";
+    public static final String STORAGE_CLEANUP_TARGET_USB = "usb";
+    public static final String STORAGE_CLEANUP_TARGET_BOTH = "both";
     
     // 车型配置相关键名
     private static final String KEY_CAR_MODEL = "car_model";  // 车型（galaxy_e5 / custom）
@@ -1339,7 +1357,23 @@ public class AppConfig {
      * @return true 如果至少有一项存储限制设置大于0
      */
     public boolean isStorageCleanupEnabled() {
-        return getVideoStorageLimitGb() > 0 || getPhotoStorageLimitGb() > 0;
+        return !STORAGE_CLEANUP_TARGET_OFF.equals(getStorageCleanupTarget())
+                && (getVideoStorageLimitGb() > 0 || getPhotoStorageLimitGb() > 0);
+    }
+
+    public void setStorageCleanupTarget(String target) {
+        if (!STORAGE_CLEANUP_TARGET_INTERNAL.equals(target)
+                && !STORAGE_CLEANUP_TARGET_USB.equals(target)
+                && !STORAGE_CLEANUP_TARGET_BOTH.equals(target)
+                && !STORAGE_CLEANUP_TARGET_OFF.equals(target)) {
+            target = STORAGE_CLEANUP_TARGET_BOTH;
+        }
+        prefs.edit().putString(KEY_STORAGE_CLEANUP_TARGET, target).apply();
+        AppLog.d(TAG, "Auto cleanup target set to: " + target);
+    }
+
+    public String getStorageCleanupTarget() {
+        return prefs.getString(KEY_STORAGE_CLEANUP_TARGET, STORAGE_CLEANUP_TARGET_BOTH);
     }
     
     // ==================== 分段录制配置相关方法 ====================
@@ -1523,6 +1557,14 @@ public class AppConfig {
         return prefs.getInt(KEY_SECONDARY_DISPLAY_ALPHA, 100);
     }
 
+    public void setSecondaryDisplayAspectRatioLocked(boolean locked) {
+        prefs.edit().putBoolean(KEY_SECONDARY_DISPLAY_ASPECT_RATIO_LOCKED, locked).apply();
+    }
+
+    public boolean isSecondaryDisplayAspectRatioLocked() {
+        return prefs.getBoolean(KEY_SECONDARY_DISPLAY_ASPECT_RATIO_LOCKED, false);
+    }
+
     public void setMainFloatingAspectRatioLocked(boolean locked) {
         prefs.edit().putBoolean(KEY_MAIN_FLOATING_ASPECT_RATIO_LOCKED, locked).apply();
     }
@@ -1537,6 +1579,69 @@ public class AppConfig {
 
     public boolean isMainFloatingLongPressDragEnabled() {
         return prefs.getBoolean(KEY_MAIN_FLOATING_LONG_PRESS_DRAG, false);
+    }
+
+    public void setBlindSpotTeslaStyleEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_BLIND_SPOT_TESLA_STYLE_ENABLED, enabled).apply();
+    }
+
+    public boolean isBlindSpotTeslaStyleEnabled() {
+        return prefs.getBoolean(KEY_BLIND_SPOT_TESLA_STYLE_ENABLED, false);
+    }
+
+    public void setBlindSpotLowLatencyEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_BLIND_SPOT_LOW_LATENCY_ENABLED, enabled).apply();
+    }
+
+    public boolean isBlindSpotLowLatencyEnabled() {
+        return prefs.getBoolean(KEY_BLIND_SPOT_LOW_LATENCY_ENABLED, false);
+    }
+
+    public void setBlindSpotDisableMainFloatingInSignal(boolean enabled) {
+        prefs.edit().putBoolean(KEY_BLIND_SPOT_DISABLE_MAIN_FLOATING_IN_SIGNAL, enabled).apply();
+    }
+
+    public boolean isBlindSpotDisableMainFloatingInSignal() {
+        return prefs.getBoolean(KEY_BLIND_SPOT_DISABLE_MAIN_FLOATING_IN_SIGNAL, false);
+    }
+
+    public void setLabRaceModeEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_LAB_RACE_MODE_ENABLED, enabled).apply();
+    }
+
+    public boolean isLabRaceModeEnabled() {
+        return prefs.getBoolean(KEY_LAB_RACE_MODE_ENABLED, false);
+    }
+
+    public void setLabRaceModeZoom(float zoom) {
+        prefs.edit().putFloat(KEY_LAB_RACE_MODE_ZOOM, Math.max(1.0f, Math.min(2.5f, zoom))).apply();
+    }
+
+    public float getLabRaceModeZoom() {
+        return prefs.getFloat(KEY_LAB_RACE_MODE_ZOOM, 1.2f);
+    }
+
+    public void setLabRaceModeFisheyeReduction(float reduction) {
+        prefs.edit().putFloat(KEY_LAB_RACE_MODE_FISHEYE_REDUCTION, Math.max(0f, Math.min(1f, reduction))).apply();
+    }
+
+    public float getLabRaceModeFisheyeReduction() {
+        return prefs.getFloat(KEY_LAB_RACE_MODE_FISHEYE_REDUCTION, 0.25f);
+    }
+
+    public void setLabRaceModeWindowSize(int width, int height) {
+        prefs.edit()
+                .putInt(KEY_LAB_RACE_MODE_WIDTH, Math.max(220, width))
+                .putInt(KEY_LAB_RACE_MODE_HEIGHT, Math.max(124, height))
+                .apply();
+    }
+
+    public int getLabRaceModeWidth() {
+        return prefs.getInt(KEY_LAB_RACE_MODE_WIDTH, 420);
+    }
+
+    public int getLabRaceModeHeight() {
+        return prefs.getInt(KEY_LAB_RACE_MODE_HEIGHT, 236);
     }
 
     public void setBlindSpotCorrectionEnabled(boolean enabled) {

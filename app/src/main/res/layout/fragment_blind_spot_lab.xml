@@ -33,7 +33,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="实验室（不建议使用）"
+            android:text="Lab (Not Recommended)"
             android:textColor="@color/text_primary"
             android:textSize="22sp"
             android:textStyle="bold" />
@@ -72,6 +72,80 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Disable Main Floating in Signals"
+                            android:textColor="@color/text_primary"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Force signal mode to use independent/rear windows only"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            android:layout_marginTop="4dp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switch_disable_main_floating_signal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tesla-Style Signal Preview"
+                            android:textColor="@color/text_primary"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="When indicating, prioritize side-camera behavior similar to Tesla-style signal previews"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            android:layout_marginTop="4dp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switch_tesla_style"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
                     android:gravity="center_vertical">
 
                     <LinearLayout
@@ -83,7 +157,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="开启主屏悬浮窗"
+                            android:text="Low-Latency Feed"
                             android:textColor="@color/text_primary"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -91,7 +165,185 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="在主屏幕显示可拖动的摄像头悬浮窗"
+                            android:text="Reduce handoff and retry delays to make blind-spot feed appear faster"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            android:layout_marginTop="4dp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switch_low_latency"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:background="@color/card_background"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Video Race Car Mode"
+                            android:textColor="@color/text_primary"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Rear floating camera overlay like racing games (double-tap window to hide)"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            android:layout_marginTop="4dp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switch_race_mode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Race zoom"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp" />
+
+                <SeekBar
+                    android:id="@+id/seek_race_zoom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="150" />
+
+                <TextView
+                    android:id="@+id/tv_race_zoom_value"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="1.20x"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Fisheye reduction"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp" />
+
+                <SeekBar
+                    android:id="@+id/seek_race_fisheye"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="100" />
+
+                <TextView
+                    android:id="@+id/tv_race_fisheye_value"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="25%"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Race window width"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp" />
+
+                <SeekBar
+                    android:id="@+id/seek_race_width"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="900" />
+
+                <TextView
+                    android:id="@+id/tv_race_width_value"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="420 px"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Race window height"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp" />
+
+                <SeekBar
+                    android:id="@+id/seek_race_height"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="600" />
+
+                <TextView
+                    android:id="@+id/tv_race_height_value"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="236 px"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:background="@color/card_background"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Enable Main Floating Window"
+                            android:textColor="@color/text_primary"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Show a draggable camera floating window on the main screen"
                             android:textColor="@color/text_secondary"
                             android:textSize="14sp"
                             android:layout_marginTop="4dp" />
@@ -115,7 +367,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="悬浮窗摄像头"
+                        android:text="Floating Window Camera"
                         android:textColor="@color/text_primary"
                         android:textSize="16sp" />
 
@@ -151,7 +403,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="复用主屏悬浮窗"
+                            android:text="Reuse Main Floating Window"
                             android:textColor="@color/text_primary"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -159,7 +411,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="转向灯联动时复用主屏悬浮窗显示对应侧画面"
+                            android:text="Reuse main floating window to show corresponding side when turn signal is triggered"
                             android:textColor="@color/text_secondary"
                             android:textSize="14sp"
                             android:layout_marginTop="4dp" />
@@ -176,7 +428,7 @@
                     android:id="@+id/btn_setup_blind_spot_pos"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="设置独立补盲窗位置"
+                    android:text="Set Independent Blind-spot Window Position"
                     android:layout_marginTop="12dp"
                     android:backgroundTint="@color/button_accent"
                     android:textColor="@color/white"
@@ -187,7 +439,7 @@
                 android:id="@+id/btn_save_apply"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="保存配置并应用"
+                android:text="Save Config & Apply"
                 android:textSize="20sp"
                 android:minHeight="56dp"
                 android:backgroundTint="@color/button_background"

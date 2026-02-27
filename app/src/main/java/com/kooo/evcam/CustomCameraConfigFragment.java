@@ -37,10 +37,10 @@ public class CustomCameraConfigFragment extends Fragment {
     
     // 摄像头数量选择
     private Spinner cameraCountSpinner;
-    private static final String[] CAMERA_COUNT_OPTIONS = {"4 个摄像头", "2 个摄像头", "1 个摄像头"};
+    private static final String[] CAMERA_COUNT_OPTIONS = {"4 cameras", "2 cameras", "1 camera"};
 
     // 按钮样式选项
-    private static final String[] BUTTON_STYLE_OPTIONS = {"标准按钮", "多按钮"};
+    private static final String[] BUTTON_STYLE_OPTIONS = {"Standard button", "Multi-button"};
     private static final String[] BUTTON_STYLE_VALUES = {AppConfig.BUTTON_STYLE_STANDARD, AppConfig.BUTTON_STYLE_MULTI};
 
     // 摄像头配置区域
@@ -124,7 +124,7 @@ public class CustomCameraConfigFragment extends Fragment {
         // 延迟设置初始化完成标记，确保 loadSavedConfig 触发的 Spinner 选择不会触发保存
         view.postDelayed(() -> {
             configInitialized = true;
-            AppLog.d(TAG, "配置界面初始化完成，自动保存已启用");
+            AppLog.d(TAG, "Configuration screen initialized, auto-save enabled");
         }, 300);
         
         // 沉浸式状态栏兼容
@@ -193,20 +193,20 @@ public class CustomCameraConfigFragment extends Fragment {
                 } else {
                     invalidCount++;
                     if (invalidCount <= 3) {  // 只记录前几个无效的，避免日志过多
-                        AppLog.d(TAG, "摄像头 " + id + " 无效（虚拟摄像头？），已跳过");
+                        AppLog.d(TAG, "Camera " + id + " is invalid (virtual camera?), skipped");
                     }
                 }
             }
             
             if (invalidCount > 3) {
-                AppLog.d(TAG, "还有 " + (invalidCount - 3) + " 个无效摄像头已跳过");
+                AppLog.d(TAG, "Additionally " + (invalidCount - 3) + " invalid cameras were skipped");
             }
             
-            AppLog.d(TAG, "检测到 " + cameraIds.length + " 个摄像头ID，其中 " + 
-                    availableCameraIds.size() + " 个有效: " + availableCameraIds);
+            AppLog.d(TAG, "Detected " + cameraIds.length + " camera IDs, with " + 
+                    availableCameraIds.size() + " valid: " + availableCameraIds);
             
         } catch (CameraAccessException e) {
-            AppLog.e(TAG, "检测摄像头失败", e);
+            AppLog.e(TAG, "Failed to detect cameras", e);
             // 如果检测失败，提供默认选项
             availableCameraIds.clear();
             for (int i = 0; i < 4; i++) {
@@ -245,13 +245,13 @@ public class CustomCameraConfigFragment extends Fragment {
             return hasValidOutput;
             
         } catch (CameraAccessException e) {
-            AppLog.d(TAG, "摄像头 " + cameraId + " 访问失败: " + e.getMessage());
+            AppLog.d(TAG, "Camera " + cameraId + " access failed: " + e.getMessage());
             return false;
         } catch (IllegalArgumentException e) {
-            AppLog.d(TAG, "摄像头 " + cameraId + " 参数无效: " + e.getMessage());
+            AppLog.d(TAG, "Camera " + cameraId + " invalid parameters: " + e.getMessage());
             return false;
         } catch (Exception e) {
-            AppLog.d(TAG, "摄像头 " + cameraId + " 验证异常: " + e.getMessage());
+            AppLog.d(TAG, "Camera " + cameraId + " validation exception: " + e.getMessage());
             return false;
         }
     }
@@ -310,7 +310,7 @@ public class CustomCameraConfigFragment extends Fragment {
                 editLayoutData.setText(layoutData);
             } else {
                 editLayoutData.setText("");
-                editLayoutData.setHint("无布局数据");
+                editLayoutData.setHint("No layout data");
             }
         }
     }
@@ -328,9 +328,9 @@ public class CustomCameraConfigFragment extends Fragment {
                         ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
                         ClipData clip = ClipData.newPlainText("layout_data", text);
                         clipboard.setPrimaryClip(clip);
-                        Toast.makeText(getContext(), "布局数据已复制", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Layout data copied", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(getContext(), "无数据可复制", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "No data to copy", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -345,14 +345,14 @@ public class CustomCameraConfigFragment extends Fragment {
                         // 简单验证 JSON 格式
                         if (text.startsWith("{") && text.endsWith("}")) {
                             appConfig.setCustomLayoutData(text);
-                            Toast.makeText(getContext(), "布局数据已保存，重载后生效", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Layout data saved. Takes effect after reload", Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(getContext(), "无效的 JSON 格式", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Invalid JSON format", Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         // 清空布局数据
                         appConfig.clearCustomLayoutData();
-                        Toast.makeText(getContext(), "布局数据已清空", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Layout data cleared", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -552,7 +552,7 @@ public class CustomCameraConfigFragment extends Fragment {
         String buttonStyleValue = getButtonStyleSpinnerValue();
         appConfig.setCustomButtonStyle(buttonStyleValue);
         
-        AppLog.d(TAG, "配置已自动保存: 摄像头数量=" + count + ", 自由操控=" + switchFreeControl.isChecked() + ", 按钮样式=" + buttonStyleValue);
+        AppLog.d(TAG, "Configuration auto-saved: camera count=" + count + ", free control=" + switchFreeControl.isChecked() + ", button style=" + buttonStyleValue);
     }
     
     /**
@@ -589,10 +589,10 @@ public class CustomCameraConfigFragment extends Fragment {
         appConfig.setCameraId("back", "1");
         appConfig.setCameraId("left", "2");
         appConfig.setCameraId("right", "3");
-        appConfig.setCameraName("front", "前");
-        appConfig.setCameraName("back", "后");
-        appConfig.setCameraName("left", "左");
-        appConfig.setCameraName("right", "右");
+        appConfig.setCameraName("front", "Front");
+        appConfig.setCameraName("back", "Rear");
+        appConfig.setCameraName("left", "Left");
+        appConfig.setCameraName("right", "Right");
         
         // 重置摄像头旋转和镜像
         appConfig.setCameraRotation("front", 0);
@@ -620,7 +620,7 @@ public class CustomCameraConfigFragment extends Fragment {
         appConfig.setCustomButtonStyle(AppConfig.BUTTON_STYLE_STANDARD);
         appConfig.setCustomButtonOrientation(AppConfig.BUTTON_ORIENTATION_HORIZONTAL);
         
-        AppLog.d(TAG, "所有自定义配置已重置");
+        AppLog.d(TAG, "All custom settings have been reset");
         
         // 重新加载配置到界面
         loadSavedConfig();
@@ -634,7 +634,7 @@ public class CustomCameraConfigFragment extends Fragment {
         
         // 提示用户
         if (getContext() != null) {
-            android.widget.Toast.makeText(getContext(), "配置已重置，请重启应用生效", android.widget.Toast.LENGTH_LONG).show();
+            android.widget.Toast.makeText(getContext(), "Settings reset. Please restart the app", android.widget.Toast.LENGTH_LONG).show();
         }
     }
     
@@ -644,7 +644,7 @@ public class CustomCameraConfigFragment extends Fragment {
     private void restartApp() {
         if (getActivity() == null) return;
         
-        android.widget.Toast.makeText(getContext(), "正在重载界面...", android.widget.Toast.LENGTH_SHORT).show();
+        android.widget.Toast.makeText(getContext(), "Reloading UI...", android.widget.Toast.LENGTH_SHORT).show();
         getActivity().recreate();
     }
 }
