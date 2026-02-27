@@ -36,7 +36,7 @@
             android:id="@+id/toolbar_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="图片回看"
+            android:text="Photo Playback"
             android:textColor="@color/text_primary"
             android:textSize="24sp"
             android:textStyle="bold" />
@@ -56,7 +56,7 @@
             android:id="@+id/btn_refresh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="刷新"
+            android:text="Refresh"
             android:textSize="20sp"
             android:minHeight="48dp"
             android:backgroundTint="@color/button_background"
@@ -66,7 +66,7 @@
             android:id="@+id/btn_multi_select"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="多选"
+            android:text="Multi-select"
             android:textSize="20sp"
             android:minHeight="48dp"
             android:layout_marginStart="8dp"
@@ -86,7 +86,7 @@
             android:textColor="@color/button_text" />
     </LinearLayout>
 
-    <!-- 多选工具栏（隐藏） -->
+    <!-- Multi-select工具栏（隐藏） -->
     <LinearLayout
         android:id="@+id/multi_select_toolbar"
         android:layout_width="match_parent"
@@ -104,7 +104,7 @@
             android:id="@+id/btn_select_all"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="全选"
+            android:text="Select All"
             android:textSize="20sp"
             android:minHeight="48dp"
             android:backgroundTint="@color/button_background"
@@ -115,7 +115,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="已选择 0 项"
+            android:text="0 selected"
             android:textColor="@color/text_primary"
             android:textSize="20sp"
             android:gravity="center" />
@@ -124,7 +124,7 @@
             android:id="@+id/btn_delete_selected"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="删除"
+            android:text="Delete"
             android:textSize="20sp"
             android:minHeight="48dp"
             android:backgroundTint="@android:color/holo_red_dark"
@@ -134,7 +134,7 @@
             android:id="@+id/btn_cancel_select"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="取消"
+            android:text="Cancel"
             android:textSize="20sp"
             android:minHeight="48dp"
             android:layout_marginStart="8dp"
@@ -142,7 +142,7 @@
             android:textColor="@color/button_text" />
     </LinearLayout>
 
-    <!-- 主内容区：左右分栏 -->
+    <!-- 主内容区：LeftRight分栏 -->
     <LinearLayout
         android:id="@+id/content_layout"
         android:layout_width="match_parent"
@@ -150,7 +150,7 @@
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <!-- 左侧：图片列表（手机使用固定宽度） -->
+        <!-- Left侧：图片列表（手机使用固定宽度） -->
         <FrameLayout
             android:id="@+id/list_container"
             android:layout_width="200dp"
@@ -169,13 +169,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="暂无照片文件"
+                android:text="No photo files"
                 android:textColor="@color/text_secondary"
                 android:textSize="16sp"
                 android:visibility="gone" />
         </FrameLayout>
 
-        <!-- 右侧：预览区（占据剩余空间） -->
+        <!-- Right侧：预览区（占据剩余空间） -->
         <LinearLayout
             android:id="@+id/preview_container"
             android:layout_width="0dp"
@@ -200,7 +200,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="center">
 
-                    <!-- 多路模式：四宫格 -->
+                    <!-- Multi-view模式：四宫格 -->
                     <LinearLayout
                         android:id="@+id/multi_view_layout"
                         android:layout_width="match_parent"
@@ -209,7 +209,7 @@
                         android:gravity="center"
                         android:background="@color/preview_grid_divider">
 
-                        <!-- 上排：前、后 -->
+                        <!-- 上排：Front、Rear -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -242,7 +242,7 @@ android:layout_marginStart="0dp"
                             android:background="#80000000"
                             android:paddingHorizontal="8dp"
                             android:paddingVertical="4dp"
-                            android:text="前"
+                            android:text="Front"
                             android:textColor="#FFFFFF"
                             android:textSize="14sp" />
 
@@ -251,7 +251,7 @@ android:layout_marginStart="0dp"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center"
-                            android:text="无图片"
+                            android:text="No photo"
                             android:textColor="@color/preview_placeholder_text"
                             android:textSize="14sp"
                             android:visibility="gone" />
@@ -283,7 +283,7 @@ android:layout_marginStart="0dp"
                             android:background="#80000000"
                             android:paddingHorizontal="8dp"
                             android:paddingVertical="4dp"
-                            android:text="后"
+                            android:text="Rear"
                             android:textColor="#FFFFFF"
                             android:textSize="14sp" />
 
@@ -292,14 +292,14 @@ android:layout_marginStart="0dp"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center"
-                            android:text="无图片"
+                            android:text="No photo"
                             android:textColor="@color/preview_placeholder_text"
                             android:textSize="14sp"
                             android:visibility="gone" />
                     </com.kooo.evcam.AspectRatioFrameLayout>
                 </LinearLayout>
 
-                        <!-- 下排：左、右 -->
+                        <!-- 下排：Left、Right -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -332,7 +332,7 @@ android:layout_marginStart="0dp"
                             android:background="#80000000"
                             android:paddingHorizontal="8dp"
                             android:paddingVertical="4dp"
-                            android:text="左"
+                            android:text="Left"
                             android:textColor="#FFFFFF"
                             android:textSize="14sp" />
 
@@ -341,7 +341,7 @@ android:layout_marginStart="0dp"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center"
-                            android:text="无图片"
+                            android:text="No photo"
                             android:textColor="@color/preview_placeholder_text"
                             android:textSize="14sp"
                             android:visibility="gone" />
@@ -373,7 +373,7 @@ android:layout_marginStart="0dp"
                             android:background="#80000000"
                             android:paddingHorizontal="8dp"
                             android:paddingVertical="4dp"
-                            android:text="右"
+                            android:text="Right"
                             android:textColor="#FFFFFF"
                             android:textSize="14sp" />
 
@@ -382,7 +382,7 @@ android:layout_marginStart="0dp"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center"
-                            android:text="无图片"
+                            android:text="No photo"
                             android:textColor="@color/preview_placeholder_text"
                             android:textSize="14sp"
                             android:visibility="gone" />
@@ -414,7 +414,7 @@ android:layout_marginStart="0dp"
                         android:background="#80000000"
                         android:paddingHorizontal="12dp"
                         android:paddingVertical="6dp"
-                        android:text="前"
+                        android:text="Front"
                         android:textColor="#FFFFFF"
                         android:textSize="16sp" />
                 </FrameLayout>
@@ -430,7 +430,7 @@ android:layout_marginStart="0dp"
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="请从左侧列表选择照片"
+                        android:text="Please select a photo from the left list"
                         android:textColor="@color/text_secondary"
                         android:textSize="24sp" />
 
@@ -438,7 +438,7 @@ android:layout_marginStart="0dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="双击画面可放大切换"
+                        android:text="Double-tap preview to toggle zoom"
                         android:textColor="@color/text_hint"
                         android:textSize="18sp" />
                 </LinearLayout>
@@ -460,7 +460,7 @@ android:layout_marginStart="0dp"
                     android:layout_width="wrap_content"
                     android:layout_height="48dp"
                     android:minWidth="72dp"
-                    android:text="多路"
+                    android:text="Multi-view"
                     android:textSize="16sp"
                     android:backgroundTint="@color/button_background"
                     android:textColor="@color/button_text" />

@@ -41,6 +41,11 @@ public class ResolutionSettingsFragment extends Fragment {
 
     private AppConfig appConfig;
     
+    // 录制档位相关
+    private Spinner qualityProfileSpinner;
+    private List<String> qualityProfileOptions = new ArrayList<>();
+    private String selectedQualityProfile;
+
     // 分辨率相关
     private Spinner resolutionSpinner;
     private TextView resolutionDescText;
@@ -84,7 +89,7 @@ public class ResolutionSettingsFragment extends Fragment {
         List<Size> supportedResolutions = new ArrayList<>();
         int maxFps = 30;  // 最大帧率
         int minFps = 15;  // 最小帧率
-        String facing = "未知";  // 朝向
+        String facing = "Unknown";  // 朝向
     }
 
     @Nullable
@@ -102,6 +107,9 @@ public class ResolutionSettingsFragment extends Fragment {
 
         // 检测摄像头信息
         detectCameraInfo();
+
+        // 初始化录制档位选择器
+        initQualityProfileSpinner();
 
         // 初始化分辨率选择器
         initResolutionSpinner();
@@ -142,6 +150,7 @@ public class ResolutionSettingsFragment extends Fragment {
     }
 
     private void initViews(View view) {
+        qualityProfileSpinner = view.findViewById(R.id.spinner_quality_profile);
         resolutionSpinner = view.findViewById(R.id.spinner_resolution);
         resolutionDescText = view.findViewById(R.id.tv_resolution_desc);
         bitrateSpinner = view.findViewById(R.id.spinner_bitrate);
@@ -183,13 +192,13 @@ public class ResolutionSettingsFragment extends Fragment {
                     if (facing != null) {
                         switch (facing) {
                             case CameraCharacteristics.LENS_FACING_FRONT:
-                                info.facing = "前置";
+                                info.facing = "Front";
                                 break;
                             case CameraCharacteristics.LENS_FACING_BACK:
-                                info.facing = "后置";
+                                info.facing = "Rear";
                                 break;
                             case CameraCharacteristics.LENS_FACING_EXTERNAL:
-                                info.facing = "外置";
+                                info.facing = "External";
                                 break;
                         }
                     }
@@ -237,14 +246,116 @@ public class ResolutionSettingsFragment extends Fragment {
                     cameraInfoMap.put(cameraId, info);
                     
                 } catch (CameraAccessException e) {
-                    AppLog.e(TAG, "获取摄像头 " + cameraId + " 特性失败", e);
+                    AppLog.e(TAG, "Failed to get camera " + cameraId + " characteristics", e);
                 }
             }
 
-            AppLog.d(TAG, "检测到 " + cameraInfoMap.size() + " 个摄像头");
+            AppLog.d(TAG, "Detected " + cameraInfoMap.size() + " cameras");
 
         } catch (CameraAccessException e) {
-            AppLog.e(TAG, "获取摄像头列表失败", e);
+            AppLog.e(TAG, "Failed to get camera list", e);
+        }
+    }
+
+    /**
+     * 初始化录制档位选择器
+     */
+    private void initQualityProfileSpinner() {
+        if (qualityProfileSpinner == null || getContext() == null) {
+            return;
+        }
+
+        qualityProfileOptions.clear();
+        qualityProfileOptions.add("Balanced (recommended)");
+        qualityProfileOptions.add("Smooth (less jitter)");
+        qualityProfileOptions.add("Max Detail (best clarity)");
+        qualityProfileOptions.add("Night Stability (low-light)");
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                getContext(),
+                R.layout.spinner_item,
+                qualityProfileOptions
+        );
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        qualityProfileSpinner.setAdapter(adapter);
+
+        String currentProfile = appConfig.getRecordingQualityProfile();
+        selectedQualityProfile = currentProfile;
+
+        int selectedIndex = 0;
+        if (AppConfig.QUALITY_PROFILE_SMOOTH.equals(currentProfile)) {
+            selectedIndex = 1;
+        } else if (AppConfig.QUALITY_PROFILE_MAX_DETAIL.equals(currentProfile)) {
+            selectedIndex = 2;
+        } else if (AppConfig.QUALITY_PROFILE_NIGHT.equals(currentProfile)) {
+            selectedIndex = 3;
+        }
+        qualityProfileSpinner.setSelection(selectedIndex);
+
+        qualityProfileSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            private boolean isFirstSelection = true;
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String profile;
+                switch (position) {
+                    case 1:
+                        profile = AppConfig.QUALITY_PROFILE_SMOOTH;
+                        break;
+                    case 2:
+                        profile = AppConfig.QUALITY_PROFILE_MAX_DETAIL;
+                        break;
+                    case 3:
+                        profile = AppConfig.QUALITY_PROFILE_NIGHT;
+                        break;
+                    default:
+                        profile = AppConfig.QUALITY_PROFILE_BALANCED;
+                        break;
+                }
+
+                if (!isFirstSelection && !profile.equals(selectedQualityProfile)) {
+                    selectedQualityProfile = profile;
+                    appConfig.applyQualityProfile(profile);
+                    selectedBitrateLevel = appConfig.getBitrateLevel();
+                    selectedFramerateLevel = appConfig.getFramerateLevel();
+                    syncBitrateAndFramerateSelections();
+                    Toast.makeText(getContext(), "Profile set to: " + AppConfig.getQualityProfileDisplayName(profile) + "\nTakes effect after app restart", Toast.LENGTH_SHORT).show();
+                    displayCurrentParams();
+                    updateFramerateDescription();
+                    updateBitrateDescription();
+                } else {
+                    selectedQualityProfile = profile;
+                }
+                isFirstSelection = false;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+    }
+
+    private void syncBitrateAndFramerateSelections() {
+        if (bitrateSpinner != null) {
+            int bitrateIndex = 1;
+            if (AppConfig.BITRATE_LOW.equals(selectedBitrateLevel)) {
+                bitrateIndex = 0;
+            } else if (AppConfig.BITRATE_HIGH.equals(selectedBitrateLevel)) {
+                bitrateIndex = 2;
+            } else if (AppConfig.BITRATE_ULTRA.equals(selectedBitrateLevel)) {
+                bitrateIndex = 3;
+            }
+            bitrateSpinner.setSelection(bitrateIndex);
+        }
+
+        if (framerateSpinner != null) {
+            int framerateIndex = 0;
+            if (AppConfig.FRAMERATE_LOW.equals(selectedFramerateLevel)) {
+                framerateIndex = 1;
+            } else if (AppConfig.FRAMERATE_HIGH.equals(selectedFramerateLevel)) {
+                framerateIndex = 2;
+            }
+            framerateSpinner.setSelection(framerateIndex);
         }
     }
 
@@ -260,7 +371,7 @@ public class ResolutionSettingsFragment extends Fragment {
 
         // 构建分辨率选项列表
         resolutionOptions.clear();
-        resolutionOptions.add("默认 (1280×800)");
+        resolutionOptions.add("Default (1280×800)");
 
         // 收集所有摄像头支持的分辨率（去重）
         Set<String> allResolutions = new LinkedHashSet<>();
@@ -315,10 +426,10 @@ public class ResolutionSettingsFragment extends Fragment {
                 String newResolution;
                 if (position == 0) {
                     newResolution = AppConfig.RESOLUTION_DEFAULT;
-                    resolutionDescText.setText("默认：优先匹配 1280×800，否则选择最接近的分辨率");
+                    resolutionDescText.setText("Default: prefer 1280×800, otherwise choose the closest resolution");
                 } else {
                     newResolution = resolutionOptions.get(position);
-                    resolutionDescText.setText("将优先匹配 " + newResolution + "，如果摄像头不支持则选择最接近的");
+                    resolutionDescText.setText("Will prioritize " + newResolution + ", and choose the closest if unsupported");
                 }
                 
                 // 只在值变化时保存
@@ -349,9 +460,10 @@ public class ResolutionSettingsFragment extends Fragment {
 
         // 构建码率选项
         bitrateOptions.clear();
-        bitrateOptions.add("低（省空间）");
-        bitrateOptions.add("标准（推荐）");
-        bitrateOptions.add("高（高画质）");
+        bitrateOptions.add("Low (smaller files)");
+        bitrateOptions.add("Standard (recommended)");
+        bitrateOptions.add("High (best quality)");
+        bitrateOptions.add("Ultra (max quality, larger files)");
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 getContext(),
@@ -369,6 +481,8 @@ public class ResolutionSettingsFragment extends Fragment {
             selectedIndex = 0;
         } else if (AppConfig.BITRATE_HIGH.equals(currentLevel)) {
             selectedIndex = 2;
+        } else if (AppConfig.BITRATE_ULTRA.equals(currentLevel)) {
+            selectedIndex = 3;
         }
         bitrateSpinner.setSelection(selectedIndex);
 
@@ -385,6 +499,9 @@ public class ResolutionSettingsFragment extends Fragment {
                         break;
                     case 2:
                         newLevel = AppConfig.BITRATE_HIGH;
+                        break;
+                    case 3:
+                        newLevel = AppConfig.BITRATE_ULTRA;
                         break;
                     default:
                         newLevel = AppConfig.BITRATE_MEDIUM;
@@ -422,8 +539,9 @@ public class ResolutionSettingsFragment extends Fragment {
 
         // 构建帧率选项
         framerateOptions.clear();
-        framerateOptions.add("标准（推荐）");
-        framerateOptions.add("低（省空间）");
+        framerateOptions.add("Standard (recommended)");
+        framerateOptions.add("Low (smaller files)");
+        framerateOptions.add("High (smoother, needs stronger hardware)");
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 getContext(),
@@ -439,6 +557,8 @@ public class ResolutionSettingsFragment extends Fragment {
         int selectedIndex = 0;  // 默认标准
         if (AppConfig.FRAMERATE_LOW.equals(currentLevel)) {
             selectedIndex = 1;
+        } else if (AppConfig.FRAMERATE_HIGH.equals(currentLevel)) {
+            selectedIndex = 2;
         }
         framerateSpinner.setSelection(selectedIndex);
 
@@ -448,7 +568,7 @@ public class ResolutionSettingsFragment extends Fragment {
             
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String newLevel = (position == 1) ? AppConfig.FRAMERATE_LOW : AppConfig.FRAMERATE_STANDARD;
+                String newLevel = (position == 1) ? AppConfig.FRAMERATE_LOW : (position == 2 ? AppConfig.FRAMERATE_HIGH : AppConfig.FRAMERATE_STANDARD);
                 
                 // 只在值变化且非首次选择时保存
                 if (!isFirstSelection && !newLevel.equals(selectedFramerateLevel)) {
@@ -482,8 +602,9 @@ public class ResolutionSettingsFragment extends Fragment {
 
         int standardFps = getStandardFrameRate();
         int lowFps = Math.max(10, standardFps / 2);
+        int highFps = Math.min(60, getRecordingHardwareMaxFps());
 
-        String desc = String.format("标准: %dfps | 低: %dfps", standardFps, lowFps);
+        String desc = String.format("Standard: %dfps | Low: %dfps | High: up to %dfps", standardFps, lowFps, highFps);
         framerateDescText.setText(desc);
     }
 
@@ -493,9 +614,8 @@ public class ResolutionSettingsFragment extends Fragment {
     private int getStandardFrameRate() {
         int maxFps = 30;
         for (CameraInfo info : cameraInfoMap.values()) {
-            if (info.maxFps > 0) {
+            if (info.maxFps > maxFps) {
                 maxFps = info.maxFps;
-                break;  // 假设所有摄像头帧率相同
             }
         }
         return AppConfig.getStandardFrameRate(maxFps);
@@ -505,12 +625,27 @@ public class ResolutionSettingsFragment extends Fragment {
      * 根据当前选择获取实际帧率
      */
     private int getSelectedFrameRate() {
-        int standardFps = getStandardFrameRate();
-        // 防止初始化顺序导致的 null 问题
-        if (selectedFramerateLevel != null && AppConfig.FRAMERATE_LOW.equals(selectedFramerateLevel)) {
+        int standardFps = AppConfig.getStandardFrameRate(getRecordingHardwareMaxFps());
+        if (AppConfig.FRAMERATE_LOW.equals(selectedFramerateLevel)) {
             return Math.max(10, standardFps / 2);
         }
+        if (AppConfig.FRAMERATE_HIGH.equals(selectedFramerateLevel)) {
+            return Math.min(60, Math.max(standardFps, getRecordingHardwareMaxFps()));
+        }
         return standardFps;
+    }
+
+    /**
+     * 获取录制可用的硬件最大帧率（取已检测摄像头中的最大值）
+     */
+    private int getRecordingHardwareMaxFps() {
+        int maxFps = 30;
+        for (CameraInfo info : cameraInfoMap.values()) {
+            if (info.maxFps > maxFps) {
+                maxFps = info.maxFps;
+            }
+        }
+        return Math.max(30, maxFps);
     }
 
     /**
@@ -541,13 +676,15 @@ public class ResolutionSettingsFragment extends Fragment {
         int lowBitrate = roundToHalfMbps(baseBitrate / 2);
         int mediumBitrate = roundToHalfMbps(baseBitrate);
         int highBitrate = roundToHalfMbps(baseBitrate * 3 / 2);
+        int ultraBitrate = roundToHalfMbps(baseBitrate * 2);
 
         String desc = String.format(
-                "分辨率 %dx%d @ %dfps\n低: %s | 标准: %s | 高: %s",
+                "Resolution %dx%d @ %dfps\nLow: %s | Standard: %s | High: %s | Ultra: %s",
                 width, height, frameRate,
                 AppConfig.formatBitrate(lowBitrate),
                 AppConfig.formatBitrate(mediumBitrate),
-                AppConfig.formatBitrate(highBitrate)
+                AppConfig.formatBitrate(highBitrate),
+                AppConfig.formatBitrate(ultraBitrate)
         );
         bitrateDescText.setText(desc);
     }
@@ -558,7 +695,7 @@ public class ResolutionSettingsFragment extends Fragment {
     private int roundToHalfMbps(int bitrate) {
         int halfMbps = 500000;
         int rounded = ((bitrate + halfMbps / 2) / halfMbps) * halfMbps;
-        return Math.max(halfMbps, Math.min(rounded, 20000000));
+        return Math.max(halfMbps, Math.min(rounded, 40000000));
     }
 
     /**
@@ -584,7 +721,7 @@ public class ResolutionSettingsFragment extends Fragment {
             MainActivity mainActivity = (MainActivity) getActivity();
             String resInfo = mainActivity.getCurrentCameraResolutionsInfo();
             if (resInfo != null && !resInfo.isEmpty()) {
-                sb.append("【实际分辨率】\n").append(resInfo).append("\n\n");
+                sb.append("[Applied Resolution]\n").append(resInfo).append("\n\n");
             }
         }
         
@@ -592,13 +729,13 @@ public class ResolutionSettingsFragment extends Fragment {
         String targetRes = appConfig.getTargetResolution();
         String bitrateLevel = AppConfig.getBitrateLevelDisplayName(appConfig.getBitrateLevel());
         String framerateLevel = AppConfig.getFramerateLevelDisplayName(appConfig.getFramerateLevel());
-        int standardFps = getStandardFrameRate();
-        int actualFps = appConfig.getActualFrameRate(standardFps);
+        int actualFps = appConfig.getActualFrameRate(getRecordingHardwareMaxFps());
         
-        sb.append("【当前配置】\n");
-        sb.append("目标分辨率: ").append(AppConfig.RESOLUTION_DEFAULT.equals(targetRes) ? "默认 (1280×800)" : targetRes).append("\n");
-        sb.append("码率等级: ").append(bitrateLevel).append("\n");
-        sb.append("帧率等级: ").append(framerateLevel).append(" (").append(actualFps).append("fps)");
+        sb.append("[Current Configuration]\n");
+        sb.append("Target resolution: ").append(AppConfig.RESOLUTION_DEFAULT.equals(targetRes) ? "Default (1280×800)" : targetRes).append("\n");
+        sb.append("Quality profile: ").append(AppConfig.getQualityProfileDisplayName(appConfig.getRecordingQualityProfile())).append("\n");
+        sb.append("Bitrate level: ").append(bitrateLevel).append("\n");
+        sb.append("Frame-rate level: ").append(framerateLevel).append(" (").append(actualFps).append("fps)");
 
         currentParamsText.setText(sb.toString());
     }
@@ -612,7 +749,7 @@ public class ResolutionSettingsFragment extends Fragment {
         }
 
         if (cameraInfoMap.isEmpty()) {
-            hardwareInfoText.setText("未检测到摄像头");
+            hardwareInfoText.setText("No camera detected");
             return;
         }
 
@@ -621,16 +758,16 @@ public class ResolutionSettingsFragment extends Fragment {
             String cameraId = entry.getKey();
             CameraInfo info = entry.getValue();
 
-            sb.append("摄像头 ").append(cameraId).append(" (").append(info.facing).append(")\n");
-            sb.append("  帧率: ").append(info.minFps).append("-").append(info.maxFps).append(" fps\n");
-            sb.append("  分辨率:\n");
+            sb.append("Camera ").append(cameraId).append(" (").append(info.facing).append(")\n");
+            sb.append("  FPS: ").append(info.minFps).append("-").append(info.maxFps).append(" fps\n");
+            sb.append("  Resolutions:\n");
             
             int count = 0;
             for (Size size : info.supportedResolutions) {
                 sb.append("    ").append(size.getWidth()).append("×").append(size.getHeight());
                 count++;
                 if (count >= 5) {
-                    sb.append("\n    ... 共 ").append(info.supportedResolutions.size()).append(" 种");
+                    sb.append("\n    ... total ").append(info.supportedResolutions.size()).append(" entries");
                     break;
                 }
                 sb.append("\n");
@@ -653,11 +790,11 @@ public class ResolutionSettingsFragment extends Fragment {
         appConfig.setTargetResolution(selectedResolution);
         
         String resolutionName = AppConfig.RESOLUTION_DEFAULT.equals(selectedResolution) 
-                ? "默认 (1280×800)" 
+                ? "Default (1280×800)" 
                 : selectedResolution;
         
-        Toast.makeText(getContext(), "分辨率已设置为: " + resolutionName + "\n重启应用后生效", Toast.LENGTH_SHORT).show();
-        AppLog.d(TAG, "分辨率已保存: " + oldResolution + " -> " + selectedResolution);
+        Toast.makeText(getContext(), "Resolution set to: " + resolutionName + "\nTakes effect after app restart", Toast.LENGTH_SHORT).show();
+        AppLog.d(TAG, "Resolution saved: " + oldResolution + " -> " + selectedResolution);
         
         // 更新当前参数显示
         displayCurrentParams();
@@ -676,8 +813,8 @@ public class ResolutionSettingsFragment extends Fragment {
         
         String bitrateName = AppConfig.getBitrateLevelDisplayName(selectedBitrateLevel);
         
-        Toast.makeText(getContext(), "码率已设置为: " + bitrateName + "\n重启应用后生效", Toast.LENGTH_SHORT).show();
-        AppLog.d(TAG, "码率已保存: " + oldBitrate + " -> " + selectedBitrateLevel);
+        Toast.makeText(getContext(), "Bitrate set to: " + bitrateName + "\nTakes effect after app restart", Toast.LENGTH_SHORT).show();
+        AppLog.d(TAG, "Bitrate saved: " + oldBitrate + " -> " + selectedBitrateLevel);
         
         // 更新当前参数显示
         displayCurrentParams();
@@ -696,8 +833,8 @@ public class ResolutionSettingsFragment extends Fragment {
         
         String framerateName = AppConfig.getFramerateLevelDisplayName(selectedFramerateLevel);
         
-        Toast.makeText(getContext(), "帧率已设置为: " + framerateName + "\n重启应用后生效", Toast.LENGTH_SHORT).show();
-        AppLog.d(TAG, "帧率已保存: " + oldFramerate + " -> " + selectedFramerateLevel);
+        Toast.makeText(getContext(), "Frame rate set to: " + framerateName + "\nTakes effect after app restart", Toast.LENGTH_SHORT).show();
+        AppLog.d(TAG, "Frame rate saved: " + oldFramerate + " -> " + selectedFramerateLevel);
         
         // 更新当前参数显示
         displayCurrentParams();
@@ -737,7 +874,7 @@ public class ResolutionSettingsFragment extends Fragment {
                 if (imageAdjustManager != null) {
                     imageAdjustManager.resetToDefault();
                     updateImageAdjustParamsDisplay();
-                    Toast.makeText(getContext(), "亮度/降噪参数已恢复默认", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Brightness/noise-reduction parameters reset to defaults", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -783,49 +920,49 @@ public class ResolutionSettingsFragment extends Fragment {
             
             // 曝光补偿
             int exposure = imageAdjustManager.getExposureCompensation();
-            sb.append("曝光补偿：").append(exposure > 0 ? "+" : "").append(exposure);
+            sb.append("Exposure compensation: ").append(exposure > 0 ? "+" : "").append(exposure);
             
             // 白平衡
             int awbMode = imageAdjustManager.getAwbMode();
-            sb.append("\n白平衡：").append(AppConfig.getAwbModeDisplayName(awbMode));
+            sb.append("\nWhite balance: ").append(AppConfig.getAwbModeDisplayName(awbMode));
             if (awbMode == AppConfig.AWB_MODE_DEFAULT && hasActual) {
-                sb.append("（实际: ").append(AppConfig.getAwbModeDisplayName(imageAdjustManager.getActualAwbMode())).append("）");
+                sb.append(" (actual: ").append(AppConfig.getAwbModeDisplayName(imageAdjustManager.getActualAwbMode())).append(")");
             }
             
             // 色调映射
             int tonemapMode = imageAdjustManager.getTonemapMode();
-            sb.append("\n色调映射：").append(AppConfig.getTonemapModeDisplayName(tonemapMode));
+            sb.append("\nTone mapping: ").append(AppConfig.getTonemapModeDisplayName(tonemapMode));
             if (tonemapMode == AppConfig.TONEMAP_MODE_DEFAULT && hasActual) {
-                sb.append("（实际: ").append(AppConfig.getTonemapModeDisplayName(imageAdjustManager.getActualTonemapMode())).append("）");
+                sb.append(" (actual: ").append(AppConfig.getTonemapModeDisplayName(imageAdjustManager.getActualTonemapMode())).append(")");
             }
             
             // 边缘增强（锐度）
             int edgeMode = imageAdjustManager.getEdgeMode();
-            sb.append("\n边缘增强：").append(AppConfig.getEdgeModeDisplayName(edgeMode));
+            sb.append("\nEdge enhancement: ").append(AppConfig.getEdgeModeDisplayName(edgeMode));
             if (edgeMode == AppConfig.EDGE_MODE_DEFAULT && hasActual) {
-                sb.append("（实际: ").append(AppConfig.getEdgeModeDisplayName(imageAdjustManager.getActualEdgeMode())).append("）");
+                sb.append(" (actual: ").append(AppConfig.getEdgeModeDisplayName(imageAdjustManager.getActualEdgeMode())).append(")");
             }
             
             // 降噪
             int noiseMode = imageAdjustManager.getNoiseReductionMode();
-            sb.append("\n降噪模式：").append(AppConfig.getNoiseReductionModeDisplayName(noiseMode));
+            sb.append("\nNoise reduction: ").append(AppConfig.getNoiseReductionModeDisplayName(noiseMode));
             if (noiseMode == AppConfig.NOISE_REDUCTION_DEFAULT && hasActual) {
-                sb.append("（实际: ").append(AppConfig.getNoiseReductionModeDisplayName(imageAdjustManager.getActualNoiseReductionMode())).append("）");
+                sb.append(" (actual: ").append(AppConfig.getNoiseReductionModeDisplayName(imageAdjustManager.getActualNoiseReductionMode())).append(")");
             }
             
             // 特效
             int effectMode = imageAdjustManager.getEffectMode();
-            sb.append("\n特效模式：").append(AppConfig.getEffectModeDisplayName(effectMode));
+            sb.append("\nEffect mode: ").append(AppConfig.getEffectModeDisplayName(effectMode));
             if (effectMode == AppConfig.EFFECT_MODE_DEFAULT && hasActual) {
-                sb.append("（实际: ").append(AppConfig.getEffectModeDisplayName(imageAdjustManager.getActualEffectMode())).append("）");
+                sb.append(" (actual: ").append(AppConfig.getEffectModeDisplayName(imageAdjustManager.getActualEffectMode())).append(")");
             }
         } else {
-            sb.append("曝光补偿：0");
-            sb.append("\n白平衡：默认");
-            sb.append("\n色调映射：默认");
-            sb.append("\n边缘增强：默认");
-            sb.append("\n降噪模式：默认");
-            sb.append("\n特效模式：默认");
+            sb.append("Exposure compensation: 0");
+            sb.append("\nWhite balance: Default");
+            sb.append("\nTone mapping: Default");
+            sb.append("\nEdge enhancement: Default");
+            sb.append("\nNoise reduction: Default");
+            sb.append("\nEffect mode: Default");
         }
         
         return sb.toString();
@@ -844,62 +981,62 @@ public class ResolutionSettingsFragment extends Fragment {
                 if (range != null) {
                     int lower = range.getLower();
                     int upper = range.getUpper();
-                    sb.append("曝光补偿范围：").append(lower).append(" ~ ");
+                    sb.append("Exposure compensation range: ").append(lower).append(" ~ ");
                     if (upper > 0) sb.append("+");
                     sb.append(upper);
                 } else {
-                    sb.append("曝光补偿范围：不支持");
+                    sb.append("Exposure compensation range: Not supported");
                 }
             } else {
-                sb.append("曝光补偿范围：不支持");
+                sb.append("Exposure compensation range: Not supported");
             }
             
             // 支持的白平衡模式
-            sb.append("\n支持的白平衡：");
+            sb.append("\nSupported white balance: ");
             int[] awbModes = imageAdjustManager.getSupportedAwbModes();
             if (awbModes != null && awbModes.length > 0) {
                 sb.append(formatSupportedModes(awbModes, "awb"));
             } else {
-                sb.append("不支持");
+                sb.append("Not supported");
             }
             
             // 支持的色调映射模式
-            sb.append("\n支持的色调映射：");
+            sb.append("\nSupported tone mapping: ");
             int[] tonemapModes = imageAdjustManager.getSupportedTonemapModes();
             if (tonemapModes != null && tonemapModes.length > 0) {
                 sb.append(formatSupportedModes(tonemapModes, "tonemap"));
             } else {
-                sb.append("不支持");
+                sb.append("Not supported");
             }
             
             // 支持的边缘增强模式
-            sb.append("\n支持的边缘增强：");
+            sb.append("\nSupported edge enhancement: ");
             int[] edgeModes = imageAdjustManager.getSupportedEdgeModes();
             if (edgeModes != null && edgeModes.length > 0) {
                 sb.append(formatSupportedModes(edgeModes, "edge"));
             } else {
-                sb.append("不支持");
+                sb.append("Not supported");
             }
             
             // 支持的降噪模式
-            sb.append("\n支持的降噪模式：");
+            sb.append("\nSupported noise reduction: ");
             int[] noiseModes = imageAdjustManager.getSupportedNoiseReductionModes();
             if (noiseModes != null && noiseModes.length > 0) {
                 sb.append(formatSupportedModes(noiseModes, "noise"));
             } else {
-                sb.append("不支持");
+                sb.append("Not supported");
             }
             
             // 支持的特效模式
-            sb.append("\n支持的特效模式：");
+            sb.append("\nSupported effects: ");
             int[] effectModes = imageAdjustManager.getSupportedEffectModes();
             if (effectModes != null && effectModes.length > 0) {
                 sb.append(formatSupportedModes(effectModes, "effect"));
             } else {
-                sb.append("不支持");
+                sb.append("Not supported");
             }
         } else {
-            sb.append("摄像头未就绪，无法获取支持的参数");
+            sb.append("Camera not ready, cannot load supported parameters");
         }
         
         return sb.toString();
@@ -943,7 +1080,7 @@ public class ResolutionSettingsFragment extends Fragment {
             mainActivity.showImageAdjustFloatingWindow();
             
             // 返回主界面以便查看预览效果
-            Toast.makeText(getContext(), "悬浮窗已打开，返回预览界面可实时查看效果", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Control overlay opened. Return to preview to see changes in real time", Toast.LENGTH_SHORT).show();
         }
     }
     
