@@ -233,13 +233,22 @@ public class AppConfig {
     public static final String BITRATE_LOW = "low";        // 低码率（计算值的50%）
     public static final String BITRATE_MEDIUM = "medium";  // 中码率（计算值，默认）
     public static final String BITRATE_HIGH = "high";      // 高码率（计算值的150%）
+    public static final String BITRATE_ULTRA = "ultra";    // 超高码率（计算值的200%）
     
     // 帧率配置相关键名
     private static final String KEY_FRAMERATE_LEVEL = "framerate_level";  // 帧率等级
+    private static final String KEY_RECORDING_QUALITY_PROFILE = "recording_quality_profile";  // 录制画质档位
     
     // 帧率等级常量
     public static final String FRAMERATE_STANDARD = "standard";  // 标准帧率（默认）
     public static final String FRAMERATE_LOW = "low";            // 低帧率（标准值的一半）
+    public static final String FRAMERATE_HIGH = "high";          // 高帧率（优先 60fps）
+
+    // 录制画质档位常量
+    public static final String QUALITY_PROFILE_BALANCED = "balanced";       // 均衡
+    public static final String QUALITY_PROFILE_SMOOTH = "smooth";           // 流畅优先
+    public static final String QUALITY_PROFILE_MAX_DETAIL = "max_detail";   // 细节优先
+    public static final String QUALITY_PROFILE_NIGHT = "night";             // 夜间稳定
     
     // 车型配置相关键名
     private static final String KEY_CAR_MODEL = "car_model";  // 车型（galaxy_e5 / custom）
@@ -581,6 +590,9 @@ public class AppConfig {
             case BITRATE_HIGH:
                 // 150%，取整到 0.5Mbps
                 return roundToHalfMbps(baseBitrate * 3 / 2);
+            case BITRATE_ULTRA:
+                // 200%，取整到 0.5Mbps
+                return roundToHalfMbps(baseBitrate * 2);
             case BITRATE_MEDIUM:
             default:
                 // 100%，取整到 0.5Mbps
@@ -597,8 +609,8 @@ public class AppConfig {
         // 转换为 0.5Mbps 的倍数
         int halfMbps = 500000;
         int rounded = ((bitrate + halfMbps / 2) / halfMbps) * halfMbps;
-        // 最小 0.5Mbps，最大 20Mbps
-        return Math.max(halfMbps, Math.min(rounded, 20000000));
+        // 最小 0.5Mbps，最大 40Mbps（用于高分辨率/高帧率）
+        return Math.max(halfMbps, Math.min(rounded, 40000000));
     }
     
     /**
@@ -607,12 +619,14 @@ public class AppConfig {
     public static String getBitrateLevelDisplayName(String level) {
         switch (level) {
             case BITRATE_LOW:
-                return "低";
+                return "Low";
             case BITRATE_HIGH:
-                return "高";
+                return "High";
+            case BITRATE_ULTRA:
+                return "Ultra";
             case BITRATE_MEDIUM:
             default:
-                return "标准";
+                return "Standard";
         }
     }
     
@@ -685,12 +699,20 @@ public class AppConfig {
     public int getActualFrameRate(int hardwareMaxFps) {
         int standardFps = getStandardFrameRate(hardwareMaxFps);
         String level = getFramerateLevel();
-        
+
         if (FRAMERATE_LOW.equals(level)) {
             // 低帧率：标准值除以2，最低10fps
             return Math.max(10, standardFps / 2);
         }
-        
+
+        if (FRAMERATE_HIGH.equals(level)) {
+            // 高帧率：硬件支持时优先使用更高帧率，最多 60fps
+            if (hardwareMaxFps > standardFps) {
+                return Math.min(60, hardwareMaxFps);
+            }
+            return standardFps;
+        }
+
         // 标准帧率
         return standardFps;
     }
@@ -700,11 +722,92 @@ public class AppConfig {
      */
     public static String getFramerateLevelDisplayName(String level) {
         if (FRAMERATE_LOW.equals(level)) {
-            return "低";
+            return "Low";
         }
-        return "标准";
+        if (FRAMERATE_HIGH.equals(level)) {
+            return "High";
+        }
+        return "Standard";
     }
     
+    /**
+     * 设置录制画质档位
+     */
+    public void setRecordingQualityProfile(String profile) {
+        prefs.edit().putString(KEY_RECORDING_QUALITY_PROFILE, profile).apply();
+        AppLog.d(TAG, "录制画质档位设置: " + profile);
+    }
+
+    /**
+     * 获取录制画质档位
+     */
+    public String getRecordingQualityProfile() {
+        return prefs.getString(KEY_RECORDING_QUALITY_PROFILE, QUALITY_PROFILE_BALANCED);
+    }
+
+    /**
+     * 根据录制画质档位自动应用建议的码率/帧率配置
+     */
+    public void applyQualityProfile(String profile) {
+        switch (profile) {
+            case QUALITY_PROFILE_SMOOTH:
+                setFramerateLevel(FRAMERATE_HIGH);
+                setBitrateLevel(BITRATE_MEDIUM);
+                break;
+            case QUALITY_PROFILE_MAX_DETAIL:
+                setFramerateLevel(FRAMERATE_STANDARD);
+                setBitrateLevel(BITRATE_ULTRA);
+                break;
+            case QUALITY_PROFILE_NIGHT:
+                setFramerateLevel(FRAMERATE_LOW);
+                setBitrateLevel(BITRATE_HIGH);
+                break;
+            case QUALITY_PROFILE_BALANCED:
+            default:
+                setFramerateLevel(FRAMERATE_STANDARD);
+                setBitrateLevel(BITRATE_HIGH);
+                break;
+        }
+        setRecordingQualityProfile(profile);
+    }
+
+    /**
+     * 获取录制画质档位显示名称
+     */
+    public static String getQualityProfileDisplayName(String profile) {
+        switch (profile) {
+            case QUALITY_PROFILE_SMOOTH:
+                return "Smooth";
+            case QUALITY_PROFILE_MAX_DETAIL:
+                return "Max Detail";
+            case QUALITY_PROFILE_NIGHT:
+                return "Night Stability";
+            case QUALITY_PROFILE_BALANCED:
+            default:
+                return "Balanced";
+        }
+    }
+
+    /**
+     * 获取不同摄像头的码率系数（前路优先）
+     */
+    public float getCameraBitrateMultiplier(String cameraKey) {
+        if (cameraKey == null) {
+            return 1.0f;
+        }
+        switch (cameraKey) {
+            case "front":
+                return 1.10f;
+            case "back":
+                return 1.00f;
+            case "left":
+            case "right":
+                return 0.90f;
+            default:
+                return 1.0f;
+        }
+    }
+
     // ==================== 车型配置相关方法 ====================
     
     /**

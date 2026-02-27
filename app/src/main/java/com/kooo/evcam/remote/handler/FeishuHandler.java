@@ -36,7 +36,7 @@ public class FeishuHandler extends RemoteCommandHandler {
     
     @Override
     protected String getPlatformName() {
-        return "飞书";
+        return "Feishu";
     }
     
     @Override
@@ -52,7 +52,7 @@ public class FeishuHandler extends RemoteCommandHandler {
     @Override
     public void sendMessage(ChatIdentifier chatId, String message) {
         if (apiClient == null) {
-            AppLog.e(TAG, "飞书 API 客户端未初始化");
+            AppLog.e(TAG, "Feishu API client is not initialized");
             return;
         }
         
@@ -61,7 +61,7 @@ public class FeishuHandler extends RemoteCommandHandler {
             try {
                 apiClient.sendTextMessage("chat_id", feishuChatId, message);
             } catch (Exception e) {
-                AppLog.e(TAG, "发送飞书消息失败", e);
+                AppLog.e(TAG, "Failed to send Feishu message", e);
             }
         }).start();
     }
@@ -89,7 +89,7 @@ public class FeishuHandler extends RemoteCommandHandler {
         if (error.contains("413") || 
             error.contains("99991663") || 
             error.contains("file size")) {
-            sendMessage(chatId, "提示：飞书限制上传文件不能超过30MB，该文件大小已超出。");
+            sendMessage(chatId, "Note: Feishu upload limit is 30MB. This file exceeds that limit.");
         }
     }
     

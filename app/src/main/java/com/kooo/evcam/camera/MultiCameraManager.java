@@ -865,8 +865,9 @@ public class MultiCameraManager {
         }
         
         // 获取帧率配置（根据帧率等级设置计算）
-        int targetFrameRate = appConfig.getActualFrameRate(30);  // 假设硬件支持30fps
-        AppLog.d(TAG, "Target frame rate: " + targetFrameRate + " fps (level: " + appConfig.getFramerateLevel() + ")");
+        int requestedFrameRate = appConfig.getActualFrameRate(60);  // 高帧率模式可提升到60fps
+        int targetFrameRate = (keys.size() >= 3 && requestedFrameRate > 30) ? 30 : requestedFrameRate;
+        AppLog.d(TAG, "Target frame rate: " + targetFrameRate + " fps (requested: " + requestedFrameRate + ", level: " + appConfig.getFramerateLevel() + ")");
 
         // 第一步：准备所有 MediaRecorder（但不启动）
         // 使用每个摄像头的实际预览分辨率，而不是硬编码的值
@@ -886,10 +887,11 @@ public class MultiCameraManager {
             }
             
             // 计算码率（基于分辨率和帧率）
-            int bitrate = appConfig.getActualBitrate(
+            int baseBitrate = appConfig.getActualBitrate(
                     previewSize.getWidth(), 
                     previewSize.getHeight(), 
                     targetFrameRate);
+            int bitrate = Math.max(500000, Math.min(Math.round(baseBitrate * appConfig.getCameraBitrateMultiplier(key)), 40000000));
             
             // 设置录制参数
             recorder.setSegmentDuration(segmentDurationMs);
@@ -1164,8 +1166,9 @@ public class MultiCameraManager {
         }
         
         // 获取帧率配置（根据帧率等级设置计算）
-        int targetFrameRate = appConfig.getActualFrameRate(30);
-        AppLog.d(TAG, "Codec target frame rate: " + targetFrameRate + " fps (level: " + appConfig.getFramerateLevel() + ")");
+        int requestedFrameRate = appConfig.getActualFrameRate(60);
+        int targetFrameRate = (keys.size() >= 3 && requestedFrameRate > 30) ? 30 : requestedFrameRate;
+        AppLog.d(TAG, "Codec target frame rate: " + targetFrameRate + " fps (requested: " + requestedFrameRate + ", level: " + appConfig.getFramerateLevel() + ")");
 
         // 清理之前的软编码录制器
         for (CodecVideoRecorder recorder : codecRecorders.values()) {
@@ -1208,7 +1211,8 @@ public class MultiCameraManager {
             }
             
             // 计算码率（基于调整后的分辨率和帧率）
-            int bitrate = appConfig.getActualBitrate(encodeWidth, encodeHeight, targetFrameRate);
+            int baseBitrate = appConfig.getActualBitrate(encodeWidth, encodeHeight, targetFrameRate);
+            int bitrate = Math.max(500000, Math.min(Math.round(baseBitrate * appConfig.getCameraBitrateMultiplier(key)), 40000000));
 
             // 创建软编码录制器（使用调整后的分辨率）
             CodecVideoRecorder codecRecorder = new CodecVideoRecorder(

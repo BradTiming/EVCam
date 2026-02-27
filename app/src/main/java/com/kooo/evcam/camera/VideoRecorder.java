@@ -834,32 +834,32 @@ public class VideoRecorder {
                 }
                 
                 try {
-                    // 如果文件太小（<10KB），说明 MediaRecorder 没有接收到帧，跳过 stop()
-                    if (fileSizeBeforeStop < MIN_VALID_FILE_SIZE) {
-                        AppLog.e(TAG, "Camera " + cameraId + " file size too small (" + fileSizeBeforeStop + " bytes < " + MIN_VALID_FILE_SIZE + "), MediaRecorder may not be receiving frames. Skipping stop().");
-                        isRecording.set(false);
-                    } else {
-                        mediaRecorder.stop();
-                        isRecording.set(false);  // 立即更新状态
-                        AppLog.d(TAG, "Camera " + cameraId + " stopped segment " + segmentIndex + ": " + currentFilePath);
+                    // 始终尝试 stop()，尽最大努力保存当前未满分段（用户手动停止时也需要落盘）
+                    mediaRecorder.stop();
+                    isRecording.set(false);  // 立即更新状态
+                    AppLog.d(TAG, "Camera " + cameraId + " stopped segment " + segmentIndex + ": " + currentFilePath + " (size before stop: " + fileSizeBeforeStop + " bytes)");
 
-                        // 验证并清理损坏的文件
-                        validateAndCleanupFile(currentFilePath);
-                        completedFileValid = true;  // 标记文件有效
-                    }
+                    // 验证并清理损坏的文件
+                    validateAndCleanupFile(currentFilePath);
+                    completedFileValid = true;  // 标记文件有效
                 } catch (RuntimeException e) {
                     AppLog.e(TAG, "Error stopping segment for camera " + cameraId + " (file size was: " + fileSizeBeforeStop + " bytes)", e);
                     isRecording.set(false);  // 即使失败也更新状态
 
-                    // 停止失败，删除损坏的文件
+                    // 停止失败时：若文件已有一定体积，保留以便后续人工确认；过小文件仍删除
                     if (currentFilePath != null) {
                         File file = new File(currentFilePath);
                         if (file.exists()) {
-                            file.delete();
-                            AppLog.w(TAG, "Deleted corrupted segment file: " + currentFilePath);
+                            if (file.length() < MIN_VALID_FILE_SIZE) {
+                                file.delete();
+                                AppLog.w(TAG, "Deleted tiny corrupted segment file: " + currentFilePath);
+                                completedFilePath = null;  // 文件已删除，标记为无效
+                            } else {
+                                AppLog.w(TAG, "Keep partial segment after stop failure for review: " + currentFilePath + " (" + file.length() + " bytes)");
+                                completedFileValid = true;
+                            }
                         }
                     }
-                    completedFilePath = null;  // 文件已删除，标记为无效
                 }
                 releaseMediaRecorder();
             }
@@ -999,13 +999,9 @@ public class VideoRecorder {
         List<String> deletedFiles = new ArrayList<>();
         try {
             if (mediaRecorder != null) {
-                // 如果文件太小（<10KB），说明 MediaRecorder 没有接收到帧，跳过 stop()
-                if (fileSizeBeforeStop < MIN_VALID_FILE_SIZE) {
-                    AppLog.e(TAG, "Camera " + cameraId + " file size too small (" + fileSizeBeforeStop + " bytes < " + MIN_VALID_FILE_SIZE + "), MediaRecorder may not be receiving frames. Skipping stop().");
-                } else {
-                    mediaRecorder.stop();
-                    AppLog.d(TAG, "Camera " + cameraId + " stopped recording: " + currentFilePath + " (total segments: " + (segmentIndex + 1) + ")");
-                }
+                // 始终尝试 stop()，尽最大努力保存当前未满分段（手动停止也应保留）
+                mediaRecorder.stop();
+                AppLog.d(TAG, "Camera " + cameraId + " stopped recording: " + currentFilePath + " (total segments: " + (segmentIndex + 1) + ", size before stop: " + fileSizeBeforeStop + " bytes)");
             }
             isRecording.set(false);
 
@@ -1019,13 +1015,17 @@ public class VideoRecorder {
             AppLog.e(TAG, "Failed to stop recording for camera " + cameraId + " (file size was: " + fileSizeBeforeStop + " bytes)", e);
             isRecording.set(false);
 
-            // 录制失败，删除损坏的文件
+            // 录制停止失败时：若文件已有一定体积，尽量保留本次片段
             if (currentFilePath != null) {
                 File file = new File(currentFilePath);
                 if (file.exists()) {
-                    file.delete();
-                    deletedFiles.add(file.getName());
-                    AppLog.w(TAG, "Deleted corrupted video file: " + currentFilePath);
+                    if (file.length() < MIN_VALID_FILE_SIZE) {
+                        file.delete();
+                        deletedFiles.add(file.getName());
+                        AppLog.w(TAG, "Deleted tiny corrupted video file: " + currentFilePath);
+                    } else {
+                        AppLog.w(TAG, "Keep partial recording after stop failure: " + currentFilePath + " (" + file.length() + " bytes)");
+                    }
                 }
             }
         } finally {
