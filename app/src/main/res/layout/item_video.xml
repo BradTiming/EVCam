@@ -14,14 +14,14 @@
         android:orientation="vertical"
         android:padding="12dp">
 
-        <!-- 视频缩略图 (16:10 比例) -->
+        <!-- Video thumbnail (16:10 比例) -->
         <com.kooo.evcam.AspectRatioImageView
             android:id="@+id/video_thumbnail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scaleType="centerCrop"
             android:background="#000000"
-            android:contentDescription="视频缩略图" />
+            android:contentDescription="Video thumbnail" />
 
         <!-- 视频信息 -->
         <LinearLayout
