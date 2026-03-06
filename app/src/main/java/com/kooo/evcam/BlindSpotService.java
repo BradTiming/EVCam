@@ -1017,7 +1017,7 @@ public class BlindSpotService extends Service {
                 mainFloatingWindowView.dismiss();
                 mainFloatingWindowView = null;
                 isMainTempShown = false;
-                AppLog.i(TAG, "🚪 ✅ 主屏车门临时悬浮窗已关闭");
+                AppLog.i(TAG, "🚪 ✅ 主屏车门临时Floating window disabled");
             } else if (mainFloatingWindowView != null) {
                 mainFloatingWindowView.updateCamera(appConfig.getMainFloatingCamera());
             }

@@ -55,7 +55,7 @@ public class TelegramVideoUploadService {
                     File videoFile = videoFiles.get(i);
 
                     if (!videoFile.exists()) {
-                        AppLog.w(TAG, "视频文件不存在: " + videoFile.getPath());
+                        AppLog.w(TAG, "Video file does not exist: " + videoFile.getPath());
                         continue;
                     }
 
@@ -103,7 +103,7 @@ public class TelegramVideoUploadService {
 
                     } catch (Exception e) {
                         AppLog.e(TAG, "上传视频失败: " + videoFile.getName(), e);
-                        callback.onError("上传失败: " + videoFile.getName() + " - " + e.getMessage());
+                        callback.onError("Upload failed: " + videoFile.getName() + " - " + e.getMessage());
                     }
                 }
 

@@ -236,7 +236,7 @@ public class PlaybackFragment extends Fragment {
 
                     if (getContext() != null) {
                         android.widget.Toast.makeText(getContext(), 
-                                "已删除 " + deletedCount + " 个视频", 
+                                "Deleted " + deletedCount + " 个视频", 
                                 android.widget.Toast.LENGTH_SHORT).show();
                     }
 

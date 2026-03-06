@@ -231,7 +231,7 @@ public class HeartbeatFragment extends Fragment implements HeartbeatManager.Hear
             if (clipboard != null) {
                 ClipData clip = ClipData.newPlainText("vehicle_id", vehicleId);
                 clipboard.setPrimaryClip(clip);
-                Toast.makeText(requireContext(), "已复制: " + vehicleId, Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Copied: " + vehicleId, Toast.LENGTH_SHORT).show();
             }
         });
         
@@ -246,7 +246,7 @@ public class HeartbeatFragment extends Fragment implements HeartbeatManager.Hear
         // 启动服务
         btnStartService.setOnClickListener(v -> {
             if (!config.isConfigured()) {
-                Toast.makeText(requireContext(), "请先保存配置", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Please save configuration first", Toast.LENGTH_SHORT).show();
                 return;
             }
             
@@ -256,7 +256,7 @@ public class HeartbeatFragment extends Fragment implements HeartbeatManager.Hear
             }
             updateButtonStates();
             updateStatusDisplay();
-            Toast.makeText(requireContext(), "服务已启动", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Service started", Toast.LENGTH_SHORT).show();
         });
         
         // 停止服务
@@ -271,20 +271,20 @@ public class HeartbeatFragment extends Fragment implements HeartbeatManager.Hear
             }
             updateButtonStates();
             updateStatusDisplay();
-            Toast.makeText(requireContext(), "服务已停止", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Service stopped", Toast.LENGTH_SHORT).show();
         });
         
         // 立即测试
         btnTest.setOnClickListener(v -> {
             if (!config.isConfigured()) {
-                Toast.makeText(requireContext(), "请先保存配置", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Please save configuration first", Toast.LENGTH_SHORT).show();
                 return;
             }
             
             if (getActivity() instanceof MainActivity) {
                 HeartbeatManager manager = ((MainActivity) getActivity()).getHeartbeatManager();
                 if (manager != null) {
-                    Toast.makeText(requireContext(), "正在测试...", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Testing...", Toast.LENGTH_SHORT).show();
                     manager.executeOnce();
                 }
             }
@@ -294,7 +294,7 @@ public class HeartbeatFragment extends Fragment implements HeartbeatManager.Hear
         btnResetStats.setOnClickListener(v -> {
             config.resetStatistics();
             updateStatisticsDisplay();
-            Toast.makeText(requireContext(), "统计已重置", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Statistics reset", Toast.LENGTH_SHORT).show();
         });
     }
     
@@ -315,15 +315,15 @@ public class HeartbeatFragment extends Fragment implements HeartbeatManager.Hear
         
         // 验证
         if (serverUrl.isEmpty()) {
-            Toast.makeText(requireContext(), "请填写服务器地址", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Please enter server URL", Toast.LENGTH_SHORT).show();
             return;
         }
         if (!serverUrl.startsWith("http://") && !serverUrl.startsWith("https://")) {
-            Toast.makeText(requireContext(), "服务器地址必须以 http:// 或 https:// 开头", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Server URL must start with http:// or https://", Toast.LENGTH_SHORT).show();
             return;
         }
         if (secretKey.isEmpty()) {
-            Toast.makeText(requireContext(), "请填写通信密钥", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Please enter communication key", Toast.LENGTH_SHORT).show();
             return;
         }
         
@@ -336,7 +336,7 @@ public class HeartbeatFragment extends Fragment implements HeartbeatManager.Hear
         config.setScreenOffPushEnabled(switchScreenOffPush.isChecked());
         config.setAutoStartEnabled(switchAutoStart.isChecked());
         
-        Toast.makeText(requireContext(), "配置已保存", Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), "Configuration saved", Toast.LENGTH_SHORT).show();
         
         // 更新按钮状态
         updateButtonStates();

@@ -316,10 +316,10 @@ public class PlaybackFragmentNew extends Fragment {
      * 设置四宫格双击监听（双击放大到单路）
      */
     private void setupDoubleTapListeners() {
-        setupDoubleTap(frameFront, VideoGroup.POSITION_FRONT, "前");
-        setupDoubleTap(frameBack, VideoGroup.POSITION_BACK, "后");
-        setupDoubleTap(frameLeft, VideoGroup.POSITION_LEFT, "左");
-        setupDoubleTap(frameRight, VideoGroup.POSITION_RIGHT, "右");
+        setupDoubleTap(frameFront, VideoGroup.POSITION_FRONT, "Front");
+        setupDoubleTap(frameBack, VideoGroup.POSITION_BACK, "Rear");
+        setupDoubleTap(frameLeft, VideoGroup.POSITION_LEFT, "Left");
+        setupDoubleTap(frameRight, VideoGroup.POSITION_RIGHT, "Right");
 
         // 单路模式双击返回多路
         if (singleViewLayout != null) {
@@ -367,7 +367,7 @@ public class PlaybackFragmentNew extends Fragment {
         
         // 先在后台加载视频，延迟后再切换界面显示（防止闪烁旧画面或黑屏）
         labelSingle.setText(label);
-        btnViewMode.setText(label + "摄");
+        btnViewMode.setText(label + " Cam");
         
         // 确保 videoSingle 可见（在切换布局之前）
         if (videoSingle != null) {
@@ -394,7 +394,7 @@ public class PlaybackFragmentNew extends Fragment {
      */
     private void switchToMultiMode() {
         isSingleMode = false;
-        btnViewMode.setText("多路");
+        btnViewMode.setText("Multi");
         
         playerManager.setSingleMode(false, null);
         
@@ -440,10 +440,10 @@ public class PlaybackFragmentNew extends Fragment {
      */
     private String getPositionLabel(String position) {
         switch (position) {
-            case VideoGroup.POSITION_FRONT: return "前";
-            case VideoGroup.POSITION_BACK: return "后";
-            case VideoGroup.POSITION_LEFT: return "左";
-            case VideoGroup.POSITION_RIGHT: return "右";
+            case VideoGroup.POSITION_FRONT: return "Front";
+            case VideoGroup.POSITION_BACK: return "Rear";
+            case VideoGroup.POSITION_LEFT: return "Left";
+            case VideoGroup.POSITION_RIGHT: return "Right";
             default: return "";
         }
     }
@@ -471,19 +471,19 @@ public class PlaybackFragmentNew extends Fragment {
         
         if (playerManager.hasVideo(VideoGroup.POSITION_FRONT)) {
             positions.add(VideoGroup.POSITION_FRONT);
-            labels.add("前摄");
+            labels.add("Front Cam");
         }
         if (playerManager.hasVideo(VideoGroup.POSITION_BACK)) {
             positions.add(VideoGroup.POSITION_BACK);
-            labels.add("后摄");
+            labels.add("Rear Cam");
         }
         if (playerManager.hasVideo(VideoGroup.POSITION_LEFT)) {
             positions.add(VideoGroup.POSITION_LEFT);
-            labels.add("左摄");
+            labels.add("Left Cam");
         }
         if (playerManager.hasVideo(VideoGroup.POSITION_RIGHT)) {
             positions.add(VideoGroup.POSITION_RIGHT);
-            labels.add("右摄");
+            labels.add("Right Cam");
         }
 
         if (positions.isEmpty()) {
@@ -493,10 +493,10 @@ public class PlaybackFragmentNew extends Fragment {
         String[] items = labels.toArray(new String[0]);
         
         new MaterialAlertDialogBuilder(getContext(), R.style.Theme_Cam_MaterialAlertDialog)
-                .setTitle("选择摄像头")
+                .setTitle("Select Camera")
                 .setItems(items, (dialog, which) -> {
                     String position = positions.get(which);
-                    String label = labels.get(which).replace("摄", "");
+                    String label = labels.get(which).replace(" Cam", "");
                     switchToSingleMode(position, label);
                 })
                 .show();
@@ -524,7 +524,7 @@ public class PlaybackFragmentNew extends Fragment {
         } else {
             multiViewLayout.setVisibility(View.VISIBLE);
             singleViewLayout.setVisibility(View.GONE);
-            btnViewMode.setText("多路");
+            btnViewMode.setText("Multi");
         }
         
         // 更新标题栏日期时间
@@ -685,7 +685,7 @@ public class PlaybackFragmentNew extends Fragment {
                         deletedCount += group.deleteAll();
                     }
                     
-                    // 从日期分组中移除已删除的组
+                    // 从日期分组中移除Deleted的组
                     for (DateSection<VideoGroup> section : dateSections) {
                         section.getItems().removeAll(selectedGroups);
                     }
@@ -700,7 +700,7 @@ public class PlaybackFragmentNew extends Fragment {
 
                     if (getContext() != null) {
                         android.widget.Toast.makeText(getContext(),
-                                "已删除 " + deletedCount + " 个视频文件",
+                                "Deleted " + deletedCount + " 个视频文件",
                                 android.widget.Toast.LENGTH_SHORT).show();
                     }
 

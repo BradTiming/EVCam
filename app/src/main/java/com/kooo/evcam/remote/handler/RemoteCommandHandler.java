@@ -178,7 +178,7 @@ public abstract class RemoteCommandHandler {
         cameraController.setSegmentDurationOverride(segmentOverrideMs);
         AppLog.d(TAG, platformName + " 设置分段时长覆盖: " + (segmentOverrideMs / 1000) + " 秒（禁用分段）");
         
-        // 9. 开始录制
+        // 9. Start recording
         boolean success = cameraController.startRecording(timestamp);
         if (success) {
             onRecordingStarted(currentContext, durationSeconds);
@@ -353,7 +353,7 @@ public abstract class RemoteCommandHandler {
         cameraController.takePicture(timestamp);
         AppLog.d(TAG, platformName + " 远程拍照已执行");
         
-        // 5. 等待拍照完成后上传（5秒延迟）
+        // 5. 等待Photo captured后上传（5秒延迟）
         final String finalTimestamp = timestamp;
         mainHandler.postDelayed(() -> {
             uploadPhotos(chatId, finalTimestamp);
@@ -408,7 +408,7 @@ public abstract class RemoteCommandHandler {
             
             @Override
             public void onError(String error) {
-                AppLog.e(TAG, platformName + " 视频上传失败: " + error);
+                AppLog.e(TAG, platformName + " 视频Upload failed: " + error);
                 
                 // 即使上传失败，也要传输文件到最终存储位置（保留视频）
                 mediaFileFinder.transferToFinalDir(videoFiles);
@@ -461,7 +461,7 @@ public abstract class RemoteCommandHandler {
             
             @Override
             public void onError(String error) {
-                AppLog.e(TAG, platformName + " 照片上传失败: " + error);
+                AppLog.e(TAG, platformName + " 照片Upload failed: " + error);
                 returnToBackgroundIfNeeded();
             }
         });

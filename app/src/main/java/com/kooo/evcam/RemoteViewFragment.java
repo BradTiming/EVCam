@@ -149,7 +149,7 @@ public class RemoteViewFragment extends Fragment {
         String clientSecret = etClientSecret.getText().toString().trim();
 
         if (clientId.isEmpty() || clientSecret.isEmpty()) {
-            Toast.makeText(requireContext(), "请先填写 ClientId 和 ClientSecret", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Please fill in ClientId and ClientSecret first", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -176,7 +176,7 @@ public class RemoteViewFragment extends Fragment {
                     getActivity().runOnUiThread(() -> {
                         btnTestConnection.setEnabled(true);
                         btnTestConnection.setText("测试连接");
-                        Toast.makeText(requireContext(), "✅ 连接测试成功！凭证有效", Toast.LENGTH_LONG).show();
+                        Toast.makeText(requireContext(), "✅ Connection test successful! Credentials are valid", Toast.LENGTH_LONG).show();
                         tvConnectionStatus.setText("凭证有效");
                         tvConnectionStatus.setTextColor(0xFF66FF66);
                     });
@@ -197,7 +197,7 @@ public class RemoteViewFragment extends Fragment {
                     getActivity().runOnUiThread(() -> {
                         btnTestConnection.setEnabled(true);
                         btnTestConnection.setText("测试连接");
-                        Toast.makeText(requireContext(), "❌ 连接测试失败：" + finalErrorMsg, Toast.LENGTH_LONG).show();
+                        Toast.makeText(requireContext(), "❌ Connection test failed: " + finalErrorMsg, Toast.LENGTH_LONG).show();
                         tvConnectionStatus.setText("凭证无效");
                         tvConnectionStatus.setTextColor(0xFFFF6666);
                     });
@@ -212,17 +212,17 @@ public class RemoteViewFragment extends Fragment {
         String clientSecret = etClientSecret.getText().toString().trim();
 
         if (clientId.isEmpty() || clientSecret.isEmpty()) {
-            Toast.makeText(requireContext(), "请填写完整的配置信息", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Please fill in all required configuration fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
         config.saveConfig(clientId, clientSecret);
-        Toast.makeText(requireContext(), "配置已保存", Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), "Configuration saved", Toast.LENGTH_SHORT).show();
     }
 
     private void startService() {
         if (!config.isConfigured()) {
-            Toast.makeText(requireContext(), "请先保存配置", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Please save configuration first", Toast.LENGTH_SHORT).show();
             return;
         }
 

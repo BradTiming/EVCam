@@ -130,13 +130,13 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
                                 photoFiles.remove(position);
                                 notifyItemRemoved(position);
                                 notifyItemRangeChanged(position, photoFiles.size());
-                                Toast.makeText(context, "已删除", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, "Deleted", Toast.LENGTH_SHORT).show();
 
                                 if (deleteListener != null) {
                                     deleteListener.onPhotoDeleted();
                                 }
                             } else {
-                                Toast.makeText(context, "删除失败", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, "Delete failed", Toast.LENGTH_SHORT).show();
                             }
                         })
                         .setNegativeButton("取消", null)

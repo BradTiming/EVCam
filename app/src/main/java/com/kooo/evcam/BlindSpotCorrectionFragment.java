@@ -192,7 +192,7 @@ public class BlindSpotCorrectionFragment extends Fragment {
 
         saveButton.setOnClickListener(v -> {
             BlindSpotService.update(requireContext());
-            Toast.makeText(requireContext(), "矫正参数已保存并应用", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Correction parameters saved and applied", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -223,7 +223,7 @@ public class BlindSpotCorrectionFragment extends Fragment {
 
     private void startPreview(String cameraPos) {
         if (!WakeUpHelper.hasOverlayPermission(requireContext())) {
-            Toast.makeText(requireContext(), "请先授予悬浮窗权限", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Please grant overlay permission first", Toast.LENGTH_SHORT).show();
             WakeUpHelper.requestOverlayPermission(requireContext());
             return;
         }
@@ -283,4 +283,3 @@ public class BlindSpotCorrectionFragment extends Fragment {
         return String.format(java.util.Locale.US, "%.2f", v);
     }
 }
-

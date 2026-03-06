@@ -506,7 +506,7 @@ public class DingTalkStreamManager {
                     AppLog.d(TAG, "收到录制指令，时长: " + durationSeconds + " 秒");
 
                     // 发送确认消息，并在发送完成后执行录制命令
-                    String confirmMsg = String.format("收到录制指令，开始录制 %d 秒视频...", durationSeconds);
+                    String confirmMsg = String.format("收到录制指令，Start recording %d 秒视频...", durationSeconds);
                     String finalConversationId = conversationId;
                     String finalConversationType = conversationType;
                     String finalSenderId = senderId;
@@ -543,7 +543,7 @@ public class DingTalkStreamManager {
                             commandCallback.getStatusInfo() : "状态信息不可用";
                     sendResponse(sessionWebhook, statusInfo);
 
-                } else if ("启动录制".equals(command) || "开始录制".equals(command) || 
+                } else if ("启动录制".equals(command) || "Start recording".equals(command) || 
                            "start".equalsIgnoreCase(command)) {
                     // 启动录制指令：唤醒到前台并开始持续录制
                     AppLog.d(TAG, "收到启动录制指令");

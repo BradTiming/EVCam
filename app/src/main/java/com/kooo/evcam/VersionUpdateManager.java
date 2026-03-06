@@ -51,7 +51,7 @@ public class VersionUpdateManager {
         void onUpdateAvailable(String newVersion);
         
         /**
-         * 已是最新版本
+         * Already up to date
          */
         void onNoUpdate();
         
@@ -229,8 +229,8 @@ public class VersionUpdateManager {
                     AppLog.d(TAG, "下载已取消");
                     mainHandler.post(() -> callback.onError("下载已取消"));
                 } else {
-                    AppLog.e(TAG, "下载失败: " + e.getMessage());
-                    mainHandler.post(() -> callback.onError("下载失败: " + e.getMessage()));
+                    AppLog.e(TAG, "Download failed: " + e.getMessage());
+                    mainHandler.post(() -> callback.onError("Download failed: " + e.getMessage()));
                 }
             }
             

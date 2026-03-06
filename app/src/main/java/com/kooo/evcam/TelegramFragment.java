@@ -130,24 +130,24 @@ public class TelegramFragment extends Fragment {
         String apiHost = etApiHost.getText().toString().trim();
 
         if (botToken.isEmpty()) {
-            Toast.makeText(requireContext(), "请填写 Bot Token", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Please enter Bot Token", Toast.LENGTH_SHORT).show();
             return;
         }
 
         // 验证 API Host 格式（必须带协议头）
         if (!TelegramConfig.isValidApiHost(apiHost)) {
-            Toast.makeText(requireContext(), "API 地址格式错误，必须以 http:// 或 https:// 开头", Toast.LENGTH_LONG).show();
+            Toast.makeText(requireContext(), "Invalid API URL. Must start with http:// or https://", Toast.LENGTH_LONG).show();
             return;
         }
 
         config.saveConfig(botToken, allowedChatIds);
         config.saveBotApiHost(apiHost);
-        Toast.makeText(requireContext(), "配置已保存", Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), "Configuration saved", Toast.LENGTH_SHORT).show();
     }
 
     private void startService() {
         if (!config.isConfigured()) {
-            Toast.makeText(requireContext(), "请先保存配置", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Please save configuration first", Toast.LENGTH_SHORT).show();
             return;
         }
 

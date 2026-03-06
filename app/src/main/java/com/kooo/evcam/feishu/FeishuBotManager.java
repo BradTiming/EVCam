@@ -475,7 +475,7 @@ public class FeishuBotManager {
                 int durationSeconds = parseRecordDuration(command);
                 AppLog.d(TAG, "收到录制指令，时长: " + durationSeconds + " 秒");
 
-                String confirmMsg = String.format("收到录制指令，开始录制 %d 秒视频...", durationSeconds);
+                String confirmMsg = String.format("收到录制指令，Start recording %d 秒视频...", durationSeconds);
                 sendReplyAndThen(chatId, messageId, chatType, confirmMsg, () -> {
                     WakeUpHelper.launchForRecordingFeishu(context, chatId, messageId, durationSeconds);
                 });
@@ -493,7 +493,7 @@ public class FeishuBotManager {
                         currentCommandCallback.getStatusInfo() : "✅ Bot 正在运行中";
                 sendReply(chatId, messageId, chatType, statusInfo);
 
-            } else if ("启动录制".equals(command) || "开始录制".equals(command) ||
+            } else if ("启动录制".equals(command) || "Start recording".equals(command) ||
                        "start".equalsIgnoreCase(command)) {
                 AppLog.d(TAG, "收到启动录制指令");
                 if (currentCommandCallback != null) {
@@ -693,7 +693,7 @@ public class FeishuBotManager {
             }, RECONNECT_DELAY_MS);
         } else if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
             AppLog.w(TAG, "达到最大重连次数（" + MAX_RECONNECT_ATTEMPTS + "），连接失败");
-            mainHandler.post(() -> connectionCallback.onError("连接失败: " + errorMsg));
+            mainHandler.post(() -> connectionCallback.onError("Connection failed: " + errorMsg));
         }
     }
 

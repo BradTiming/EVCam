@@ -239,7 +239,7 @@ public class PhotoPlaybackFragment extends Fragment {
 
                     if (getContext() != null) {
                         android.widget.Toast.makeText(getContext(), 
-                                "已删除 " + deletedCount + " 张照片", 
+                                "Deleted " + deletedCount + " 张照片", 
                                 android.widget.Toast.LENGTH_SHORT).show();
                     }
 

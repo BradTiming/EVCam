@@ -220,7 +220,7 @@ public class PermissionSettingsFragment extends Fragment {
         btnOverlayPermission.setOnClickListener(v -> {
             if (getContext() != null) {
                 WakeUpHelper.requestOverlayPermission(getContext());
-                Toast.makeText(getContext(), "请开启悬浮窗权限", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Please enable overlay permission", Toast.LENGTH_LONG).show();
             }
         });
         
@@ -486,10 +486,10 @@ public class PermissionSettingsFragment extends Fragment {
             Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
             intent.setData(Uri.parse("package:" + getContext().getPackageName()));
             startActivity(intent);
-            Toast.makeText(getContext(), "请在权限列表中授予所需权限", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Please grant required permissions in the permission list", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             AppLog.e("PermissionSettings", "打开应用设置失败", e);
-            Toast.makeText(getContext(), "无法打开设置页面，请使用第三方权限管理工具设置", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Unable to open settings page. Please use a third-party permission manager.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -503,7 +503,7 @@ public class PermissionSettingsFragment extends Fragment {
             Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
             intent.putExtra(Settings.EXTRA_APP_PACKAGE, getContext().getPackageName());
             startActivity(intent);
-            Toast.makeText(getContext(), "请开启通知权限", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Please enable notification permission", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             openAppSettings();
         }
@@ -520,15 +520,15 @@ public class PermissionSettingsFragment extends Fragment {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
                 intent.setData(Uri.parse("package:" + getContext().getPackageName()));
                 startActivity(intent);
-                Toast.makeText(getContext(), "请开启「允许访问所有文件」", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Please enable "Allow access to all files"", Toast.LENGTH_LONG).show();
             } catch (Exception e) {
                 try {
                     Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
                     startActivity(intent);
-                    Toast.makeText(getContext(), "请找到本应用并开启权限", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Please find this app and enable permission", Toast.LENGTH_LONG).show();
                 } catch (Exception e2) {
                     AppLog.e("PermissionSettings", "无法打开权限设置页面", e2);
-                    Toast.makeText(getContext(), "无法打开设置页面，请使用第三方权限管理工具设置", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Unable to open settings page. Please use a third-party permission manager.", Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -574,10 +574,10 @@ public class PermissionSettingsFragment extends Fragment {
         try {
             Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
             startActivity(intent);
-            Toast.makeText(getContext(), "请找到本应用并开启使用情况访问权限", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Please find this app and enable Usage Access permission", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             AppLog.e("PermissionSettings", "打开使用情况访问设置失败", e);
-            Toast.makeText(getContext(), "无法打开设置页面", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Unable to open settings page", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -589,10 +589,10 @@ public class PermissionSettingsFragment extends Fragment {
             Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-            Toast.makeText(getContext(), "请找到「电车记录仪 - 保活服务」并启用", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Please find "EV Dashcam - Keep Alive Service" and enable it", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             AppLog.e("PermissionSettings", "打开无障碍设置失败", e);
-            Toast.makeText(getContext(), "无法打开设置页面，请使用第三方权限管理工具设置", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Unable to open settings page. Please use a third-party permission manager.", Toast.LENGTH_SHORT).show();
         }
     }
 
