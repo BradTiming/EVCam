@@ -132,7 +132,7 @@ public class FeishuApiClient {
             AppLog.d(TAG, "WebSocket 连接信息响应: " + responseBody);
 
             if (!response.isSuccessful()) {
-                throw new IOException("获取 WebSocket 连接失败: " + response.code() + " - " + responseBody);
+                throw new IOException("获取 WebSocket Connection failed: " + response.code() + " - " + responseBody);
             }
 
             JsonObject jsonResponse = gson.fromJson(responseBody, JsonObject.class);
@@ -140,7 +140,7 @@ public class FeishuApiClient {
             int code = jsonResponse.has("code") ? jsonResponse.get("code").getAsInt() : -1;
             if (code != 0) {
                 String msg = jsonResponse.has("msg") ? jsonResponse.get("msg").getAsString() : "Unknown error";
-                throw new IOException("获取 WebSocket 连接失败: code=" + code + ", msg=" + msg);
+                throw new IOException("获取 WebSocket Connection failed: code=" + code + ", msg=" + msg);
             }
 
             JsonObject data = jsonResponse.getAsJsonObject("data");

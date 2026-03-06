@@ -50,7 +50,7 @@ public class TransparentBootActivity extends Activity {
         CameraForegroundService.start(this, 
             "开机自启动", 
             "应用已在后台运行");
-        AppLog.d(TAG, "前台服务已启动（远程服务将在其中启动）");
+        AppLog.d(TAG, "前台Service started（远程服务将在其中启动）");
         
         // 2. 启动 WorkManager 保活任务（车机必需，始终开启）
         KeepAliveManager.startKeepAliveWork(this);

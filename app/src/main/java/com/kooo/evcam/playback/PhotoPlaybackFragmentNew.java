@@ -217,10 +217,10 @@ public class PhotoPlaybackFragmentNew extends Fragment {
      * 设置四宫格双击监听（双击放大到单路）
      */
     private void setupDoubleTapListeners() {
-        setupDoubleTap(frameFront, PhotoGroup.POSITION_FRONT, "前");
-        setupDoubleTap(frameBack, PhotoGroup.POSITION_BACK, "后");
-        setupDoubleTap(frameLeft, PhotoGroup.POSITION_LEFT, "左");
-        setupDoubleTap(frameRight, PhotoGroup.POSITION_RIGHT, "右");
+        setupDoubleTap(frameFront, PhotoGroup.POSITION_FRONT, "Front");
+        setupDoubleTap(frameBack, PhotoGroup.POSITION_BACK, "Rear");
+        setupDoubleTap(frameLeft, PhotoGroup.POSITION_LEFT, "Left");
+        setupDoubleTap(frameRight, PhotoGroup.POSITION_RIGHT, "Right");
 
         // 单路模式双击返回多路
         if (singleViewLayout != null) {
@@ -286,7 +286,7 @@ public class PhotoPlaybackFragmentNew extends Fragment {
 
         multiViewLayout.setVisibility(View.VISIBLE);
         singleViewLayout.setVisibility(View.GONE);
-        btnViewMode.setText("多路");
+        btnViewMode.setText("Multi");
     }
 
     /**
@@ -326,10 +326,10 @@ public class PhotoPlaybackFragmentNew extends Fragment {
      */
     private String getPositionLabel(String position) {
         switch (position) {
-            case PhotoGroup.POSITION_FRONT: return "前";
-            case PhotoGroup.POSITION_BACK: return "后";
-            case PhotoGroup.POSITION_LEFT: return "左";
-            case PhotoGroup.POSITION_RIGHT: return "右";
+            case PhotoGroup.POSITION_FRONT: return "Front";
+            case PhotoGroup.POSITION_BACK: return "Rear";
+            case PhotoGroup.POSITION_LEFT: return "Left";
+            case PhotoGroup.POSITION_RIGHT: return "Right";
             default: return "";
         }
     }
@@ -353,7 +353,7 @@ public class PhotoPlaybackFragmentNew extends Fragment {
             if (!group.hasPhoto(currentSinglePosition)) {
                 // 当前摄像头在新图片组中没有图片，切回多路模式
                 isSingleMode = false;
-                btnViewMode.setText("多路");
+                btnViewMode.setText("Multi");
             }
         }
 
@@ -553,7 +553,7 @@ public class PhotoPlaybackFragmentNew extends Fragment {
                         deletedCount += group.deleteAll();
                     }
                     
-                    // 从日期分组中移除已删除的组
+                    // 从日期分组中移除Deleted的组
                     for (DateSection<PhotoGroup> section : dateSections) {
                         section.getItems().removeAll(selectedGroups);
                     }
@@ -568,7 +568,7 @@ public class PhotoPlaybackFragmentNew extends Fragment {
 
                     if (getContext() != null) {
                         android.widget.Toast.makeText(getContext(),
-                                "已删除 " + deletedCount + " 张照片",
+                                "Deleted " + deletedCount + " 张照片",
                                 android.widget.Toast.LENGTH_SHORT).show();
                     }
 

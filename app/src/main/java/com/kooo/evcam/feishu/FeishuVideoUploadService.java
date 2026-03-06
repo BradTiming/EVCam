@@ -53,7 +53,7 @@ public class FeishuVideoUploadService {
                     File videoFile = videoFiles.get(i);
 
                     if (!videoFile.exists()) {
-                        AppLog.w(TAG, "视频文件不存在: " + videoFile.getPath());
+                        AppLog.w(TAG, "Video file does not exist: " + videoFile.getPath());
                         failedFiles.add(videoFile.getName() + " (文件不存在)");
                         continue;
                     }

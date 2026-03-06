@@ -276,7 +276,7 @@ public class SecondaryBlindSpotAdjustFragment extends Fragment {
 
         saveButton.setOnClickListener(v -> {
             persistAllAndUpdate();
-            Toast.makeText(requireContext(), "配置已保存并应用", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Configuration saved and applied", Toast.LENGTH_SHORT).show();
         });
     }
 

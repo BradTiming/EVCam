@@ -132,13 +132,13 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
                                 videoFiles.remove(position);
                                 notifyItemRemoved(position);
                                 notifyItemRangeChanged(position, videoFiles.size());
-                                Toast.makeText(context, "已删除", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, "Deleted", Toast.LENGTH_SHORT).show();
 
                                 if (deleteListener != null) {
                                     deleteListener.onVideoDeleted();
                                 }
                             } else {
-                                Toast.makeText(context, "删除失败", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, "Delete failed", Toast.LENGTH_SHORT).show();
                             }
                         })
                         .setNegativeButton("取消", null)

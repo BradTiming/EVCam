@@ -41,7 +41,7 @@
                         android:layout_weight="1"
                         android:scaleType="centerCrop"
                         android:background="#1A1A1A"
-                        android:contentDescription="前置" />
+                        android:contentDescription="Front" />
 
                     <View
                         android:layout_width="1dp"
@@ -55,7 +55,7 @@
                         android:layout_weight="1"
                         android:scaleType="centerCrop"
                         android:background="#1A1A1A"
-                        android:contentDescription="后置" />
+                        android:contentDescription="Rear" />
                 </LinearLayout>
 
                 <View
@@ -76,7 +76,7 @@
                         android:layout_weight="1"
                         android:scaleType="centerCrop"
                         android:background="#1A1A1A"
-                        android:contentDescription="左侧" />
+                        android:contentDescription="Left Side" />
 
                     <View
                         android:layout_width="1dp"
@@ -90,11 +90,11 @@
                         android:layout_weight="1"
                         android:scaleType="centerCrop"
                         android:background="#1A1A1A"
-                        android:contentDescription="右侧" />
+                        android:contentDescription="Right Side" />
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- 视频路数标签 -->
+            <!-- Video路数标签 -->
             <TextView
                 android:id="@+id/video_count_badge"
                 android:layout_width="wrap_content"
@@ -105,10 +105,10 @@
                 android:paddingVertical="1dp"
                 android:textColor="#FFFFFF"
                 android:textSize="10sp"
-                android:text="4路" />
+                android:text="4 Channels" />
         </FrameLayout>
 
-        <!-- 视频信息 -->
+        <!-- Video信息 -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -157,7 +157,7 @@
             android:focusable="false"
             android:checked="true"
             android:visibility="gone"
-            android:contentDescription="选中" />
+            android:contentDescription="Selected" />
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

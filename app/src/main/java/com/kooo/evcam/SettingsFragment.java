@@ -256,7 +256,7 @@ public class SettingsFragment extends Fragment {
         recordingStatsSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (getContext() != null && appConfig != null) {
                 appConfig.setRecordingStatsEnabled(isChecked);
-                String message = isChecked ? "录制状态显示已开启" : "录制状态显示已关闭";
+                String message = isChecked ? "Recording status display enabled" : "Recording status display disabled";
                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                 AppLog.d("SettingsFragment", message);
                 
@@ -309,7 +309,7 @@ public class SettingsFragment extends Fragment {
         openPreviewCorrectionFloatingButton.setOnClickListener(v -> {
             if (getContext() == null) return;
             if (!WakeUpHelper.hasOverlayPermission(requireContext())) {
-                Toast.makeText(requireContext(), "请先授予悬浮窗权限", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Please grant overlay permission first", Toast.LENGTH_SHORT).show();
                 WakeUpHelper.requestOverlayPermission(requireContext());
                 return;
             }
@@ -323,7 +323,7 @@ public class SettingsFragment extends Fragment {
         resetPreviewCorrectionButton.setOnClickListener(v -> {
             if (getContext() != null && appConfig != null) {
                 appConfig.resetAllPreviewCorrection();
-                Toast.makeText(getContext(), "所有预览矫正参数已恢复默认", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "All preview correction parameters restored to default", Toast.LENGTH_SHORT).show();
                 MainActivity mainActivity = MainActivity.getInstance();
                 if (mainActivity != null) {
                     mainActivity.refreshPreviewCorrection();
@@ -357,7 +357,7 @@ public class SettingsFragment extends Fragment {
         openFisheyeCorrectionFloatingButton.setOnClickListener(v -> {
             if (getContext() == null) return;
             if (!WakeUpHelper.hasOverlayPermission(requireContext())) {
-                Toast.makeText(requireContext(), "请先授予悬浮窗权限", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Please grant overlay permission first", Toast.LENGTH_SHORT).show();
                 WakeUpHelper.requestOverlayPermission(requireContext());
                 return;
             }
@@ -371,7 +371,7 @@ public class SettingsFragment extends Fragment {
         resetFisheyeCorrectionButton.setOnClickListener(v -> {
             if (getContext() != null && appConfig != null) {
                 appConfig.resetAllFisheyeCorrection();
-                Toast.makeText(getContext(), "所有鱼眼矫正参数已恢复默认", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "All fisheye correction parameters restored to default", Toast.LENGTH_SHORT).show();
                 MainActivity mainActivity = MainActivity.getInstance();
                 if (mainActivity != null) {
                     mainActivity.refreshFisheyeCorrection();
@@ -624,7 +624,7 @@ public class SettingsFragment extends Fragment {
             
             // 检查悬浮窗权限
             if (isChecked && !WakeUpHelper.hasOverlayPermission(getContext())) {
-                Toast.makeText(getContext(), "请先在权限设置中授权悬浮窗权限", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Please grant overlay permission in Permission Settings first", Toast.LENGTH_SHORT).show();
                 buttonView.setChecked(false);
                 WakeUpHelper.requestOverlayPermission(getContext());
                 return;
@@ -635,14 +635,14 @@ public class SettingsFragment extends Fragment {
             
             if (isChecked) {
                 FloatingWindowService.start(getContext());
-                Toast.makeText(getContext(), "悬浮窗已开启", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Floating window enabled", Toast.LENGTH_SHORT).show();
                 
                 if (getActivity() instanceof MainActivity) {
                     ((MainActivity) getActivity()).broadcastCurrentRecordingState();
                 }
             } else {
                 FloatingWindowService.stop(getContext());
-                Toast.makeText(getContext(), "悬浮窗已关闭", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Floating window disabled", Toast.LENGTH_SHORT).show();
             }
         });
         
@@ -811,7 +811,7 @@ public class SettingsFragment extends Fragment {
                 
                 if (getContext() != null && appConfig.isFloatingWindowEnabled()) {
                     FloatingWindowService.sendUpdateFloatingWindow(getContext());
-                    Toast.makeText(getContext(), "悬浮窗大小已设置为「" + sizeName + "」", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Floating window size set to \"" + sizeName + "\"", Toast.LENGTH_SHORT).show();
                 }
             }
             
@@ -1052,7 +1052,7 @@ public class SettingsFragment extends Fragment {
                 updateRecordingCameraSelectionUI();
                 
                 if (getContext() != null) {
-                    Toast.makeText(getContext(), "已切换为「" + modelName + "」，重启应用后生效", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Switched to \"" + modelName + "\". Restart app to apply", Toast.LENGTH_SHORT).show();
                 }
             }
             
@@ -1157,7 +1157,7 @@ public class SettingsFragment extends Fragment {
                 appConfig.setRecordingMode(newMode);
                 
                 if (getContext() != null) {
-                    Toast.makeText(getContext(), "已切换为「" + modeName + "」模式，下次录制生效", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Switched to \"" + modeName + "\" mode. Will apply on next recording", Toast.LENGTH_SHORT).show();
                 }
             }
             
@@ -1239,7 +1239,7 @@ public class SettingsFragment extends Fragment {
                 appConfig.setSegmentDurationMinutes(newDuration);
                 
                 if (getContext() != null) {
-                    Toast.makeText(getContext(), "分段时长已设置为「" + durationName + "」，下次录制生效", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Segment duration set to \"" + durationName + "\". Will apply on next recording", Toast.LENGTH_SHORT).show();
                 }
             }
             
@@ -1311,7 +1311,7 @@ public class SettingsFragment extends Fragment {
             if (!isChecked && !hasAtLeastOneRecordingCameraEnabled(buttonView)) {
                 // 恢复勾选状态
                 buttonView.setChecked(true);
-                Toast.makeText(getContext(), "至少需要选择一个摄像头", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "At least one camera must be selected", Toast.LENGTH_SHORT).show();
                 return;
             }
             
@@ -1460,7 +1460,7 @@ public class SettingsFragment extends Fragment {
                     locationName = "U盘";
                     // 如果U盘不可用，显示警告但仍然允许用户选择
                     if (!hasExternalSdCard && !isInitializingStorageLocation && getContext() != null) {
-                        Toast.makeText(getContext(), "当前未检测到U盘，录制将临时使用内部存储", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "USB not detected currently; recording will temporarily use internal storage", Toast.LENGTH_LONG).show();
                     }
                 }
                 
@@ -1478,7 +1478,7 @@ public class SettingsFragment extends Fragment {
                 appConfig.setStorageLocation(newLocation);
                 
                 if (getContext() != null) {
-                    Toast.makeText(getContext(), "存储位置已切换为「" + locationName + "」", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Storage location switched to \"" + locationName + "\"", Toast.LENGTH_SHORT).show();
                     // 异步获取路径描述
                     new Thread(() -> {
                         String pathDesc = StorageHelper.getCurrentStoragePathDesc(getContext());
@@ -1709,7 +1709,7 @@ public class SettingsFragment extends Fragment {
                             (android.content.ClipboardManager) getContext().getSystemService(android.content.Context.CLIPBOARD_SERVICE);
                     android.content.ClipData clip = android.content.ClipData.newPlainText("存储调试信息", sb.toString());
                     clipboard.setPrimaryClip(clip);
-                    Toast.makeText(getContext(), "已复制到剪贴板", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Copied to clipboard", Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("手动设置路径", (dialog, which) -> {
                     showManualSdCardPathDialog();
@@ -1757,17 +1757,17 @@ public class SettingsFragment extends Fragment {
                     String path = input.getText().toString().trim();
                     if (path.isEmpty()) {
                         appConfig.setCustomSdCardPath(null);
-                        Toast.makeText(getContext(), "已清除自定义路径，使用自动检测", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Custom path cleared; using auto-detection", Toast.LENGTH_SHORT).show();
                     } else {
                         java.io.File testDir = new java.io.File(path);
                         if (!testDir.exists()) {
-                            Toast.makeText(getContext(), "警告：路径不存在，但已保存", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "Warning: path does not exist, but saved", Toast.LENGTH_LONG).show();
                         } else if (!testDir.isDirectory()) {
-                            Toast.makeText(getContext(), "警告：路径不是目录，但已保存", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "Warning: path is not a directory, but saved", Toast.LENGTH_LONG).show();
                         } else if (!testDir.canWrite()) {
-                            Toast.makeText(getContext(), "警告：路径不可写，但已保存", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "Warning: path is not writable, but saved", Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(getContext(), "U盘路径已设置", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "USB path set", Toast.LENGTH_SHORT).show();
                         }
                         appConfig.setCustomSdCardPath(path);
                     }
@@ -2033,15 +2033,15 @@ public class SettingsFragment extends Fragment {
                     String url = inputEditText.getText().toString().trim();
                     if (url.isEmpty()) {
                         appConfig.setUpdateServerUrl(null);
-                        Toast.makeText(getContext(), "已清除更新服务器地址", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Update server URL cleared", Toast.LENGTH_SHORT).show();
                     } else {
                         // 基本 URL 验证
                         if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                            Toast.makeText(getContext(), "请输入有效的 HTTP/HTTPS 地址", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Please enter a valid HTTP/HTTPS URL", Toast.LENGTH_SHORT).show();
                             return;
                         }
                         appConfig.setUpdateServerUrl(url);
-                        Toast.makeText(getContext(), "更新服务器地址已保存", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Update server URL saved", Toast.LENGTH_SHORT).show();
                         // 保存后自动检查更新
                         performCheckUpdate();
                     }
@@ -2072,14 +2072,14 @@ public class SettingsFragment extends Fragment {
             public void onNoUpdate() {
                 checkUpdateButton.setEnabled(true);
                 checkUpdateButton.setText("检查 →");
-                Toast.makeText(getContext(), "已是最新版本", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Already up to date", Toast.LENGTH_SHORT).show();
             }
             
             @Override
             public void onError(String error) {
                 checkUpdateButton.setEnabled(true);
                 checkUpdateButton.setText("检查 →");
-                Toast.makeText(getContext(), "检查更新失败: " + error, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Update check failed: " + error, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -2139,7 +2139,7 @@ public class SettingsFragment extends Fragment {
             public void onError(String error) {
                 progressDialog.dismiss();
                 if (!"下载已取消".equals(error)) {
-                    Toast.makeText(getContext(), "下载失败: " + error, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Download failed: " + error, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -2260,7 +2260,7 @@ public class SettingsFragment extends Fragment {
                 .setPositiveButton("确认", (dialog, which) -> {
                     String nickname = inputEditText.getText().toString().trim();
                     if (nickname.isEmpty()) {
-                        Toast.makeText(getContext(), "名称不能为空", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Name cannot be empty", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     // 显示二次确认
@@ -2416,7 +2416,7 @@ public class SettingsFragment extends Fragment {
                     getActivity().runOnUiThread(() -> {
                         uploadLogsButton.setEnabled(true);
                         uploadLogsButton.setText("一键上传");
-                        Toast.makeText(getContext(), "作者已收到" + logType + "日志", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "Author received " + logType + " logs", Toast.LENGTH_LONG).show();
                     });
                 }
             }
@@ -2427,7 +2427,7 @@ public class SettingsFragment extends Fragment {
                     getActivity().runOnUiThread(() -> {
                         uploadLogsButton.setEnabled(true);
                         uploadLogsButton.setText("一键上传");
-                        Toast.makeText(getContext(), "上传失败: " + error, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Upload failed: " + error, Toast.LENGTH_SHORT).show();
                     });
                 }
             }

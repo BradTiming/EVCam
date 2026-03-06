@@ -656,7 +656,7 @@ public class ResolutionSettingsFragment extends Fragment {
                 ? "默认 (1280×800)" 
                 : selectedResolution;
         
-        Toast.makeText(getContext(), "分辨率已设置为: " + resolutionName + "\n重启应用后生效", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Resolution set to: " + resolutionName + "\nRestart app to apply", Toast.LENGTH_SHORT).show();
         AppLog.d(TAG, "分辨率已保存: " + oldResolution + " -> " + selectedResolution);
         
         // 更新当前参数显示
@@ -676,7 +676,7 @@ public class ResolutionSettingsFragment extends Fragment {
         
         String bitrateName = AppConfig.getBitrateLevelDisplayName(selectedBitrateLevel);
         
-        Toast.makeText(getContext(), "码率已设置为: " + bitrateName + "\n重启应用后生效", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Bitrate set to: " + bitrateName + "\nRestart app to apply", Toast.LENGTH_SHORT).show();
         AppLog.d(TAG, "码率已保存: " + oldBitrate + " -> " + selectedBitrateLevel);
         
         // 更新当前参数显示
@@ -696,7 +696,7 @@ public class ResolutionSettingsFragment extends Fragment {
         
         String framerateName = AppConfig.getFramerateLevelDisplayName(selectedFramerateLevel);
         
-        Toast.makeText(getContext(), "帧率已设置为: " + framerateName + "\n重启应用后生效", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Frame rate set to: " + framerateName + "\nRestart app to apply", Toast.LENGTH_SHORT).show();
         AppLog.d(TAG, "帧率已保存: " + oldFramerate + " -> " + selectedFramerateLevel);
         
         // 更新当前参数显示
@@ -737,7 +737,7 @@ public class ResolutionSettingsFragment extends Fragment {
                 if (imageAdjustManager != null) {
                     imageAdjustManager.resetToDefault();
                     updateImageAdjustParamsDisplay();
-                    Toast.makeText(getContext(), "亮度/降噪参数已恢复默认", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Brightness/noise-reduction parameters restored to default", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -943,7 +943,7 @@ public class ResolutionSettingsFragment extends Fragment {
             mainActivity.showImageAdjustFloatingWindow();
             
             // 返回主界面以便查看预览效果
-            Toast.makeText(getContext(), "悬浮窗已打开，返回预览界面可实时查看效果", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Floating window opened. Return to preview for live effect", Toast.LENGTH_SHORT).show();
         }
     }
     

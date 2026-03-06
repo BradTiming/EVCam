@@ -55,7 +55,7 @@ public class TelegramPhotoUploadService {
                     File photoFile = photoFiles.get(i);
 
                     if (!photoFile.exists()) {
-                        AppLog.w(TAG, "图片文件不存在: " + photoFile.getPath());
+                        AppLog.w(TAG, "Image file does not exist: " + photoFile.getPath());
                         failedFiles.add(photoFile.getName() + " (文件不存在)");
                         continue;
                     }

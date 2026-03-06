@@ -47,7 +47,7 @@ public class KeepAliveAccessibilityService extends AccessibilityService {
         isServiceRunning = true;
         startTime = System.currentTimeMillis();
         
-        AppLog.d(TAG, "无障碍服务已启动（增强保活模式）");
+        AppLog.d(TAG, "无障碍Service started（增强保活模式）");
         
         // 注意：辅助服务本身就是系统级服务，不需要前台通知也有最高优先级
         // 前台通知由 CameraForegroundService 提供，避免重复通知

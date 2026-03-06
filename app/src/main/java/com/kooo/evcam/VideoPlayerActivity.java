@@ -55,14 +55,14 @@ public class VideoPlayerActivity extends AppCompatActivity {
         // 获取视频路径
         String videoPath = getIntent().getStringExtra("video_path");
         if (videoPath == null || videoPath.isEmpty()) {
-            Toast.makeText(this, "无效的视频路径", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Invalid video path", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
         File videoFile = new File(videoPath);
         if (!videoFile.exists()) {
-            Toast.makeText(this, "视频文件不存在", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Video file does not exist", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -164,13 +164,13 @@ public class VideoPlayerActivity extends AppCompatActivity {
             videoView.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                 @Override
                 public boolean onError(MediaPlayer mp, int what, int extra) {
-                    Toast.makeText(VideoPlayerActivity.this, "播放出错", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(VideoPlayerActivity.this, "Playback error", Toast.LENGTH_SHORT).show();
                     return true;
                 }
             });
 
         } catch (Exception e) {
-            Toast.makeText(this, "加载视频失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Failed to load video: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             finish();
         }
     }

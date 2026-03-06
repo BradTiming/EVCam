@@ -289,7 +289,7 @@ public class CustomLayoutManager {
                     applyRotationWithScale(textureView, newRotation);
                 }
                 
-                Toast.makeText(context, cameraKey + " 旋转: " + newRotation + "°", 
+                Toast.makeText(context, cameraKey + " Rotation: " + newRotation + "°", 
                         Toast.LENGTH_SHORT).show();
                 AppLog.d(TAG, cameraKey + " 旋转设置为: " + newRotation + "°");
             });
@@ -309,7 +309,7 @@ public class CustomLayoutManager {
                     applyMirrorWithRotation(textureView, cameraKey, newMirror);
                 }
                 
-                Toast.makeText(context, cameraKey + " 镜像: " + (newMirror ? "开" : "关"), 
+                Toast.makeText(context, cameraKey + " Mirror: " + (newMirror ? "On" : "Off"), 
                         Toast.LENGTH_SHORT).show();
                 AppLog.d(TAG, cameraKey + " 镜像设置为: " + newMirror);
             });
@@ -788,11 +788,11 @@ public class CustomLayoutManager {
             if (mode.equals("front")) {
                 appConfig.setFrontWheelLeftViewParams(leftWidth, leftHeight, leftX, leftY, leftRotation);
                 appConfig.setFrontWheelRightViewParams(rightWidth, rightHeight, rightX, rightY, rightRotation);
-                Toast.makeText(context, "前轮模式设置已保存", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Front wheel mode settings saved", Toast.LENGTH_SHORT).show();
             } else {
                 appConfig.setRearWheelLeftViewParams(leftWidth, leftHeight, leftX, leftY, leftRotation);
                 appConfig.setRearWheelRightViewParams(rightWidth, rightHeight, rightX, rightY, rightRotation);
-                Toast.makeText(context, "后轮模式设置已保存", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Rear wheel mode settings saved", Toast.LENGTH_SHORT).show();
             }
 
             dialog.dismiss();
@@ -856,7 +856,7 @@ public class CustomLayoutManager {
             // 实时应用重置后的值
             previewUpdateRunnable.run();
 
-            Toast.makeText(context, "已重置为默认值", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Reset to default", Toast.LENGTH_SHORT).show();
         });
 
         // 设置弹窗背景透明度为15%
@@ -1178,7 +1178,7 @@ public class CustomLayoutManager {
             // 裁剪区域无效，重置
             appConfig.resetCameraCrop(cameraKey);
             textureView.setClipBounds(null);
-            Toast.makeText(context, "裁剪过大，已重置", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Crop too large; reset applied", Toast.LENGTH_SHORT).show();
             return;
         }
         
@@ -1237,7 +1237,7 @@ public class CustomLayoutManager {
         if (btnSave != null) {
             btnSave.setOnClickListener(v -> {
                 saveLayout();
-                Toast.makeText(context, "布局已保存", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Layout saved", Toast.LENGTH_SHORT).show();
             });
         }
         
@@ -1247,7 +1247,7 @@ public class CustomLayoutManager {
         if (btnReset != null) {
             btnReset.setOnClickListener(v -> {
                 resetLayout();
-                Toast.makeText(context, "布局已重置", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Layout reset", Toast.LENGTH_SHORT).show();
             });
         }
         
@@ -1289,7 +1289,7 @@ public class CustomLayoutManager {
                     buttonLayoutChangeListener.onButtonLayoutChange(newOrientation);
                 }
                 
-                Toast.makeText(context, "按钮方向: " + 
+                Toast.makeText(context, "Button direction: " + 
                         (newOrientation.equals(AppConfig.BUTTON_ORIENTATION_VERTICAL) ? "竖版" : "横版"), 
                         Toast.LENGTH_SHORT).show();
             });
@@ -1515,7 +1515,7 @@ public class CustomLayoutManager {
         
         // 保存到配置
         appConfig.setCustomLayoutData(layoutData.toJson());
-        AppLog.d(TAG, "布局已保存: " + layoutData.toJson());
+        AppLog.d(TAG, "Layout saved: " + layoutData.toJson());
     }
     
     /**
@@ -1607,7 +1607,7 @@ public class CustomLayoutManager {
         // 显示所有视图
         showAllViews();
         
-        AppLog.d(TAG, "布局已重置");
+        AppLog.d(TAG, "Layout reset");
     }
     
     /**
@@ -1620,7 +1620,7 @@ public class CustomLayoutManager {
         if (context instanceof android.app.Activity) {
             android.app.Activity activity = (android.app.Activity) context;
 
-            Toast.makeText(context, "正在重载界面...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Reloading UI...", Toast.LENGTH_SHORT).show();
             // 清掉 Holder 中的旧 CameraManager，避免新 Activity 复用处于不一致状态的实例
             com.kooo.evcam.camera.CameraManagerHolder.getInstance().setCameraManager(null);
             activity.recreate();
