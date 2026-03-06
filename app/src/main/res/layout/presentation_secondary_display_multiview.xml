@@ -16,27 +16,26 @@
         app:cardElevation="0dp"
         app:cardPreventCornerOverlap="false">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
             android:clipChildren="true"
             android:clipToPadding="false">
 
-            <com.kooo.evcam.BlindSpotStatusBarView
-                android:id="@+id/blind_spot_status_bar"
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:background="#4D000000" />
-
-            <!-- 摄像头预览 -->
             <TextureView
                 android:id="@+id/secondary_texture_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:clipToOutline="true" />
-        </LinearLayout>
+
+            <com.kooo.evcam.BlindSpotStatusBarView
+                android:id="@+id/blind_spot_status_bar"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_gravity="top"
+                android:background="#501A1A1A" />
+        </FrameLayout>
     </androidx.cardview.widget.CardView>
 
     <!-- 白色边框 -->
