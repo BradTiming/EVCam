@@ -121,6 +121,7 @@ public class AppConfig {
 
     // 补盲悬浮窗动效
     private static final String KEY_FLOATING_WINDOW_ANIMATION_ENABLED = "floating_window_animation_enabled"; // 悬浮窗开启/关闭动效
+    private static final String KEY_BLIND_SPOT_STATUS_BAR_STYLE = "blind_spot_status_bar_style";             // 状态栏动效样式 (0=关, 1-5=五种动效)
 
     // 主屏悬浮窗比例锁定
     private static final String KEY_MAIN_FLOATING_ASPECT_RATIO_LOCKED = "main_floating_aspect_ratio_locked";
@@ -2159,6 +2160,17 @@ public class AppConfig {
 
     public boolean isFloatingWindowAnimationEnabled() {
         return prefs.getBoolean(KEY_FLOATING_WINDOW_ANIMATION_ENABLED, false);
+    }
+
+    public void setBlindSpotStatusBarStyle(int style) {
+        prefs.edit().putInt(KEY_BLIND_SPOT_STATUS_BAR_STYLE, style).apply();
+    }
+
+    /**
+     * @return 0=关闭, 1=序贯灯段, 2=流光彗尾, 3=波纹扩散, 4=呼吸渐变填充, 5=箭头涟漪
+     */
+    public int getBlindSpotStatusBarStyle() {
+        return prefs.getInt(KEY_BLIND_SPOT_STATUS_BAR_STYLE, 1);
     }
 
     // ==================== 时间角标配置相关方法 ====================

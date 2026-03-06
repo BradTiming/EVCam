@@ -374,6 +374,91 @@
                         android:layout_marginStart="16dp" />
                 </LinearLayout>
 
+                <!-- 状态栏动效样式 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="12dp"
+                    android:paddingStart="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="状态栏动效样式"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="4dp" />
+
+                    <RadioGroup
+                        android:id="@+id/rg_status_bar_style"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <RadioButton
+                            android:id="@+id/rb_style_off"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="36dp"
+                            android:text="关闭（无状态栏）"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            android:buttonTint="@color/colorPrimary" />
+
+                        <RadioButton
+                            android:id="@+id/rb_style_sequential"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="36dp"
+                            android:text="A. 序贯灯段（类奥迪动态转向灯）"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            android:buttonTint="@color/colorPrimary" />
+
+                        <RadioButton
+                            android:id="@+id/rb_style_comet"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="36dp"
+                            android:text="B. 流光彗尾（流星拖尾效果）"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            android:buttonTint="@color/colorPrimary" />
+
+                        <RadioButton
+                            android:id="@+id/rb_style_ripple"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="36dp"
+                            android:text="C. 波纹扩散（水波纹横向传播）"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            android:buttonTint="@color/colorPrimary" />
+
+                        <RadioButton
+                            android:id="@+id/rb_style_gradient_fill"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="36dp"
+                            android:text="D. 呼吸渐变填充（类充电动画）"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            android:buttonTint="@color/colorPrimary" />
+
+                        <RadioButton
+                            android:id="@+id/rb_style_arrow_ripple"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="36dp"
+                            android:text="E. 箭头涟漪（箭头从中心飞出）"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            android:buttonTint="@color/colorPrimary" />
+
+                    </RadioGroup>
+                </LinearLayout>
+
                 <!-- 消失延迟设置 -->
                 <LinearLayout
                     android:layout_width="match_parent"

@@ -75,6 +75,7 @@ public class BlindSpotFloatingWindowView extends FrameLayout {
         View rotateButton = findViewById(R.id.btn_rotate_blind_spot);
 
         statusBar = findViewById(R.id.blind_spot_status_bar);
+        applyStatusBarStyle();
 
         currentRotation = appConfig.getTurnSignalFloatingRotation();
         applyTransformNow();
@@ -570,8 +571,20 @@ public class BlindSpotFloatingWindowView extends FrameLayout {
         retryBindCount = 0;
     }
 
+    private void applyStatusBarStyle() {
+        if (statusBar == null) return;
+        int style = appConfig.getBlindSpotStatusBarStyle();
+        if (style == BlindSpotStatusBarView.STYLE_OFF) {
+            statusBar.setVisibility(View.GONE);
+        } else {
+            statusBar.setVisibility(View.VISIBLE);
+            statusBar.setAnimationStyle(style);
+        }
+    }
+
     public void updateStatusLabel(String cameraPos) {
         if (statusBar != null) {
+            applyStatusBarStyle();
             statusBar.setDirection(cameraPos);
         }
     }

@@ -90,6 +90,7 @@ public class MainFloatingWindowView extends FrameLayout {
         textureView = findViewById(R.id.secondary_texture_view);
 
         statusBar = findViewById(R.id.blind_spot_status_bar);
+        applyStatusBarStyle();
 
         // 圆角裁切
         float cornerRadius = 8 * getContext().getResources().getDisplayMetrics().density;
@@ -661,8 +662,20 @@ public class MainFloatingWindowView extends FrameLayout {
         retryBindCount = 0;
     }
 
+    private void applyStatusBarStyle() {
+        if (statusBar == null) return;
+        int style = appConfig.getBlindSpotStatusBarStyle();
+        if (style == BlindSpotStatusBarView.STYLE_OFF) {
+            statusBar.setVisibility(View.GONE);
+        } else {
+            statusBar.setVisibility(View.VISIBLE);
+            statusBar.setAnimationStyle(style);
+        }
+    }
+
     public void updateStatusLabel(String cameraPos) {
         if (statusBar != null) {
+            applyStatusBarStyle();
             statusBar.setDirection(cameraPos);
         }
     }

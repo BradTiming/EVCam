@@ -63,6 +63,7 @@ public class BlindSpotSettingsFragment extends Fragment {
     private Button adjustSecondaryBlindSpotWindowButton;
     private SwitchMaterial mockFloatingSwitch;
     private SwitchMaterial floatingWindowAnimationSwitch;
+    private RadioGroup statusBarStyleGroup;
     private SwitchMaterial blindSpotCorrectionSwitch;
     private Button adjustBlindSpotCorrectionButton;
     private SwitchMaterial mainFloatingAspectRatioLockSwitch;
@@ -123,6 +124,7 @@ public class BlindSpotSettingsFragment extends Fragment {
 
         mockFloatingSwitch = view.findViewById(R.id.switch_mock_floating);
         floatingWindowAnimationSwitch = view.findViewById(R.id.switch_floating_window_animation);
+        statusBarStyleGroup = view.findViewById(R.id.rg_status_bar_style);
 
         blindSpotCorrectionSwitch = view.findViewById(R.id.switch_blind_spot_correction);
         adjustBlindSpotCorrectionButton = view.findViewById(R.id.btn_adjust_blind_spot_correction);
@@ -210,6 +212,16 @@ public class BlindSpotSettingsFragment extends Fragment {
 
         mockFloatingSwitch.setChecked(appConfig.isMockTurnSignalFloatingEnabled());
         floatingWindowAnimationSwitch.setChecked(appConfig.isFloatingWindowAnimationEnabled());
+
+        int statusBarStyle = appConfig.getBlindSpotStatusBarStyle();
+        switch (statusBarStyle) {
+            case BlindSpotStatusBarView.STYLE_OFF:           statusBarStyleGroup.check(R.id.rb_style_off); break;
+            case BlindSpotStatusBarView.STYLE_COMET:         statusBarStyleGroup.check(R.id.rb_style_comet); break;
+            case BlindSpotStatusBarView.STYLE_RIPPLE:        statusBarStyleGroup.check(R.id.rb_style_ripple); break;
+            case BlindSpotStatusBarView.STYLE_GRADIENT_FILL: statusBarStyleGroup.check(R.id.rb_style_gradient_fill); break;
+            case BlindSpotStatusBarView.STYLE_ARROW_RIPPLE:  statusBarStyleGroup.check(R.id.rb_style_arrow_ripple); break;
+            default:                                         statusBarStyleGroup.check(R.id.rb_style_sequential); break;
+        }
 
         blindSpotCorrectionSwitch.setChecked(appConfig.isBlindSpotCorrectionEnabled());
 
@@ -401,6 +413,18 @@ public class BlindSpotSettingsFragment extends Fragment {
 
         floatingWindowAnimationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             appConfig.setFloatingWindowAnimationEnabled(isChecked);
+        });
+
+        statusBarStyleGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            int style;
+            if (checkedId == R.id.rb_style_off)            style = BlindSpotStatusBarView.STYLE_OFF;
+            else if (checkedId == R.id.rb_style_comet)         style = BlindSpotStatusBarView.STYLE_COMET;
+            else if (checkedId == R.id.rb_style_ripple)        style = BlindSpotStatusBarView.STYLE_RIPPLE;
+            else if (checkedId == R.id.rb_style_gradient_fill) style = BlindSpotStatusBarView.STYLE_GRADIENT_FILL;
+            else if (checkedId == R.id.rb_style_arrow_ripple)  style = BlindSpotStatusBarView.STYLE_ARROW_RIPPLE;
+            else                                               style = BlindSpotStatusBarView.STYLE_SEQUENTIAL;
+            appConfig.setBlindSpotStatusBarStyle(style);
+            BlindSpotService.update(requireContext());
         });
 
         mockFloatingSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
