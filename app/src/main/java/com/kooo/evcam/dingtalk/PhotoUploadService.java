@@ -54,7 +54,7 @@ public class PhotoUploadService {
                     File photoFile = photoFiles.get(i);
 
                     if (!photoFile.exists()) {
-                        AppLog.w(TAG, "图片文件不存在: " + photoFile.getPath());
+                        AppLog.w(TAG, "Image file does not exist: " + photoFile.getPath());
                         continue;
                     }
 
@@ -89,7 +89,7 @@ public class PhotoUploadService {
 
                     } catch (Exception e) {
                         AppLog.e(TAG, "上传图片失败: " + photoFile.getName(), e);
-                        callback.onError("上传失败: " + photoFile.getName() + " - " + e.getMessage());
+                        callback.onError("Upload failed: " + photoFile.getName() + " - " + e.getMessage());
                     }
                 }
 

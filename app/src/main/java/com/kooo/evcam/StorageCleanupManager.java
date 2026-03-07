@@ -321,7 +321,7 @@ public class StorageCleanupManager {
             if (file.delete()) {
                 deletedSize += fileSize;
                 deletedCount++;
-                AppLog.d(TAG, "已删除" + typeName + ": " + fileName + " (" + StorageHelper.formatSize(fileSize) + ")");
+                AppLog.d(TAG, "Deleted" + typeName + ": " + fileName + " (" + StorageHelper.formatSize(fileSize) + ")");
             } else {
                 AppLog.w(TAG, "删除" + typeName + "失败: " + fileName);
             }

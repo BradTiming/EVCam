@@ -76,27 +76,27 @@ public class SettingsFragment extends Fragment {
     private Spinner floatingWindowSizeSpinner;
     private SeekBar floatingWindowAlphaSeekBar;
     private TextView floatingWindowAlphaText;
-    private static final String[] FLOATING_SIZE_OPTIONS = {"超小", "特小", "小", "中", "大", "超大", "特大", "特特大", "PLUS大", "MAX大"};
+    private static final String[] FLOATING_SIZE_OPTIONS = {"XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL", "PLUS", "MAX"};
     private boolean isInitializingFloatingSize = false;
     private int lastAppliedFloatingSize = -1;  // 记录上次应用的大小，避免重复触发
     
     // 车型配置相关
     private Spinner carModelSpinner;
     private Button customCameraConfigButton;
-    private static final String[] CAR_MODEL_OPTIONS = {"银河E5", "银河E5-多按钮", "银河L6/L7", "银河L7-多按钮", "26款星舰7", "手机", "自定义车型", "多视角布局"};
+    private static final String[] CAR_MODEL_OPTIONS = {"Galaxy E5", "Galaxy E5 - Multi Buttons", "Galaxy L6/L7", "Galaxy L7 - Multi Buttons", "Galaxy Starship 7 (2026)", "Phone", "Custom Vehicle", "Multi-view Layout"};
     private boolean isInitializingCarModel = false;
     private String lastAppliedCarModel = null;
     
     // 录制模式配置相关
     private Spinner recordingModeSpinner;
     private TextView recordingModeDescText;
-    private static final String[] RECORDING_MODE_OPTIONS = {"自动（推荐）", "MediaRecorder", "MediaCodec"};
+    private static final String[] RECORDING_MODE_OPTIONS = {"Auto (Recommended)", "MediaRecorder", "MediaCodec"};
     private boolean isInitializingRecordingMode = false;
     private String lastAppliedRecordingMode = null;
     
     // 分段时长配置相关
     private Spinner segmentDurationSpinner;
-    private static final String[] SEGMENT_DURATION_OPTIONS = {"1分钟", "3分钟", "5分钟"};
+    private static final String[] SEGMENT_DURATION_OPTIONS = {"1 min", "3 min", "5 min"};
     private boolean isInitializingSegmentDuration = false;
     private int lastAppliedSegmentDuration = -1;
     
@@ -256,7 +256,7 @@ public class SettingsFragment extends Fragment {
         recordingStatsSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (getContext() != null && appConfig != null) {
                 appConfig.setRecordingStatsEnabled(isChecked);
-                String message = isChecked ? "录制状态显示已开启" : "录制状态显示已关闭";
+                String message = isChecked ? "Recording status display enabled" : "Recording status display disabled";
                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                 AppLog.d("SettingsFragment", message);
                 
@@ -277,7 +277,7 @@ public class SettingsFragment extends Fragment {
         timestampWatermarkSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (getContext() != null && appConfig != null) {
                 appConfig.setTimestampWatermarkEnabled(isChecked);
-                String message = isChecked ? "时间角标已开启" : "时间角标已关闭";
+                String message = isChecked ? "Timestamp watermark enabled" : "Timestamp watermark disabled";
                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                 AppLog.d("SettingsFragment", message);
             }
@@ -302,14 +302,14 @@ public class SettingsFragment extends Fragment {
                 if (mainActivity != null) {
                     mainActivity.refreshPreviewCorrection();
                 }
-                String message = isChecked ? "预览画面矫正已开启" : "预览画面矫正已关闭";
+                String message = isChecked ? "Preview correction enabled" : "Preview correction disabled";
                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
             }
         });
         openPreviewCorrectionFloatingButton.setOnClickListener(v -> {
             if (getContext() == null) return;
             if (!WakeUpHelper.hasOverlayPermission(requireContext())) {
-                Toast.makeText(requireContext(), "请先授予悬浮窗权限", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Please grant overlay permission first", Toast.LENGTH_SHORT).show();
                 WakeUpHelper.requestOverlayPermission(requireContext());
                 return;
             }
@@ -323,7 +323,7 @@ public class SettingsFragment extends Fragment {
         resetPreviewCorrectionButton.setOnClickListener(v -> {
             if (getContext() != null && appConfig != null) {
                 appConfig.resetAllPreviewCorrection();
-                Toast.makeText(getContext(), "所有预览矫正参数已恢复默认", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "All preview correction parameters restored to default", Toast.LENGTH_SHORT).show();
                 MainActivity mainActivity = MainActivity.getInstance();
                 if (mainActivity != null) {
                     mainActivity.refreshPreviewCorrection();
@@ -350,14 +350,14 @@ public class SettingsFragment extends Fragment {
                 if (mainActivity != null) {
                     mainActivity.refreshFisheyeCorrection();
                 }
-                String message = isChecked ? "鱼眼矫正已开启" : "鱼眼矫正已关闭";
+                String message = isChecked ? "Fisheye correction enabled" : "Fisheye correction disabled";
                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
             }
         });
         openFisheyeCorrectionFloatingButton.setOnClickListener(v -> {
             if (getContext() == null) return;
             if (!WakeUpHelper.hasOverlayPermission(requireContext())) {
-                Toast.makeText(requireContext(), "请先授予悬浮窗权限", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Please grant overlay permission first", Toast.LENGTH_SHORT).show();
                 WakeUpHelper.requestOverlayPermission(requireContext());
                 return;
             }
@@ -371,7 +371,7 @@ public class SettingsFragment extends Fragment {
         resetFisheyeCorrectionButton.setOnClickListener(v -> {
             if (getContext() != null && appConfig != null) {
                 appConfig.resetAllFisheyeCorrection();
-                Toast.makeText(getContext(), "所有鱼眼矫正参数已恢复默认", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "All fisheye correction parameters restored to default", Toast.LENGTH_SHORT).show();
                 MainActivity mainActivity = MainActivity.getInstance();
                 if (mainActivity != null) {
                     mainActivity.refreshFisheyeCorrection();
@@ -389,7 +389,7 @@ public class SettingsFragment extends Fragment {
         autoStartSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (getContext() != null && appConfig != null) {
                 appConfig.setAutoStartOnBoot(isChecked);
-                String message = isChecked ? "开机自启动已启用" : "开机自启动已禁用";
+                String message = isChecked ? "Auto-start on boot enabled" : "Auto-start on boot disabled";
                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                 AppLog.d("SettingsFragment", message);
             }
@@ -414,7 +414,7 @@ public class SettingsFragment extends Fragment {
         autoStartRecordingSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (getContext() != null && appConfig != null) {
                 appConfig.setAutoStartRecording(isChecked);
-                String message = isChecked ? "启动自动录制已启用，下次启动生效" : "启动自动录制已禁用";
+                String message = isChecked ? "Auto-start recording enabled (effective on next launch)" : "Auto-start recording disabled";
                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                 AppLog.d("SettingsFragment", message);
                 
@@ -427,7 +427,7 @@ public class SettingsFragment extends Fragment {
         screenOffRecordingSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (getContext() != null && appConfig != null) {
                 appConfig.setScreenOffRecordingEnabled(isChecked);
-                String message = isChecked ? "息屏录制已启用，息屏时将继续录制" : "息屏录制已禁用，息屏10秒后将自动停止录制";
+                String message = isChecked ? "Screen-off recording enabled; recording continues when screen turns off" : "Screen-off recording disabled; recording stops 10 seconds after screen off";
                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                 AppLog.d("SettingsFragment", message);
             }
@@ -580,7 +580,7 @@ public class SettingsFragment extends Fragment {
                     getActivity().runOnUiThread(() -> imageView.setImageBitmap(bitmap));
                 }
             } catch (Exception e) {
-                AppLog.e("SettingsFragment", "加载二维码图片失败: " + e.getMessage());
+                AppLog.e("SettingsFragment", "Failed to load QR image: " + e.getMessage());
             }
         }).start();
     }
@@ -624,7 +624,7 @@ public class SettingsFragment extends Fragment {
             
             // 检查悬浮窗权限
             if (isChecked && !WakeUpHelper.hasOverlayPermission(getContext())) {
-                Toast.makeText(getContext(), "请先在权限设置中授权悬浮窗权限", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Please grant overlay permission in Permission Settings first", Toast.LENGTH_SHORT).show();
                 buttonView.setChecked(false);
                 WakeUpHelper.requestOverlayPermission(getContext());
                 return;
@@ -635,14 +635,14 @@ public class SettingsFragment extends Fragment {
             
             if (isChecked) {
                 FloatingWindowService.start(getContext());
-                Toast.makeText(getContext(), "悬浮窗已开启", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Floating window enabled", Toast.LENGTH_SHORT).show();
                 
                 if (getActivity() instanceof MainActivity) {
                     ((MainActivity) getActivity()).broadcastCurrentRecordingState();
                 }
             } else {
                 FloatingWindowService.stop(getContext());
-                Toast.makeText(getContext(), "悬浮窗已关闭", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Floating window disabled", Toast.LENGTH_SHORT).show();
             }
         });
         
@@ -756,43 +756,43 @@ public class SettingsFragment extends Fragment {
                 switch (position) {
                     case 0:
                         sizeDp = AppConfig.FLOATING_SIZE_TINY;
-                        sizeName = "超小";
+                        sizeName = "XXS";
                         break;
                     case 1:
                         sizeDp = AppConfig.FLOATING_SIZE_EXTRA_SMALL;
-                        sizeName = "特小";
+                        sizeName = "XS";
                         break;
                     case 2:
                         sizeDp = AppConfig.FLOATING_SIZE_SMALL;
-                        sizeName = "小";
+                        sizeName = "S";
                         break;
                     case 3:
                         sizeDp = AppConfig.FLOATING_SIZE_MEDIUM;
-                        sizeName = "中";
+                        sizeName = "M";
                         break;
                     case 4:
                         sizeDp = AppConfig.FLOATING_SIZE_LARGE;
-                        sizeName = "大";
+                        sizeName = "L";
                         break;
                     case 5:
                         sizeDp = AppConfig.FLOATING_SIZE_EXTRA_LARGE;
-                        sizeName = "超大";
+                        sizeName = "XL";
                         break;
                     case 6:
                         sizeDp = AppConfig.FLOATING_SIZE_HUGE;
-                        sizeName = "特大";
+                        sizeName = "XXL";
                         break;
                     case 7:
                         sizeDp = AppConfig.FLOATING_SIZE_GIANT;
-                        sizeName = "特特大";
+                        sizeName = "XXXL";
                         break;
                     case 8:
                         sizeDp = AppConfig.FLOATING_SIZE_PLUS;
-                        sizeName = "PLUS大";
+                        sizeName = "PLUS";
                         break;
                     default:
                         sizeDp = AppConfig.FLOATING_SIZE_MAX;
-                        sizeName = "MAX大";
+                        sizeName = "MAX";
                         break;
                 }
                 
@@ -811,7 +811,7 @@ public class SettingsFragment extends Fragment {
                 
                 if (getContext() != null && appConfig.isFloatingWindowEnabled()) {
                     FloatingWindowService.sendUpdateFloatingWindow(getContext());
-                    Toast.makeText(getContext(), "悬浮窗大小已设置为「" + sizeName + "」", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Floating window size set to \"" + sizeName + "\"", Toast.LENGTH_SHORT).show();
                 }
             }
             
@@ -933,9 +933,9 @@ public class SettingsFragment extends Fragment {
                             // 更新 Spinner 选项文字
                             if (storageLocationSpinner != null) {
                                 if (hasExternalSdCard) {
-                                    storageLocationOptions = new String[] {"内部存储", "U盘"};
+                                    storageLocationOptions = new String[] {"Internal Storage", "USB Drive"};
                                 } else {
-                                    storageLocationOptions = new String[] {"内部存储", "U盘（未检测到）"};
+                                    storageLocationOptions = new String[] {"Internal Storage", "USB Drive (Not Detected)"};
                                 }
                                 ArrayAdapter<String> adapter = new ArrayAdapter<>(
                                         getContext(),
@@ -952,7 +952,7 @@ public class SettingsFragment extends Fragment {
                                 storageLocationSpinner.setSelection(selectedIndex);
                                 storageLocationSpinner.post(() -> isInitializingStorageLocation = false);
                                 // 注意：这里不弹 Toast，因为 onResume 不代表 U 盘刚插入
-                                // 只是界面切换后重新检测状态，避免每次打开设置都提示"检测到U盘"
+                                // 只是界面切换后重新检测状态，避免每次打开设置都提示"USB drive detected"
                             }
                         }
                         
@@ -1007,28 +1007,28 @@ public class SettingsFragment extends Fragment {
                 
                 if (position == 0) {
                     newModel = AppConfig.CAR_MODEL_GALAXY_E5;
-                    modelName = "银河E5";
+                    modelName = "Galaxy E5";
                 } else if (position == 1) {
                     newModel = AppConfig.CAR_MODEL_E5_MULTI;
-                    modelName = "银河E5-多按钮";
+                    modelName = "Galaxy E5 - Multi Buttons";
                 } else if (position == 2) {
                     newModel = AppConfig.CAR_MODEL_L7;
-                    modelName = "银河L6/L7";
+                    modelName = "Galaxy L6/L7";
                 } else if (position == 3) {
                     newModel = AppConfig.CAR_MODEL_L7_MULTI;
-                    modelName = "银河L7-多按钮";
+                    modelName = "Galaxy L7 - Multi Buttons";
                 } else if (position == 4) {
                     newModel = AppConfig.CAR_MODEL_XINGHAN_7;
-                    modelName = "26款星舰7";
+                    modelName = "Galaxy Starship 7 (2026)";
                 } else if (position == 5) {
                     newModel = AppConfig.CAR_MODEL_PHONE;
-                    modelName = "手机";
+                    modelName = "Phone";
                 } else if (position == 7) {
                     newModel = AppConfig.CAR_MODEL_MULTIVIEW;
-                    modelName = "多视角布局";
+                    modelName = "Multi-view Layout";
                 } else {
                     newModel = AppConfig.CAR_MODEL_CUSTOM;
-                    modelName = "自定义车型";
+                    modelName = "Custom Vehicle";
                 }
 
                 // 自定义车型和多视角布局显示配置按钮
@@ -1052,7 +1052,7 @@ public class SettingsFragment extends Fragment {
                 updateRecordingCameraSelectionUI();
                 
                 if (getContext() != null) {
-                    Toast.makeText(getContext(), "已切换为「" + modelName + "」，重启应用后生效", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Switched to \"" + modelName + "\". Restart app to apply", Toast.LENGTH_SHORT).show();
                 }
             }
             
@@ -1129,18 +1129,18 @@ public class SettingsFragment extends Fragment {
                 
                 if (position == 0) {
                     newMode = AppConfig.RECORDING_MODE_AUTO;
-                    modeName = "自动";
+                    modeName = "Auto";
                     // 显示当前实际使用的模式
                     String actualMode = appConfig.shouldUseCodecRecording() ? "MediaCodec" : "MediaRecorder";
-                    modeDesc = "MediaRecorder编码更稳定，MediaCodec兼容性更好，如果无法存储视频，尝试修改\n当前自动选择：" + actualMode;
+                    modeDesc = "MediaRecorder is generally more stable, while MediaCodec may offer better compatibility on some devices. If recording fails to save, try switching modes.\nCurrent auto selection: " + actualMode;
                 } else if (position == 1) {
                     newMode = AppConfig.RECORDING_MODE_MEDIA_RECORDER;
                     modeName = "MediaRecorder";
-                    modeDesc = "使用系统硬件编码器，兼容性好";
+                    modeDesc = "Uses system hardware encoder with broad compatibility";
                 } else {
                     newMode = AppConfig.RECORDING_MODE_CODEC;
                     modeName = "MediaCodec";
-                    modeDesc = "软编码方案，解决部分设备兼容问题";
+                    modeDesc = "Software encoding mode for better compatibility on some devices";
                 }
                 
                 updateRecordingModeDescription(modeDesc);
@@ -1157,7 +1157,7 @@ public class SettingsFragment extends Fragment {
                 appConfig.setRecordingMode(newMode);
                 
                 if (getContext() != null) {
-                    Toast.makeText(getContext(), "已切换为「" + modeName + "」模式，下次录制生效", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Switched to \"" + modeName + "\" mode. Will apply on next recording", Toast.LENGTH_SHORT).show();
                 }
             }
             
@@ -1218,13 +1218,13 @@ public class SettingsFragment extends Fragment {
                 
                 if (position == 0) {
                     newDuration = AppConfig.SEGMENT_DURATION_1_MIN;
-                    durationName = "1分钟";
+                    durationName = "1 min";
                 } else if (position == 1) {
                     newDuration = AppConfig.SEGMENT_DURATION_3_MIN;
-                    durationName = "3分钟";
+                    durationName = "3 min";
                 } else {
                     newDuration = AppConfig.SEGMENT_DURATION_5_MIN;
-                    durationName = "5分钟";
+                    durationName = "5 min";
                 }
                 
                 if (isInitializingSegmentDuration) {
@@ -1239,7 +1239,7 @@ public class SettingsFragment extends Fragment {
                 appConfig.setSegmentDurationMinutes(newDuration);
                 
                 if (getContext() != null) {
-                    Toast.makeText(getContext(), "分段时长已设置为「" + durationName + "」，下次录制生效", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Segment duration set to \"" + durationName + "\". Will apply on next recording", Toast.LENGTH_SHORT).show();
                 }
             }
             
@@ -1311,7 +1311,7 @@ public class SettingsFragment extends Fragment {
             if (!isChecked && !hasAtLeastOneRecordingCameraEnabled(buttonView)) {
                 // 恢复勾选状态
                 buttonView.setChecked(true);
-                Toast.makeText(getContext(), "至少需要选择一个摄像头", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "At least one camera must be selected", Toast.LENGTH_SHORT).show();
                 return;
             }
             
@@ -1320,7 +1320,7 @@ public class SettingsFragment extends Fragment {
             if (position != null) {
                 appConfig.setRecordingCameraEnabled(position, isChecked);
                 String cameraName = ((android.widget.CheckBox) buttonView).getText().toString();
-                String message = isChecked ? "已启用「" + cameraName + "」录制" : "已禁用「" + cameraName + "」录制";
+                String message = isChecked ? "Enabled recording for: " + cameraName : "Disabled recording for: " + cameraName;
                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
             }
         };
@@ -1436,7 +1436,7 @@ public class SettingsFragment extends Fragment {
         }
         
         // 初始化 Spinner（使用默认选项，后续异步更新）
-        storageLocationOptions = new String[] {"内部存储", "U盘（检测中...）"};
+        storageLocationOptions = new String[] {"Internal Storage", "USB Drive (Detecting...)"};
         
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 getContext(),
@@ -1454,13 +1454,13 @@ public class SettingsFragment extends Fragment {
                 
                 if (position == 0) {
                     newLocation = AppConfig.STORAGE_INTERNAL;
-                    locationName = "内部存储";
+                    locationName = "Internal Storage";
                 } else {
                     newLocation = AppConfig.STORAGE_EXTERNAL_SD;
-                    locationName = "U盘";
+                    locationName = "USB Drive";
                     // 如果U盘不可用，显示警告但仍然允许用户选择
                     if (!hasExternalSdCard && !isInitializingStorageLocation && getContext() != null) {
-                        Toast.makeText(getContext(), "当前未检测到U盘，录制将临时使用内部存储", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "USB not detected currently; recording will temporarily use internal storage", Toast.LENGTH_LONG).show();
                     }
                 }
                 
@@ -1478,11 +1478,11 @@ public class SettingsFragment extends Fragment {
                 appConfig.setStorageLocation(newLocation);
                 
                 if (getContext() != null) {
-                    Toast.makeText(getContext(), "存储位置已切换为「" + locationName + "」", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Storage location switched to \"" + locationName + "\"", Toast.LENGTH_SHORT).show();
                     // 异步获取路径描述
                     new Thread(() -> {
                         String pathDesc = StorageHelper.getCurrentStoragePathDesc(getContext());
-                        AppLog.d("SettingsFragment", "存储位置已切换为: " + newLocation + "，路径: " + pathDesc);
+                        AppLog.d("SettingsFragment", "Storage location switched to: " + newLocation + ", path: " + pathDesc);
                     }).start();
                 }
             }
@@ -1502,7 +1502,7 @@ public class SettingsFragment extends Fragment {
         
         // 显示加载中状态
         if (storageLocationDescText != null) {
-            storageLocationDescText.setText("正在检测存储设备...");
+            storageLocationDescText.setText("Detecting storage devices...");
         }
         
         // 异步检测 U盘并更新 UI
@@ -1528,9 +1528,9 @@ public class SettingsFragment extends Fragment {
                     
                     // 更新 Spinner 选项文字
                     if (hasExternalSdCard) {
-                        storageLocationOptions = new String[] {"内部存储", "U盘"};
+                        storageLocationOptions = new String[] {"Internal Storage", "USB Drive"};
                     } else {
-                        storageLocationOptions = new String[] {"内部存储", "U盘（未检测到）"};
+                        storageLocationOptions = new String[] {"Internal Storage", "USB Drive (Not Detected)"};
                     }
                     
                     ArrayAdapter<String> newAdapter = new ArrayAdapter<>(
@@ -1575,7 +1575,7 @@ public class SettingsFragment extends Fragment {
         }
         
         // 先显示加载状态
-        storageLocationDescText.setText("正在获取存储信息...");
+        storageLocationDescText.setText("Loading storage information...");
         
         final Context context = getContext();
         final boolean useExternal = AppConfig.STORAGE_EXTERNAL_SD.equals(location);
@@ -1595,17 +1595,17 @@ public class SettingsFragment extends Fragment {
             String displayPath;
             if (path.startsWith(internalRoot + "/")) {
                 // 是内部存储
-                displayPath = path.replace(internalRoot + "/", "内部存储/");
+                displayPath = path.replace(internalRoot + "/", "Internal Storage/");
             } else if (path.startsWith("/storage/emulated/")) {
                 // 其他 emulated 路径也是内部存储
-                displayPath = "内部存储" + path.substring(path.indexOf("/", "/storage/emulated/".length()));
+                displayPath = "Internal Storage" + path.substring(path.indexOf("/", "/storage/emulated/".length()));
             } else if (path.matches("/storage/[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}/.*")) {
                 // XXXX-XXXX 格式是 SD 卡
                 int dcimIndex = path.indexOf("/DCIM/");
                 if (dcimIndex > 0) {
-                    displayPath = "U盘" + path.substring(dcimIndex);
+                    displayPath = "USB Drive" + path.substring(dcimIndex);
                 } else {
-                    displayPath = "U盘/" + path.substring(path.lastIndexOf("/") + 1);
+                    displayPath = "USB Drive/" + path.substring(path.lastIndexOf("/") + 1);
                 }
             } else {
                 // 其他路径原样显示
@@ -1621,9 +1621,9 @@ public class SettingsFragment extends Fragment {
             // 构建最终显示文字
             final String finalText;
             if (isFallback) {
-                finalText = "⚠ U盘不可用，临时使用内部存储\n" + displayPath + "\n可用: " + availableStr + " / 共: " + totalStr;
+                finalText = "⚠ USB drive unavailable. Temporarily using internal storage\n" + displayPath + "\nAvailable: " + availableStr + " / Total: " + totalStr;
             } else {
-                finalText = displayPath + "\n可用: " + availableStr + " / 共: " + totalStr;
+                finalText = displayPath + "\nAvailable: " + availableStr + " / Total: " + totalStr;
             }
             
             // 回到主线程更新 UI
@@ -1648,21 +1648,21 @@ public class SettingsFragment extends Fragment {
         StringBuilder sb = new StringBuilder();
         
         // 首先检测存储权限状态
-        sb.append("=== 存储权限状态 ===\n");
+        sb.append("=== Storage Permission Status ===\n");
         
         // 检查所有文件访问权限（Android 11+）
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             boolean hasAllFilesAccess = android.os.Environment.isExternalStorageManager();
-            sb.append("所有文件访问权限 (Android 11+): ");
+            sb.append("All files access (Android 11+): ");
             if (hasAllFilesAccess) {
-                sb.append("已授权 ✓\n");
+                sb.append("Granted ✓\n");
             } else {
-                sb.append("未授权 ✗\n");
-                sb.append("⚠️ 提示: 访问U盘需要此权限！\n");
-                sb.append("   请前往「权限设置」授予「所有文件访问权限」\n");
+                sb.append("Not Granted ✗\n");
+                sb.append("⚠️ Note: USB access requires this permission!\n");
+                sb.append("   Go to Permission Settings and grant All Files Access\n");
             }
         } else {
-            sb.append("Android 版本低于 11，无需「所有文件访问权限」\n");
+            sb.append("Android version below 11; All Files Access not required\n");
         }
         
         // 检查基础存储权限
@@ -1671,25 +1671,25 @@ public class SettingsFragment extends Fragment {
             hasStoragePermission = androidx.core.content.ContextCompat.checkSelfPermission(
                     getContext(), android.Manifest.permission.READ_MEDIA_VIDEO) 
                     == android.content.pm.PackageManager.PERMISSION_GRANTED;
-            sb.append("媒体文件权限 (Android 13+): ");
+            sb.append("Media permission (Android 13+): ");
         } else {
             hasStoragePermission = androidx.core.content.ContextCompat.checkSelfPermission(
                     getContext(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE) 
                     == android.content.pm.PackageManager.PERMISSION_GRANTED;
-            sb.append("存储读写权限: ");
+            sb.append("Storage read/write permission: ");
         }
-        sb.append(hasStoragePermission ? "已授权 ✓\n" : "未授权 ✗\n");
+        sb.append(hasStoragePermission ? "Granted ✓\n" : "Not Granted ✗\n");
         
         // 显示当前自定义路径
         String customPath = appConfig.getCustomSdCardPath();
-        sb.append("\n=== 自定义U盘路径 ===\n");
+        sb.append("\n=== Custom USB Path ===\n");
         if (customPath != null) {
-            sb.append("当前设置: " + customPath + "\n");
+            sb.append("Current setting: " + customPath + "\n");
             java.io.File customDir = new java.io.File(customPath);
-            sb.append("路径状态: " + (customDir.exists() ? "存在" : "不存在") + 
-                    ", " + (customDir.canWrite() ? "可写" : "不可写") + "\n");
+            sb.append("Path status: " + (customDir.exists() ? "Exists" : "Not found") + 
+                    ", " + (customDir.canWrite() ? "Writable" : "Not writable") + "\n");
         } else {
-            sb.append("未设置（使用自动检测）\n");
+            sb.append("Not set (using auto-detection)\n");
         }
         
         sb.append("\n");
@@ -1701,17 +1701,17 @@ public class SettingsFragment extends Fragment {
         }
         
         new com.google.android.material.dialog.MaterialAlertDialogBuilder(getContext(), R.style.Theme_Cam_MaterialAlertDialog)
-                .setTitle("存储设备检测信息")
+                .setTitle("Storage device detection info")
                 .setMessage(sb.toString())
-                .setPositiveButton("确定", null)
-                .setNeutralButton("复制", (dialog, which) -> {
+                .setPositiveButton("OK", null)
+                .setNeutralButton("Copy", (dialog, which) -> {
                     android.content.ClipboardManager clipboard = 
                             (android.content.ClipboardManager) getContext().getSystemService(android.content.Context.CLIPBOARD_SERVICE);
-                    android.content.ClipData clip = android.content.ClipData.newPlainText("存储调试信息", sb.toString());
+                    android.content.ClipData clip = android.content.ClipData.newPlainText("Storage Debug Info", sb.toString());
                     clipboard.setPrimaryClip(clip);
-                    Toast.makeText(getContext(), "已复制到剪贴板", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Copied to clipboard", Toast.LENGTH_SHORT).show();
                 })
-                .setNegativeButton("手动设置路径", (dialog, which) -> {
+                .setNegativeButton("Set path manually", (dialog, which) -> {
                     showManualSdCardPathDialog();
                 })
                 .show();
@@ -1724,7 +1724,7 @@ public class SettingsFragment extends Fragment {
         if (getContext() == null) return;
         
         android.widget.EditText input = new android.widget.EditText(getContext());
-        input.setHint("例如: /storage/ABCD-1234");
+        input.setHint("e.g. /storage/ABCD-1234");
         input.setSingleLine(true);
         // 适配夜间模式
         input.setTextColor(ContextCompat.getColor(getContext(), R.color.text_primary));
@@ -1748,26 +1748,26 @@ public class SettingsFragment extends Fragment {
         container.addView(input);
         
         new com.google.android.material.dialog.MaterialAlertDialogBuilder(getContext(), R.style.Theme_Cam_MaterialAlertDialog)
-                .setTitle("手动设置U盘路径")
-                .setMessage("如果自动检测失败，你可以手动输入U盘的挂载路径。\n\n" +
-                        "常见格式：/storage/XXXX-XXXX（十六进制ID）\n\n" +
-                        "留空表示使用自动检测。")
+                .setTitle("Set USB path manually")
+                .setMessage("If auto-detection fails, manually enter the USB mount path.\n\n" +
+                        "Common format: /storage/XXXX-XXXX (hex ID)\n\n" +
+                        "Leave blank to use auto-detection.")
                 .setView(container)
-                .setPositiveButton("保存", (dialog, which) -> {
+                .setPositiveButton("Save", (dialog, which) -> {
                     String path = input.getText().toString().trim();
                     if (path.isEmpty()) {
                         appConfig.setCustomSdCardPath(null);
-                        Toast.makeText(getContext(), "已清除自定义路径，使用自动检测", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Custom path cleared; using auto-detection", Toast.LENGTH_SHORT).show();
                     } else {
                         java.io.File testDir = new java.io.File(path);
                         if (!testDir.exists()) {
-                            Toast.makeText(getContext(), "警告：路径不存在，但已保存", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "Warning: path does not exist, but saved", Toast.LENGTH_LONG).show();
                         } else if (!testDir.isDirectory()) {
-                            Toast.makeText(getContext(), "警告：路径不是目录，但已保存", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "Warning: path is not a directory, but saved", Toast.LENGTH_LONG).show();
                         } else if (!testDir.canWrite()) {
-                            Toast.makeText(getContext(), "警告：路径不可写，但已保存", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "Warning: path is not writable, but saved", Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(getContext(), "U盘路径已设置", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "USB path set", Toast.LENGTH_SHORT).show();
                         }
                         appConfig.setCustomSdCardPath(path);
                     }
@@ -1778,7 +1778,7 @@ public class SettingsFragment extends Fragment {
                         storageDebugButton.setVisibility(hasExternalSdCard ? View.GONE : View.VISIBLE);
                     }
                     if (hasExternalSdCard && storageLocationSpinner != null) {
-                        storageLocationOptions = new String[] {"内部存储", "U盘"};
+                        storageLocationOptions = new String[] {"Internal Storage", "USB Drive"};
                         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                                 getContext(),
                                 R.layout.spinner_item,
@@ -1790,7 +1790,7 @@ public class SettingsFragment extends Fragment {
                     String currentLocation = appConfig.getStorageLocation();
                     updateStorageLocationDescriptionAsync(currentLocation);
                 })
-                .setNegativeButton("取消", null)
+                .setNegativeButton("Cancel", null)
                 .show();
     }
     
@@ -1993,7 +1993,7 @@ public class SettingsFragment extends Fragment {
         
         // 显示当前版本号
         String currentVersion = versionUpdateManager.getCurrentVersion();
-        currentVersionText.setText("当前版本：v" + currentVersion);
+        currentVersionText.setText("Current Version: v" + currentVersion);
         
         // 设置检查更新按钮点击事件（直接检查，已有默认服务器）
         checkUpdateButton.setOnClickListener(v -> performCheckUpdate());
@@ -2029,24 +2029,24 @@ public class SettingsFragment extends Fragment {
                 .setTitle("配置更新服务器")
                 .setMessage("请输入更新服务器地址。\n\n服务器目录应包含：\n• version.txt（版本号文件）\n• EVCam.apk（安装包）")
                 .setView(inputEditText)
-                .setPositiveButton("保存", (dialog, which) -> {
+                .setPositiveButton("Save", (dialog, which) -> {
                     String url = inputEditText.getText().toString().trim();
                     if (url.isEmpty()) {
                         appConfig.setUpdateServerUrl(null);
-                        Toast.makeText(getContext(), "已清除更新服务器地址", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Update server URL cleared", Toast.LENGTH_SHORT).show();
                     } else {
                         // 基本 URL 验证
                         if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                            Toast.makeText(getContext(), "请输入有效的 HTTP/HTTPS 地址", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Please enter a valid HTTP/HTTPS URL", Toast.LENGTH_SHORT).show();
                             return;
                         }
                         appConfig.setUpdateServerUrl(url);
-                        Toast.makeText(getContext(), "更新服务器地址已保存", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Update server URL saved", Toast.LENGTH_SHORT).show();
                         // 保存后自动检查更新
                         performCheckUpdate();
                     }
                 })
-                .setNegativeButton("取消", null)
+                .setNegativeButton("Cancel", null)
                 .show();
     }
     
@@ -2058,28 +2058,28 @@ public class SettingsFragment extends Fragment {
         
         // 禁用按钮防止重复点击
         checkUpdateButton.setEnabled(false);
-        checkUpdateButton.setText("检查中...");
+        checkUpdateButton.setText("Checking...");
         
         versionUpdateManager.checkUpdate(new VersionUpdateManager.UpdateCheckCallback() {
             @Override
             public void onUpdateAvailable(String newVersion) {
                 checkUpdateButton.setEnabled(true);
-                checkUpdateButton.setText("检查 →");
+                checkUpdateButton.setText("Check →");
                 showUpdateAvailableDialog(newVersion);
             }
             
             @Override
             public void onNoUpdate() {
                 checkUpdateButton.setEnabled(true);
-                checkUpdateButton.setText("检查 →");
-                Toast.makeText(getContext(), "已是最新版本", Toast.LENGTH_SHORT).show();
+                checkUpdateButton.setText("Check →");
+                Toast.makeText(getContext(), "Already up to date", Toast.LENGTH_SHORT).show();
             }
             
             @Override
             public void onError(String error) {
                 checkUpdateButton.setEnabled(true);
-                checkUpdateButton.setText("检查 →");
-                Toast.makeText(getContext(), "检查更新失败: " + error, Toast.LENGTH_SHORT).show();
+                checkUpdateButton.setText("Check →");
+                Toast.makeText(getContext(), "Update check failed: " + error, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -2117,7 +2117,7 @@ public class SettingsFragment extends Fragment {
         progressDialog.setMax(100);
         progressDialog.setProgress(0);
         progressDialog.setCancelable(false);
-        progressDialog.setButton(android.app.ProgressDialog.BUTTON_NEGATIVE, "取消", (dialog, which) -> {
+        progressDialog.setButton(android.app.ProgressDialog.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> {
             versionUpdateManager.cancelDownload();
             dialog.dismiss();
         });
@@ -2139,7 +2139,7 @@ public class SettingsFragment extends Fragment {
             public void onError(String error) {
                 progressDialog.dismiss();
                 if (!"下载已取消".equals(error)) {
-                    Toast.makeText(getContext(), "下载失败: " + error, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Download failed: " + error, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -2156,7 +2156,7 @@ public class SettingsFragment extends Fragment {
         String displayPath = filePath;
         String internalRoot = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
         if (filePath.startsWith(internalRoot)) {
-            displayPath = filePath.replace(internalRoot, "内部存储");
+            displayPath = filePath.replace(internalRoot, "Internal Storage");
         }
         
         String message = "EVCam v" + newVersion + " 已下载完成！\n\n" +
@@ -2260,13 +2260,13 @@ public class SettingsFragment extends Fragment {
                 .setPositiveButton("确认", (dialog, which) -> {
                     String nickname = inputEditText.getText().toString().trim();
                     if (nickname.isEmpty()) {
-                        Toast.makeText(getContext(), "名称不能为空", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Name cannot be empty", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     // 显示二次确认
                     showNicknameConfirmDialog(nickname);
                 })
-                .setNegativeButton("取消", null)
+                .setNegativeButton("Cancel", null)
                 .show();
     }
     
@@ -2385,7 +2385,7 @@ public class SettingsFragment extends Fragment {
                 .setNeutralButton("修改名称", (dialog, which) -> {
                     showDeviceNicknameInputDialog();
                 })
-                .setNegativeButton("取消", null)
+                .setNegativeButton("Cancel", null)
                 .show();
     }
     
@@ -2405,7 +2405,7 @@ public class SettingsFragment extends Fragment {
         
         // 禁用按钮防止重复点击
         uploadLogsButton.setEnabled(false);
-        uploadLogsButton.setText("上传中...");
+        uploadLogsButton.setText("Uploading...");
         
         String logType = uploadPreviousSession ? "上次运行" : "本次运行";
         
@@ -2415,8 +2415,8 @@ public class SettingsFragment extends Fragment {
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
                         uploadLogsButton.setEnabled(true);
-                        uploadLogsButton.setText("一键上传");
-                        Toast.makeText(getContext(), "作者已收到" + logType + "日志", Toast.LENGTH_LONG).show();
+                        uploadLogsButton.setText("Upload Logs");
+                        Toast.makeText(getContext(), "Author received " + logType + " logs", Toast.LENGTH_LONG).show();
                     });
                 }
             }
@@ -2426,8 +2426,8 @@ public class SettingsFragment extends Fragment {
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
                         uploadLogsButton.setEnabled(true);
-                        uploadLogsButton.setText("一键上传");
-                        Toast.makeText(getContext(), "上传失败: " + error, Toast.LENGTH_SHORT).show();
+                        uploadLogsButton.setText("Upload Logs");
+                        Toast.makeText(getContext(), "Upload failed: " + error, Toast.LENGTH_SHORT).show();
                     });
                 }
             }

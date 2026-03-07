@@ -102,13 +102,13 @@ public class MultiCameraManager {
     }
     
     /**
-     * 录制状态回调（用于通知部分摄像头录制失败）
+     * 录制状态回调（用于通知部分摄像头Recording failed）
      */
     public interface RecordingStatusCallback {
         /**
          * 当部分摄像头启动录制成功，部分失败时调用
          * @param activeCameras 成功启动录制的摄像头 key 集合
-         * @param failedCameras 启动录制失败的摄像头 key 集合
+         * @param failedCameras 启动Recording failed的摄像头 key 集合
          */
         void onPartialRecordingStart(Set<String> activeCameras, Set<String> failedCameras);
     }
@@ -739,7 +739,7 @@ public class MultiCameraManager {
     }
 
     /**
-     * 开始录制所有摄像头（自动生成时间戳）
+     * Start recording所有摄像头（自动生成时间戳）
      */
     public boolean startRecording() {
         // 生成统一的时间戳
@@ -748,7 +748,7 @@ public class MultiCameraManager {
     }
 
     /**
-     * 开始录制所有摄像头（使用指定的时间戳）
+     * Start recording所有摄像头（使用指定的时间戳）
      * @param timestamp 统一的时间戳，用于所有摄像头的文件命名
      */
     public boolean startRecording(String timestamp) {
@@ -769,7 +769,7 @@ public class MultiCameraManager {
     }
 
     /**
-     * 开始录制指定的摄像头（使用指定的时间戳和摄像头列表）
+     * Start recording指定的摄像头（使用指定的时间戳和摄像头列表）
      * @param timestamp 统一的时间戳，用于所有摄像头的文件命名
      * @param enabledCameras 要录制的摄像头位置集合（如 ["front", "back"]），为 null 时录制所有摄像头
      */
@@ -791,7 +791,7 @@ public class MultiCameraManager {
     }
 
     /**
-     * 使用 MediaRecorder 开始录制（标准模式）
+     * 使用 MediaRecorder Start recording（标准模式）
      * @param timestamp 时间戳
      * @param enabledCameras 要录制的摄像头位置集合，为 null 时录制所有摄像头
      */
@@ -1093,7 +1093,7 @@ public class MultiCameraManager {
     }
 
     /**
-     * 使用软编码开始录制（L6/L7 模式）
+     * 使用软编码Start recording（L6/L7 模式）
      * 使用 OpenGL 渲染 + MediaCodec 编码 + MediaMuxer 写入
      * @param timestamp 时间戳
      * @param enabledCameras 要录制的摄像头位置集合，为 null 时录制所有摄像头
@@ -2086,7 +2086,7 @@ public class MultiCameraManager {
     public String getDebugStats() {
         StringBuilder sb = new StringBuilder();
         String[] order = {"front", "back", "left", "right"};
-        String[] labels = {"前", "后", "左", "右"};
+        String[] labels = {"Front", "Rear", "Left", "Right"};
         for (int i = 0; i < order.length; i++) {
             SingleCamera camera = cameras.get(order[i]);
             if (camera == null) continue;

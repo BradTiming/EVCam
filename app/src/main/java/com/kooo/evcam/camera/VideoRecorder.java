@@ -263,7 +263,7 @@ public class VideoRecorder {
     }
 
     /**
-     * 检查录制器是否已准备好（但未开始录制）
+     * 检查录制器是否已准备好（但未Start recording）
      * 用于判断是否可以启动初始录制
      */
     public boolean isPrepared() {
@@ -517,7 +517,7 @@ public class VideoRecorder {
             }
             
             if (callback != null && segmentIndex == 0) {
-                // 只在第一段时通知开始录制
+                // 只在第一段时通知Start recording
                 callback.onRecordStart(cameraId);
             }
 
@@ -859,7 +859,7 @@ public class VideoRecorder {
                             AppLog.w(TAG, "Deleted corrupted segment file: " + currentFilePath);
                         }
                     }
-                    completedFilePath = null;  // 文件已删除，标记为无效
+                    completedFilePath = null;  // 文件Deleted，标记为无效
                 }
                 releaseMediaRecorder();
             }
@@ -900,7 +900,7 @@ public class VideoRecorder {
     }
 
     /**
-     * 开始录制（旧方法，保持兼容性）
+     * Start recording（旧方法，保持兼容性）
      */
     public boolean startRecording(String filePath, int width, int height) {
         if (prepareRecording(filePath, width, height)) {
@@ -1019,7 +1019,7 @@ public class VideoRecorder {
             AppLog.e(TAG, "Failed to stop recording for camera " + cameraId + " (file size was: " + fileSizeBeforeStop + " bytes)", e);
             isRecording.set(false);
 
-            // 录制失败，删除损坏的文件
+            // Recording failed，删除损坏的文件
             if (currentFilePath != null) {
                 File file = new File(currentFilePath);
                 if (file.exists()) {
@@ -1142,7 +1142,7 @@ public class VideoRecorder {
 
     /**
      * 重置录制器状态（用于 Watchdog 重建）
-     * 停止当前录制并释放 MediaRecorder，但保留 Handler/Thread 以便重新开始录制
+     * 停止当前录制并释放 MediaRecorder，但保留 Handler/Thread 以便重新Start recording
      */
     public void reset() {
         AppLog.d(TAG, "Camera " + cameraId + " resetting VideoRecorder for rebuild");

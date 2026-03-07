@@ -22,7 +22,7 @@
 
     <style name="Theme.Cam" parent="Base.Theme.Cam" />
 
-    <!-- 全屏播放器主题 -->
+    <!-- 全屏Play器主题 -->
     <style name="Theme.Cam.Fullscreen" parent="Theme.Cam">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>

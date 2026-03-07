@@ -552,7 +552,7 @@ public class HeartbeatManager {
         }
         
         if (isRunning.getAndSet(false)) {
-            AppLog.i(TAG, "心跳推图服务已停止");
+            AppLog.i(TAG, "心跳推图Service stopped");
             notifyStopped();
         }
     }

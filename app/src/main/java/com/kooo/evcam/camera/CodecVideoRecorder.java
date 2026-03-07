@@ -452,7 +452,7 @@ public class CodecVideoRecorder {
     }
 
     /**
-     * 开始录制
+     * Start recording
      */
     public boolean startRecording() {
         if (encoder == null || eglEncoder == null) {
@@ -943,7 +943,7 @@ public class CodecVideoRecorder {
             // 4. 创建新的 Muxer
             createMuxer(nextSegmentPath);
             
-            // 5. 重新开始录制
+            // 5. 重新Start recording
             isRecording.set(true);
             switchSuccess = true;
             

@@ -129,22 +129,22 @@ public class FeishuFragment extends Fragment {
         String allowedUserIds = etAllowedUserIds.getText().toString().trim();
 
         if (appId.isEmpty()) {
-            Toast.makeText(requireContext(), "请填写 App ID", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Please enter App ID", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (appSecret.isEmpty()) {
-            Toast.makeText(requireContext(), "请填写 App Secret", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Please enter App Secret", Toast.LENGTH_SHORT).show();
             return;
         }
 
         config.saveConfig(appId, appSecret, allowedUserIds);
-        Toast.makeText(requireContext(), "配置已保存", Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), "Configuration saved", Toast.LENGTH_SHORT).show();
     }
 
     private void startService() {
         if (!config.isConfigured()) {
-            Toast.makeText(requireContext(), "请先保存配置", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Please save configuration first", Toast.LENGTH_SHORT).show();
             return;
         }
 

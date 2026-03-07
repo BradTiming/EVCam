@@ -260,7 +260,7 @@ public class TelegramBotManager {
                 AppLog.d(TAG, "收到录制指令，时长: " + durationSeconds + " 秒");
 
                 // 发送确认消息
-                String confirmMsg = String.format("收到录制指令，开始录制 %d 秒视频...", durationSeconds);
+                String confirmMsg = String.format("收到录制指令，Start recording %d 秒视频...", durationSeconds);
                 sendResponseAndThen(chatId, confirmMsg, () -> {
                     // 使用 WakeUpHelper 唤醒并启动录制
                     AppLog.d(TAG, "使用 WakeUpHelper 启动录制...");
@@ -286,7 +286,7 @@ public class TelegramBotManager {
                         currentCommandCallback.getStatusInfo() : "✅ Bot 正在运行中";
                 apiClient.sendMessage(chatId, statusInfo);
 
-            } else if ("启动录制".equals(command) || "开始录制".equals(command) || 
+            } else if ("启动录制".equals(command) || "Start recording".equals(command) || 
                        "/start_rec".equals(command) || "start".equalsIgnoreCase(command)) {
                 // 启动录制指令：唤醒到前台并开始持续录制
                 AppLog.d(TAG, "收到启动录制指令");

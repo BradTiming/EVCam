@@ -518,7 +518,7 @@ public class AppConfig {
      */
     public void resetToDefault() {
         prefs.edit().clear().apply();
-        AppLog.d(TAG, "配置已重置为默认值");
+        AppLog.d(TAG, "配置Reset to default");
     }
     
     // ==================== 分辨率配置相关方法 ====================
@@ -959,7 +959,7 @@ public class AppConfig {
                 key = KEY_CAMERA_RIGHT_NAME;
                 break;
             default:
-                return "未知";
+                return "Unknown";
         }
         return prefs.getString(key, defaultValue);
     }
@@ -974,15 +974,15 @@ public class AppConfig {
         // 默认名称（适用于大多数预设车型）
         switch (position) {
             case "front":
-                return "前";
+                return "Front";
             case "back":
-                return "后";
+                return "Rear";
             case "left":
-                return "左";
+                return "Left";
             case "right":
-                return "右";
+                return "Right";
             default:
-                return "未知";
+                return "Unknown";
         }
     }
 
@@ -2498,7 +2498,7 @@ public class AppConfig {
             .putInt(KEY_EFFECT_MODE, EFFECT_MODE_DEFAULT)
             .putInt(KEY_SCENE_MODE, -1)
             .apply();
-        AppLog.d(TAG, "亮度/降噪调节参数已重置为默认值");
+        AppLog.d(TAG, "亮度/降噪调节参数Reset to default");
     }
     
     /**
@@ -2515,7 +2515,7 @@ public class AppConfig {
             case AWB_MODE_CLOUDY_DAYLIGHT: return "阴天";
             case AWB_MODE_TWILIGHT: return "黄昏";
             case AWB_MODE_SHADE: return "阴影";
-            default: return "未知";
+            default: return "Unknown";
         }
     }
     
@@ -2528,7 +2528,7 @@ public class AppConfig {
             case TONEMAP_MODE_CONTRAST_CURVE: return "对比度曲线";
             case TONEMAP_MODE_FAST: return "快速";
             case TONEMAP_MODE_HIGH_QUALITY: return "高质量";
-            default: return "未知";
+            default: return "Unknown";
         }
     }
     
@@ -2541,7 +2541,7 @@ public class AppConfig {
             case EDGE_MODE_OFF: return "关闭";
             case EDGE_MODE_FAST: return "快速";
             case EDGE_MODE_HIGH_QUALITY: return "高质量";
-            default: return "未知";
+            default: return "Unknown";
         }
     }
     
@@ -2554,7 +2554,7 @@ public class AppConfig {
             case NOISE_REDUCTION_OFF: return "关闭";
             case NOISE_REDUCTION_FAST: return "快速";
             case NOISE_REDUCTION_HIGH_QUALITY: return "高质量";
-            default: return "未知";
+            default: return "Unknown";
         }
     }
     
@@ -2570,7 +2570,7 @@ public class AppConfig {
             case EFFECT_MODE_SOLARIZE: return "曝光过度";
             case EFFECT_MODE_SEPIA: return "怀旧";
             case EFFECT_MODE_AQUA: return "水蓝";
-            default: return "未知";
+            default: return "Unknown";
         }
     }
     
@@ -3117,7 +3117,7 @@ public class AppConfig {
     public void resetFrontWheelViewParams() {
         setFrontWheelLeftViewParams(1120, 662, 10, 397, 270);
         setFrontWheelRightViewParams(1211, 662, -76, 502, 90);
-        AppLog.d(TAG, "前轮模式视图参数已重置为默认值");
+        AppLog.d(TAG, "前轮模式视图参数Reset to default");
     }
 
     /**
@@ -3126,7 +3126,7 @@ public class AppConfig {
     public void resetRearWheelViewParams() {
         setRearWheelLeftViewParams(1120, 662, 10, -624, 270);
         setRearWheelRightViewParams(1298, 662, -164, -702, 90);
-        AppLog.d(TAG, "后轮模式视图参数已重置为默认值");
+        AppLog.d(TAG, "后轮模式视图参数Reset to default");
     }
 
     /**
@@ -3146,6 +3146,6 @@ public class AppConfig {
 
         setNormalLeftViewParams(leftViewWidth, halfHeight, padding, padding * 2 + halfHeight, 0);
         setNormalRightViewParams(rightViewWidth, halfHeight, padding * 2 + leftViewWidth + vehicleControlWidth, padding * 2 + halfHeight, 0);
-        AppLog.d(TAG, "普通模式视图参数已重置为默认值");
+        AppLog.d(TAG, "普通模式视图参数Reset to default");
     }
 }
