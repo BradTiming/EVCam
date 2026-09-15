@@ -33,6 +33,9 @@ The app supports simultaneous video recording and snapshot capture across up to 
 - 🪞 **Blind Spot Assistance & Dual-View** - Automatically display camera overlay feeds when turn signals are engaged, with customizable window bounds and secondary display support.
 - 📡 **HTTP MJPEG & RTP Camera Streaming** - Stream camera feeds directly to browsers, local network clients, or ESP32 displays over TCP/UDP/RTP.
 - 📲 **Local Web & QR File Transfer** - Built-in lightweight HTTP server to download videos and photos directly to smartphones via Wi-Fi hotspot or local network without unplugging the USB drive.
+- 🔄 **Auto-Move Local Footage to USB** - Automatically detects USB insertion and migrates footage stored on internal display memory to USB, with disk sync verification before deletion.
+- ⚡ **Silent / Headless Background Autostart** - Begins recording automatically on boot without popping up over vehicle navigation or dashboard apps.
+- 🔒 **Record Only With USB Detected** - Optional guard that restricts dashcam recording strictly to external USB drives, protecting internal flash memory.
 - 🔄 **Auto-Start & Multi-Layer Keep-Alive** - Boot autostart + Foreground Service + Accessibility Service + WorkManager to prevent OS task killing.
 - 💾 **Dual Storage & Smart Cleanup** - Supports internal storage and USB drives (FAT32/exFAT) with automatic disk-space cleanup when thresholds are reached.
 - 🎬 **Segmented Loop Recording** - Automatically segments video into 1, 3, or 5-minute files for seamless loop management.
