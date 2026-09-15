@@ -13,6 +13,8 @@ android {
             storePassword = "android"
             keyAlias = "apkeasytool"
             keyPassword = "android"
+            enableV1Signing = true
+            enableV2Signing = true
         }
     }
 
