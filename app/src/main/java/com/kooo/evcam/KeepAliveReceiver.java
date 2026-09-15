@@ -49,6 +49,9 @@ public class KeepAliveReceiver extends BroadcastReceiver {
     
     // 自定义广播 Action，用于手动触发保活检查
     public static final String ACTION_KEEP_ALIVE = "com.kooo.evcam.ACTION_KEEP_ALIVE";
+    // USB 存储状态变更广播
+    public static final String ACTION_USB_MOUNTED = "com.kooo.evcam.ACTION_USB_MOUNTED";
+    public static final String ACTION_USB_UNMOUNTED = "com.kooo.evcam.ACTION_USB_UNMOUNTED";
     
     private static KeepAliveReceiver timeTickReceiver;
     private static boolean isTimeTickRegistered = false;
@@ -133,33 +136,21 @@ public class KeepAliveReceiver extends BroadcastReceiver {
                 
             // ========== USB/存储相关（插U盘触发） ==========
             case Intent.ACTION_MEDIA_MOUNTED:
-                AppLog.d(TAG, "【存储】存储已挂载（U盘/SD卡插入）");
+            case "android.hardware.usb.action.USB_DEVICE_ATTACHED":
+                AppLog.d(TAG, "【存储】存储已挂载/USB设备已连接");
+                StorageHelper.clearCache();
                 ensureServicesRunning(context, "Storage Mounted");
+                handleUsbAttached(context);
                 break;
                 
             case Intent.ACTION_MEDIA_UNMOUNTED:
-                AppLog.d(TAG, "【存储】存储已卸载");
-                ensureServicesRunning(context, "Storage Unmounted");
-                break;
-                
             case Intent.ACTION_MEDIA_REMOVED:
-                AppLog.d(TAG, "【存储】存储已移除");
-                ensureServicesRunning(context, "Storage Removed");
-                break;
-                
             case Intent.ACTION_MEDIA_EJECT:
-                AppLog.d(TAG, "【存储】存储弹出请求");
-                ensureServicesRunning(context, "Storage Ejected");
-                break;
-                
-            case "android.hardware.usb.action.USB_DEVICE_ATTACHED":
-                AppLog.d(TAG, "【USB】USB设备已连接");
-                ensureServicesRunning(context, "USB Connected");
-                break;
-                
             case "android.hardware.usb.action.USB_DEVICE_DETACHED":
-                AppLog.d(TAG, "【USB】USB设备已断开");
-                ensureServicesRunning(context, "USB Disconnected");
+                AppLog.d(TAG, "【存储】存储已卸载/USB设备已断开");
+                StorageHelper.clearCache();
+                ensureServicesRunning(context, "Storage Unmounted");
+                handleUsbDetached(context);
                 break;
                 
             // ========== 网络相关 ==========
@@ -383,6 +374,31 @@ public class KeepAliveReceiver extends BroadcastReceiver {
             context.sendBroadcast(intent);
         } catch (Exception e) {
             AppLog.e(TAG, "发送保活检查广播失败: " + e.getMessage(), e);
+        }
+    }
+
+    private void handleUsbAttached(Context context) {
+        try {
+            AppConfig config = new AppConfig(context);
+            if (config.isAutoMoveLocalToUsbEnabled() && StorageHelper.hasExternalSdCard(context)) {
+                AppLog.d(TAG, "USB attached: triggering auto-migration of local footage to USB");
+                UsbFootageMigrator.migrateLocalFootageToUsb(context, null);
+            }
+            Intent usbIntent = new Intent(ACTION_USB_MOUNTED);
+            usbIntent.setPackage(context.getPackageName());
+            context.sendBroadcast(usbIntent);
+        } catch (Exception e) {
+            AppLog.e(TAG, "Error handling USB attached: " + e.getMessage(), e);
+        }
+    }
+
+    private void handleUsbDetached(Context context) {
+        try {
+            Intent usbIntent = new Intent(ACTION_USB_UNMOUNTED);
+            usbIntent.setPackage(context.getPackageName());
+            context.sendBroadcast(usbIntent);
+        } catch (Exception e) {
+            AppLog.e(TAG, "Error handling USB detached: " + e.getMessage(), e);
         }
     }
 }

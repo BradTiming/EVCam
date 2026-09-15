@@ -455,6 +455,22 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        // 初始化开机后台静默自启动开关
+        SwitchMaterial autostartInBackgroundSwitch = view.findViewById(R.id.switch_autostart_in_background);
+        if (autostartInBackgroundSwitch != null && appConfig != null) {
+            autostartInBackgroundSwitch.setChecked(appConfig.isAutostartInBackgroundEnabled());
+            autostartInBackgroundSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (getContext() != null && appConfig != null) {
+                    appConfig.setAutostartInBackgroundEnabled(isChecked);
+                    String message = isChecked ? 
+                            "Autostart in background enabled: app starts silently on startup" : 
+                            "Autostart in background disabled: app UI will be shown on startup";
+                    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                    AppLog.d("SettingsFragment", message);
+                }
+            });
+        }
+
         // 定时保活已改为始终开启（车机必需），无需设置开关
         // 隐藏定时保活开关
         View keepAliveSwitch = view.findViewById(R.id.switch_keep_alive);
@@ -1719,6 +1735,9 @@ public class SettingsFragment extends Fragment {
         
         // 初始化中转写入开关
         initRelayWriteConfig(view);
+
+        // 初始化存储增强选项（仅U盘录制、自动转移机身录像、机身录像迁移）
+        initStorageEnhancementsConfig(view);
     }
     
     /**
@@ -1757,6 +1776,109 @@ public class SettingsFragment extends Fragment {
         });
         
         isInitializingRelayWrite = false;
+    }
+
+    /**
+     * 初始化存储增强配置
+     */
+    private void initStorageEnhancementsConfig(View view) {
+        SwitchMaterial recordOnlyWithUsbSwitch = view.findViewById(R.id.switch_record_only_with_usb);
+        if (recordOnlyWithUsbSwitch != null && appConfig != null) {
+            recordOnlyWithUsbSwitch.setChecked(appConfig.isRecordOnlyWhenUsbDetected());
+            recordOnlyWithUsbSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (getContext() != null && appConfig != null) {
+                    appConfig.setRecordOnlyWhenUsbDetected(isChecked);
+                    String message = isChecked ? 
+                            "Record only when USB detected enabled: app will not record without a USB drive" : 
+                            "Record only when USB detected disabled";
+                    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                    AppLog.d("SettingsFragment", message);
+                }
+            });
+        }
+
+        SwitchMaterial autoMoveToUsbSwitch = view.findViewById(R.id.switch_auto_move_to_usb);
+        if (autoMoveToUsbSwitch != null && appConfig != null) {
+            autoMoveToUsbSwitch.setChecked(appConfig.isAutoMoveLocalToUsbEnabled());
+            autoMoveToUsbSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (getContext() != null && appConfig != null) {
+                    appConfig.setAutoMoveLocalToUsbEnabled(isChecked);
+                    String message = isChecked ? 
+                            "Auto-move local footage to USB enabled: display footage moves to USB once connected" : 
+                            "Auto-move local footage to USB disabled";
+                    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                    AppLog.d("SettingsFragment", message);
+                }
+            });
+        }
+
+        TextView tvLocalFootageInfo = view.findViewById(R.id.tv_local_footage_info);
+        Button btnMigrateLocalToUsb = view.findViewById(R.id.btn_migrate_local_to_usb);
+        if (btnMigrateLocalToUsb != null && tvLocalFootageInfo != null) {
+            updateLocalFootageInfo(tvLocalFootageInfo, btnMigrateLocalToUsb);
+
+            btnMigrateLocalToUsb.setOnClickListener(v -> {
+                Context ctx = getContext();
+                if (ctx == null) return;
+                if (!StorageHelper.hasExternalSdCard(ctx)) {
+                    Toast.makeText(ctx, "No USB drive detected. Please insert a USB drive first.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                btnMigrateLocalToUsb.setEnabled(false);
+                btnMigrateLocalToUsb.setText("Moving footage...");
+                UsbFootageMigrator.migrateLocalFootageToUsb(ctx, new UsbFootageMigrator.MigrationCallback() {
+                    @Override
+                    public void onProgress(int current, int total, String fileName) {
+                        if (isAdded() && getActivity() != null) {
+                            btnMigrateLocalToUsb.setText("Moving " + current + "/" + total + "...");
+                        }
+                    }
+
+                    @Override
+                    public void onComplete(int movedCount, long movedBytes, int failedCount) {
+                        if (isAdded() && getActivity() != null) {
+                            btnMigrateLocalToUsb.setText("Move Local Footage to USB Now");
+                            updateLocalFootageInfo(tvLocalFootageInfo, btnMigrateLocalToUsb);
+                        }
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        if (isAdded() && getActivity() != null) {
+                            btnMigrateLocalToUsb.setText("Move Local Footage to USB Now");
+                            Toast.makeText(ctx, "Migration failed: " + message, Toast.LENGTH_SHORT).show();
+                            updateLocalFootageInfo(tvLocalFootageInfo, btnMigrateLocalToUsb);
+                        }
+                    }
+                });
+            });
+        }
+    }
+
+    private void updateLocalFootageInfo(TextView tvInfo, Button btnMigrate) {
+        if (tvInfo == null || getContext() == null) return;
+        new Thread(() -> {
+            Context ctx = getContext();
+            if (ctx == null) return;
+            UsbFootageMigrator.FootageStats stats = UsbFootageMigrator.getLocalFootageStats(ctx);
+            boolean usbConnected = StorageHelper.hasExternalSdCard(ctx);
+
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(() -> {
+                    if (!isAdded()) return;
+                    if (stats.totalCount() == 0) {
+                        tvInfo.setText("No footage stored on internal display storage");
+                        if (btnMigrate != null) btnMigrate.setEnabled(false);
+                    } else {
+                        tvInfo.setText(String.format("Footage on internal display: %d video(s), %d photo(s) (%s)",
+                                stats.videoCount, stats.photoCount, StorageHelper.formatSize(stats.totalBytes())));
+                        if (btnMigrate != null) {
+                            btnMigrate.setEnabled(usbConnected && !UsbFootageMigrator.isMigrationRunning());
+                        }
+                    }
+                });
+            }
+        }).start();
     }
     
     /**

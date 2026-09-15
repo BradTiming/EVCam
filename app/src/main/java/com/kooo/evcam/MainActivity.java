@@ -149,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
     private android.content.BroadcastReceiver screenStateReceiver;  // 屏幕状态广播接收器
     private android.content.BroadcastReceiver backgroundCommandReceiver;  // 后台切换广播接收器
     private android.content.BroadcastReceiver toggleRecordingReceiver;  // 录制切换广播接收器（来自悬浮窗）
+    private android.content.BroadcastReceiver usbStateReceiver;  // USB 存储设备状态广播接收器
     private android.os.Handler screenStateHandler;  // 息屏/亮屏延迟处理
     private Runnable screenOffStopRunnable;  // 息屏停止录制的延迟任务
     private Runnable screenOnStartRunnable;  // 亮屏恢复录制的延迟任务
@@ -426,22 +427,27 @@ public class MainActivity extends AppCompatActivity {
         // 启动文件传输服务（用于U盘中转写入模式）
         FileTransferManager.getInstance(this).start();
 
-        // 检查是否是开机自启动
+        // 检查是否是开机自启动或后台静默启动
         boolean autoStartFromBoot = getIntent().getBooleanExtra("auto_start_from_boot", false);
-        if (autoStartFromBoot) {
+        boolean silentMode = getIntent().getBooleanExtra("silent_mode", false);
+        if (autoStartFromBoot || silentMode) {
             // 清除标志，避免后续重复检测
             getIntent().removeExtra("auto_start_from_boot");
+            getIntent().removeExtra("silent_mode");
 
             // 判断是否需要移到后台：
-            // - 如果开启了自动录制：不移到后台，显示主界面并开始录制
-            // - 如果未开启自动录制（只开启悬浮窗/推送等）：移到后台
-            if (appConfig.isAutoStartRecording()) {
+            // - 如果开启了"开机后台静默自启动"或传入了 silent_mode
+            if (silentMode || appConfig.isAutostartInBackgroundEnabled()) {
+                AppLog.d(TAG, "开机自启动：已启用后台静默自启动，将在窗口就绪后移到后台");
+                shouldMoveToBackgroundOnReady = true;
+                if (appConfig.isAutoStartRecording()) {
+                    isAutoRecordingPending = true; // 确保 onPause 不会释放摄像头
+                }
+            } else if (appConfig.isAutoStartRecording()) {
                 AppLog.d(TAG, "开机自启动模式：已开启自动录制，保持前台显示");
                 shouldMoveToBackgroundOnReady = false;
             } else {
                 AppLog.d(TAG, "开机自启动模式：未开启自动录制，等待窗口准备好后移到后台");
-                // 设置标志，等待 onWindowFocusChanged 时再移到后台
-                // 这确保 Activity 完全初始化后再执行，避免中断初始化过程
                 shouldMoveToBackgroundOnReady = true;
             }
         }
@@ -580,10 +586,11 @@ public class MainActivity extends AppCompatActivity {
             shouldMoveToBackgroundOnReady = false;  // 清除标志，避免重复执行
             
             // 延迟移到后台，确保初始化完成
-            new android.os.Handler().postDelayed(() -> {
+            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
                 moveTaskToBack(true);  // 将应用移到后台
+                overridePendingTransition(0, 0);
                 AppLog.d(TAG, "应用已移到后台，开机自启动完成");
-            }, 500);  // 延迟 500ms
+            }, 300);  // 延迟 300ms
         }
     }
 
@@ -3455,6 +3462,12 @@ public class MainActivity extends AppCompatActivity {
             AppLog.d(TAG, "未启用启动自动录制");
             return;
         }
+
+        // 检查是否启用了"仅在插入U盘时录制"
+        if (appConfig.isRecordOnlyWhenUsbDetected() && !StorageHelper.hasExternalSdCard(this)) {
+            AppLog.d(TAG, "已启用'仅在插入U盘时录制'但未检测到U盘，跳过启动自动录制");
+            return;
+        }
         
         // 标记已触发
         autoStartRecordingTriggered = true;
@@ -3543,6 +3556,11 @@ public class MainActivity extends AppCompatActivity {
         if (!appConfig.isAutoStartRecording()) {
             return;
         }
+
+        // 如果开启了"仅在插入U盘时录制"，但未检测到U盘，则不录制
+        if (appConfig.isRecordOnlyWhenUsbDetected() && !StorageHelper.hasExternalSdCard(this)) {
+            return;
+        }
         
         // 如果用户手动停止了录制，不自动恢复
         if (isManuallyStoppedRecording) {
@@ -3606,6 +3624,9 @@ public class MainActivity extends AppCompatActivity {
         
         // 初始化录制切换广播接收器（来自悬浮窗）
         initToggleRecordingReceiver();
+
+        // 初始化 USB 状态广播接收器
+        initUsbStateReceiver();
     }
     
     /**
@@ -3657,6 +3678,62 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(backgroundCommandReceiver, filter, android.content.Context.RECEIVER_NOT_EXPORTED);
         
         AppLog.d(TAG, "后台切换广播接收器已注册");
+    }
+
+    /**
+     * 初始化 USB 设备插拔与存储状态广播接收器
+     */
+    private void initUsbStateReceiver() {
+        usbStateReceiver = new android.content.BroadcastReceiver() {
+            @Override
+            public void onReceive(android.content.Context context, android.content.Intent intent) {
+                if (intent == null || intent.getAction() == null) return;
+                String action = intent.getAction();
+                AppLog.d(TAG, "USB State Receiver received: " + action);
+
+                if (KeepAliveReceiver.ACTION_USB_MOUNTED.equals(action) ||
+                    android.content.Intent.ACTION_MEDIA_MOUNTED.equals(action) ||
+                    "android.hardware.usb.action.USB_DEVICE_ATTACHED".equals(action)) {
+
+                    StorageHelper.clearCache();
+                    if (appConfig != null && appConfig.isAutoMoveLocalToUsbEnabled()) {
+                        UsbFootageMigrator.migrateLocalFootageToUsb(MainActivity.this, null);
+                    }
+                    if (appConfig != null && appConfig.isRecordOnlyWhenUsbDetected() && appConfig.isAutoStartRecording()) {
+                        if (!isRecording && !isPreparingRecording && !isAutoRecordingPending) {
+                            AppLog.d(TAG, "USB mounted and 'Record Only With USB' is active: starting auto-recording");
+                            runOnUiThread(() -> checkAndRestoreAutoRecording());
+                        }
+                    }
+                } else if (KeepAliveReceiver.ACTION_USB_UNMOUNTED.equals(action) ||
+                           android.content.Intent.ACTION_MEDIA_UNMOUNTED.equals(action) ||
+                           android.content.Intent.ACTION_MEDIA_EJECT.equals(action) ||
+                           "android.hardware.usb.action.USB_DEVICE_DETACHED".equals(action)) {
+
+                    StorageHelper.clearCache();
+                    if (appConfig != null && appConfig.isRecordOnlyWhenUsbDetected()) {
+                        if (isRecording) {
+                            AppLog.w(TAG, "USB disconnected while 'Record Only When USB' is active: stopping recording");
+                            runOnUiThread(() -> {
+                                if (isRecording) {
+                                    stopRecording();
+                                    Toast.makeText(MainActivity.this, "USB drive removed. Recording stopped.", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        };
+
+        android.content.IntentFilter filter = new android.content.IntentFilter();
+        filter.addAction(KeepAliveReceiver.ACTION_USB_MOUNTED);
+        filter.addAction(KeepAliveReceiver.ACTION_USB_UNMOUNTED);
+        filter.addAction("android.hardware.usb.action.USB_DEVICE_ATTACHED");
+        filter.addAction("android.hardware.usb.action.USB_DEVICE_DETACHED");
+        registerReceiver(usbStateReceiver, filter, android.content.Context.RECEIVER_NOT_EXPORTED);
+
+        AppLog.d(TAG, "USB状态广播接收器已注册");
     }
     
     /**
@@ -3961,6 +4038,14 @@ public class MainActivity extends AppCompatActivity {
             
             if (enabledCameras.isEmpty()) {
                 Toast.makeText(this, "Please select at least one recording camera", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // 检查"仅在插入U盘时录制"设置
+            if (appConfig.isRecordOnlyWhenUsbDetected() && !StorageHelper.hasExternalSdCard(this)) {
+                AppLog.w(TAG, "Recording blocked: Record Only With USB is enabled and no USB drive is detected");
+                Toast.makeText(this, "USB drive not detected. Recording disabled by 'Record Only With USB' setting.", Toast.LENGTH_SHORT).show();
+                isAutoRecordingPending = false;
                 return;
             }
             
@@ -5036,14 +5121,18 @@ public class MainActivity extends AppCompatActivity {
                     
                     // 如果启用了自动录制，从后台返回时自动恢复录制
                     if (appConfig.isAutoStartRecording()) {
-                        AppLog.d(TAG, "启用了自动录制，从后台返回后将自动恢复录制");
-                        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
-                            if (!isRecording && cameraManager != null && cameraManager.hasConnectedCameras()) {
-                                AppLog.d(TAG, "自动恢复录制...");
-                                startRecording();
-                                Toast.makeText(this, "Recording automatically resumed", Toast.LENGTH_SHORT).show();
-                            }
-                        }, 1500);  // 等待摄像头准备好
+                        if (appConfig.isRecordOnlyWhenUsbDetected() && !StorageHelper.hasExternalSdCard(this)) {
+                            AppLog.d(TAG, "已启用'仅在插入U盘时录制'但未检测到U盘，从后台返回跳过自动恢复");
+                        } else {
+                            AppLog.d(TAG, "启用了自动录制，从后台返回后将自动恢复录制");
+                            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+                                if (!isRecording && cameraManager != null && cameraManager.hasConnectedCameras()) {
+                                    AppLog.d(TAG, "自动恢复录制...");
+                                    startRecording();
+                                    Toast.makeText(this, "Recording automatically resumed", Toast.LENGTH_SHORT).show();
+                                }
+                            }, 1500);  // 等待摄像头准备好
+                        }
                     }
                     
                     // 重新启动超视模式窗口的摄像头预览
@@ -5148,6 +5237,16 @@ public class MainActivity extends AppCompatActivity {
                 AppLog.w(TAG, "注销录制切换广播接收器时出错: " + e.getMessage());
             }
             toggleRecordingReceiver = null;
+        }
+
+        // 清理 USB 状态广播接收器
+        if (usbStateReceiver != null) {
+            try {
+                unregisterReceiver(usbStateReceiver);
+            } catch (Exception e) {
+                AppLog.w(TAG, "注销 USB 状态广播接收器时出错: " + e.getMessage());
+            }
+            usbStateReceiver = null;
         }
         if (screenStateHandler != null) {
             if (screenOffStopRunnable != null) {

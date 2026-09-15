@@ -158,6 +158,11 @@ public class AppConfig {
 
     // 补盲悬浮窗动效
     private static final String KEY_FLOATING_WINDOW_ANIMATION_ENABLED = "floating_window_animation_enabled"; // 悬浮窗开启/关闭动效
+
+    // 存储与自启动增强配置
+    private static final String KEY_AUTO_MOVE_LOCAL_TO_USB = "auto_move_local_to_usb";               // 插入U盘后自动转移机身录像
+    private static final String KEY_RECORD_ONLY_WHEN_USB_DETECTED = "record_only_when_usb_detected"; // 仅在插入U盘时录制
+    private static final String KEY_AUTOSTART_IN_BACKGROUND = "autostart_in_background";             // 开机自启动静默在后台运行
     private static final String KEY_BLIND_SPOT_STATUS_BAR_STYLE = "blind_spot_status_bar_style";             // 状态栏动效样式 (0=关, 1-5=五种动效)
     private static final String KEY_BLIND_SPOT_STATUS_BAR_COLOR = "blind_spot_status_bar_color";             // 状态栏动效颜色 (ARGB int)
     private static final String KEY_BLIND_SPOT_STATUS_BAR_BG_OPACITY = "blind_spot_status_bar_bg_opacity";   // 状态栏底色不透明度 0-100
@@ -3776,5 +3781,34 @@ public class AppConfig {
 
     public void setMjpegStreamAutoDiscover(boolean enabled) {
         prefs.edit().putBoolean(KEY_MJPEG_STREAM_AUTO_DISCOVER, enabled).apply();
+    }
+
+    // ==================== Storage & Autostart Enhancements ====================
+
+    public boolean isAutoMoveLocalToUsbEnabled() {
+        return prefs.getBoolean(KEY_AUTO_MOVE_LOCAL_TO_USB, true);
+    }
+
+    public void setAutoMoveLocalToUsbEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_AUTO_MOVE_LOCAL_TO_USB, enabled).apply();
+        AppLog.d(TAG, "Auto move local footage to USB: " + enabled);
+    }
+
+    public boolean isRecordOnlyWhenUsbDetected() {
+        return prefs.getBoolean(KEY_RECORD_ONLY_WHEN_USB_DETECTED, false);
+    }
+
+    public void setRecordOnlyWhenUsbDetected(boolean enabled) {
+        prefs.edit().putBoolean(KEY_RECORD_ONLY_WHEN_USB_DETECTED, enabled).apply();
+        AppLog.d(TAG, "Record only when USB detected: " + enabled);
+    }
+
+    public boolean isAutostartInBackgroundEnabled() {
+        return prefs.getBoolean(KEY_AUTOSTART_IN_BACKGROUND, true);
+    }
+
+    public void setAutostartInBackgroundEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_AUTOSTART_IN_BACKGROUND, enabled).apply();
+        AppLog.d(TAG, "Autostart in background: " + enabled);
     }
 }
