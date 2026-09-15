@@ -53,6 +53,18 @@ public class StorageHelper {
     }
     
     /**
+     * 检查"仅在插入U盘时录制"策略是否阻止本次录制
+     * 由所有录制入口（前台手动录制、远程指令录制、悬浮窗录制）统一调用，
+     * 确保该设置对所有录制路径都生效
+     * @param context 上下文
+     * @param appConfig 应用配置
+     * @return true 如果该设置已启用但未检测到U盘（应阻止录制）
+     */
+    public static boolean isRecordingBlockedByUsbPolicy(Context context, AppConfig appConfig) {
+        return appConfig != null && appConfig.isRecordOnlyWhenUsbDetected() && !hasExternalSdCard(context);
+    }
+
+    /**
      * 检测是否有U盘（并且可以写入公共目录）
      * 使用内存缓存，5秒内不重复检测
      * @param context 上下文

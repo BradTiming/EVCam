@@ -3464,7 +3464,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // 检查是否启用了"仅在插入U盘时录制"
-        if (appConfig.isRecordOnlyWhenUsbDetected() && !StorageHelper.hasExternalSdCard(this)) {
+        if (StorageHelper.isRecordingBlockedByUsbPolicy(this, appConfig)) {
             AppLog.d(TAG, "已启用'仅在插入U盘时录制'但未检测到U盘，跳过启动自动录制");
             return;
         }
@@ -3558,7 +3558,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // 如果开启了"仅在插入U盘时录制"，但未检测到U盘，则不录制
-        if (appConfig.isRecordOnlyWhenUsbDetected() && !StorageHelper.hasExternalSdCard(this)) {
+        if (StorageHelper.isRecordingBlockedByUsbPolicy(this, appConfig)) {
             return;
         }
         
@@ -4042,7 +4042,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // 检查"仅在插入U盘时录制"设置
-            if (appConfig.isRecordOnlyWhenUsbDetected() && !StorageHelper.hasExternalSdCard(this)) {
+            if (StorageHelper.isRecordingBlockedByUsbPolicy(this, appConfig)) {
                 AppLog.w(TAG, "Recording blocked: Record Only With USB is enabled and no USB drive is detected");
                 Toast.makeText(this, "USB drive not detected. Recording disabled by 'Record Only With USB' setting.", Toast.LENGTH_SHORT).show();
                 isAutoRecordingPending = false;
@@ -5121,7 +5121,7 @@ public class MainActivity extends AppCompatActivity {
                     
                     // 如果启用了自动录制，从后台返回时自动恢复录制
                     if (appConfig.isAutoStartRecording()) {
-                        if (appConfig.isRecordOnlyWhenUsbDetected() && !StorageHelper.hasExternalSdCard(this)) {
+                        if (StorageHelper.isRecordingBlockedByUsbPolicy(this, appConfig)) {
                             AppLog.d(TAG, "已启用'仅在插入U盘时录制'但未检测到U盘，从后台返回跳过自动恢复");
                         } else {
                             AppLog.d(TAG, "启用了自动录制，从后台返回后将自动恢复录制");

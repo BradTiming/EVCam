@@ -8,6 +8,7 @@ import com.kooo.evcam.AppConfig;
 import com.kooo.evcam.AppLog;
 import com.kooo.evcam.CameraForegroundService;
 import com.kooo.evcam.FloatingWindowService;
+import com.kooo.evcam.StorageHelper;
 import com.kooo.evcam.WakeUpHelper;
 import com.kooo.evcam.remote.core.ChatIdentifier;
 import com.kooo.evcam.remote.core.RecordingContext;
@@ -145,7 +146,15 @@ public abstract class RemoteCommandHandler {
             returnToBackgroundIfNeeded();
             return;
         }
-        
+
+        // 3.5 检查"仅在插入U盘时录制"设置
+        if (StorageHelper.isRecordingBlockedByUsbPolicy(context, appConfig)) {
+            AppLog.w(TAG, "Remote recording blocked: Record Only With USB is enabled and no USB drive is detected");
+            sendError(chatId, "USB drive not detected. Recording disabled by 'Record Only With USB' setting.");
+            returnToBackgroundIfNeeded();
+            return;
+        }
+
         // 4. 生成统一的时间戳
         String timestamp = generateTimestamp();
         AppLog.d(TAG, platformName + " 录制统一时间戳: " + timestamp);

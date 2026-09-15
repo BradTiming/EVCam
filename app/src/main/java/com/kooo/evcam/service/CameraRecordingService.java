@@ -23,6 +23,7 @@ import com.kooo.evcam.AppLog;
 import com.kooo.evcam.CameraForegroundService;
 import com.kooo.evcam.MainActivity;
 import com.kooo.evcam.R;
+import com.kooo.evcam.StorageHelper;
 import com.kooo.evcam.camera.CameraManagerHolder;
 import com.kooo.evcam.camera.MultiCameraManager;
 import com.kooo.evcam.config.BlindSpotConfig;
@@ -212,6 +213,13 @@ public class CameraRecordingService extends Service {
                 if (cameraManager.isReleased()) {
                     AppLog.e(TAG, "Cameras not initialized, please open app first");
                     recordingController.onError(3, "Cameras not initialized, please open app first");
+                    return;
+                }
+
+                // 检查"仅在插入U盘时录制"设置
+                if (StorageHelper.isRecordingBlockedByUsbPolicy(this, appConfig)) {
+                    AppLog.w(TAG, "Recording blocked: Record Only With USB is enabled and no USB drive is detected");
+                    recordingController.onError(4, "USB drive not detected. Recording disabled by 'Record Only With USB' setting.");
                     return;
                 }
 
